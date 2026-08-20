@@ -4,6 +4,11 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Siladon Landscape Admin</title>
+  <script>
+    if (window.location.protocol === 'file:') {
+      window.location.replace('https://siladonlandscape.netlify.app/admin/');
+    }
+  </script>
   <style>
     body {
       margin: 0;
@@ -104,9 +109,7 @@
           window.netlifyIdentity.close();
           loadCms();
         });
-        window.netlifyIdentity.init({
-          APIUrl: 'https://siladonlandscape.netlify.app/garden-api'
-        });
+        window.netlifyIdentity.init();
       }
 
       loginButton.disabled = true;
