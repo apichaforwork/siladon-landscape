@@ -1,3 +1,3 @@
-/cms-auth/*  /.netlify/functions/cms-auth/:splat  200
-/cms-auth  /.netlify/functions/cms-auth  200
-/cms-git/*  /.netlify/functions/cms-git/:splat  200
+/garden-api/*  /.netlify/functions/cms-auth/:splat  200
+/garden-api  /.netlify/functions/cms-auth  200
+/garden-sync/*  /.netlify/functions/cms-git/:splat  200
