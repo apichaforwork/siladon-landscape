@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Siladon Landscape | ออกแบบและติดตั้งพื้นที่สวน</title>
+  <meta name="description" content="บริการออกแบบและติดตั้งพื้นที่สวน ทางเดิน สวนหิน และงานภูมิทัศน์ พร้อมประเมินงบเบื้องต้น" />
+  <style>
+    :root{
+      --green:#2F8F1F;
+      --green2:#3FAE2A;
+      --light:#EAF7E6;
+      --ink:#151515;
+      --muted:#6a6a6a;
+      --line:#e8e8e8;
+      --bg:#FCFDFD;
+      --white:#fff;
+      --radius:22px;
+      --shadow:0 14px 40px rgba(0,0,0,.08);
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans Thai","Tahoma",sans-serif;
+      color:var(--ink);
+      background:var(--bg);
+      line-height:1.55;
+    }
+    a{text-decoration:none;color:inherit}
+    .container{width:min(1180px,92%);margin:auto}
+    .nav{
+      position:sticky;top:0;z-index:20;
+      backdrop-filter:blur(12px);
+      background:rgba(252,253,253,.9);
+      border-bottom:1px solid rgba(0,0,0,.05);
+    }
+    .nav-inner{
+      min-height:72px;display:flex;align-items:center;justify-content:space-between;gap:20px;
+    }
+    .brand{font-weight:900;letter-spacing:.3px;font-size:21px}
+    .brand span{color:var(--green)}
+    .menu{display:flex;gap:22px;font-size:14px;color:#333}
+    .cta{
+      display:inline-flex;align-items:center;justify-content:center;
+      padding:13px 18px;border-radius:999px;background:var(--green);color:white;
+      font-weight:750;border:0;cursor:pointer;
+    }
+    .cta.alt{background:white;color:var(--ink);border:1px solid #ddd}
+    .hero{padding:66px 0 34px}
+    .hero-grid{
+      display:grid;grid-template-columns:1.02fr .98fr;gap:42px;align-items:center;
+    }
+    .eyebrow{color:var(--green);font-weight:800;font-size:14px;margin-bottom:10px}
+    h1{font-size:clamp(42px,6vw,76px);line-height:1.05;margin:0 0 20px;letter-spacing:-2.2px}
+    .lead{font-size:18px;color:var(--muted);max-width:640px;margin-bottom:26px}
+    .hero-actions{display:flex;gap:12px;flex-wrap:wrap}
+    .hero-card{
+      min-height:520px;border-radius:30px;overflow:hidden;position:relative;
+      background:
+        linear-gradient(to top,rgba(0,0,0,.45),rgba(0,0,0,.05)),
+        url("https://images.unsplash.com/photo-1558904541-efa843a96f01?auto=format&fit=crop&w=1400&q=85") center/cover;
+      box-shadow:var(--shadow);
+    }
+    .hero-card .tag{
+      position:absolute;left:22px;bottom:22px;background:rgba(255,255,255,.93);
+      border-radius:18px;padding:15px 17px;font-weight:800;max-width:280px;
+    }
+    .trust{
+      margin-top:28px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:620px
+    }
+    .trust div{padding:14px 0;border-top:1px solid #ddd;color:#555;font-size:14px}
+    .trust b{display:block;color:#111;font-size:18px}
+    section{padding:72px 0}
+    .section-head{
+      display:flex;justify-content:space-between;align-items:end;gap:22px;margin-bottom:28px
+    }
+    h2{font-size:clamp(30px,4vw,48px);line-height:1.1;margin:0;letter-spacing:-1.2px}
+    .section-head p{max-width:560px;color:var(--muted);margin:0}
+    .projects{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+    .project{
+      background:white;border-radius:var(--radius);overflow:hidden;border:1px solid var(--line);
+      transition:.2s transform,.2s box-shadow;
+    }
+    .project:hover{transform:translateY(-4px);box-shadow:var(--shadow)}
+    .project-img{height:230px;background-size:cover;background-position:center}
+    .project-body{padding:20px}
+    .project-body small{color:var(--green);font-weight:800}
+    .project-body h3{margin:5px 0 8px;font-size:22px}
+    .project-body p{color:var(--muted);margin:0 0 14px;font-size:14px}
+    .chips{display:flex;gap:7px;flex-wrap:wrap}
+    .chip{font-size:12px;padding:7px 10px;background:#f4f4f4;border-radius:999px}
+    .services{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+    .service{background:white;border:1px solid var(--line);border-radius:20px;padding:22px}
+    .service .icon{font-size:28px}
+    .service h3{margin:12px 0 5px}
+    .service p{margin:0;color:var(--muted);font-size:14px}
+    .price-wrap{
+      display:grid;grid-template-columns:.92fr 1.08fr;gap:20px;align-items:stretch
+    }
+    .price-card,.calc-card{
+      background:white;border:1px solid var(--line);border-radius:26px;padding:28px
+    }
+    .price-row{
+      display:flex;justify-content:space-between;gap:20px;padding:17px 0;border-bottom:1px solid #eee
+    }
+    .price-row:last-child{border-bottom:0}
+    .price-row span:last-child{font-weight:850;text-align:right}
+    .note{font-size:12px;color:#777;margin-top:15px}
+    label{display:block;font-size:13px;font-weight:750;margin:15px 0 7px}
+    select,input{
+      width:100%;padding:13px 14px;border:1px solid #dcdcdc;border-radius:12px;background:white;
+      font-size:15px;
+    }
+    .result{
+      margin-top:18px;padding:18px;border-radius:16px;background:var(--light)
+    }
+    .result b{display:block;font-size:28px;color:var(--green)}
+    .steps{display:grid;grid-template-columns:repeat(7,1fr);gap:10px}
+    .step{
+      background:white;border:1px solid var(--line);border-radius:18px;padding:18px;min-height:160px
+    }
+    .num{font-size:12px;font-weight:900;color:var(--green)}
+    .step h3{font-size:17px;margin:10px 0 6px}
+    .step p{font-size:13px;color:var(--muted);margin:0}
+    .contact{
+      background:#151515;color:white;border-radius:30px;padding:46px;
+      display:flex;justify-content:space-between;align-items:center;gap:25px
+    }
+    .contact h2{max-width:650px}
+    .contact p{color:#cfcfcf}
+    footer{padding:30px 0 100px;color:#777;font-size:13px}
+    .mobile-bar{
+      position:fixed;left:50%;transform:translateX(-50%);bottom:14px;z-index:30;
+      width:min(620px,92%);display:grid;grid-template-columns:1fr 1fr;gap:8px;
+      background:rgba(255,255,255,.94);padding:8px;border-radius:18px;
+      box-shadow:0 12px 40px rgba(0,0,0,.16);backdrop-filter:blur(10px)
+    }
+
+    .project{cursor:pointer}
+    .modal{display:none;position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.62);padding:24px;overflow:auto}
+    .modal.open{display:block}
+    .modal-card{width:min(980px,100%);margin:30px auto;background:#fff;border-radius:26px;overflow:hidden;box-shadow:var(--shadow)}
+    .modal-top{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;border-bottom:1px solid var(--line)}
+    .modal-close{border:0;background:#f2f2f2;border-radius:999px;width:38px;height:38px;font-size:22px;cursor:pointer}
+    .modal-body{padding:24px}
+    .modal-cover{width:100%;height:min(52vw,500px);object-fit:cover;border-radius:18px}
+    .modal-meta{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:18px 0}
+    .modal-meta div{background:#f6f6f6;border-radius:14px;padding:13px}
+    .gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px}
+    .gallery img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:12px}
+    @media(max-width:640px){.modal-meta,.gallery{grid-template-columns:1fr 1fr}}
+
+    @media(max-width:950px){
+      .menu{display:none}
+      .hero-grid,.price-wrap{grid-template-columns:1fr}
+      .hero-card{min-height:420px}
+      .projects{grid-template-columns:1fr 1fr}
+      .services{grid-template-columns:1fr 1fr}
+      .steps{grid-template-columns:1fr 1fr}
+      .contact{flex-direction:column;align-items:flex-start}
+    }
+    @media(max-width:640px){
+      .hero{padding-top:34px}
+      h1{letter-spacing:-1.3px}
+      .projects,.services,.steps{grid-template-columns:1fr}
+      .section-head{display:block}
+      .section-head p{margin-top:12px}
+      .hero-card{min-height:360px}
+      .trust{grid-template-columns:1fr}
+      .contact{padding:28px}
+    }
+  </style>
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+</head>
+<body>
+  <nav class="nav">
+    <div class="container nav-inner">
+      <div class="brand">SILADON <span>LANDSCAPE</span></div>
+      <div class="menu">
+        <a href="#work">ผลงาน</a>
+        <a href="#services">บริการ</a>
+        <a href="#price">ราคาโดยประมาณ</a>
+        <a href="#process">ขั้นตอนทำงาน</a>
+      </div>
+      <a class="cta" href="#estimate">ประเมินงบ</a>
+    </div>
+  </nav>
+
+  <main>
+    <section class="hero">
+      <div class="container hero-grid">
+        <div>
+          <div class="eyebrow">LANDSCAPE DESIGN & INSTALLATION</div>
+          <h1>เปลี่ยนพื้นที่รอบบ้าน<br>ให้เป็นมุมที่คุณอยากใช้ทุกวัน</h1>
+          <p class="lead">
+            บริการออกแบบและติดตั้งพื้นที่สวน ทางเดิน สวนหิน และงานภูมิทัศน์
+            ตั้งแต่วางแนวคิด เลือกวัสดุ ไปจนถึงติดตั้งและส่งมอบ
+          </p>
+          <div class="hero-actions">
+            <a class="cta" href="#work">ดูผลงานจริง</a>
+            <a class="cta alt" href="#estimate">ประเมินงบเบื้องต้น</a>
+          </div>
+          <div class="trust">
+            <div><b>30 ตร.ม.</b>ขั้นต่ำงานปู</div>
+            <div><b>2D Design</b>ก่อนเริ่มติดตั้ง</div>
+            <div><b>6 เดือน</b>รับประกันงานติดตั้ง</div>
+          </div>
+        </div>
+        <div class="hero-card">
+          <div class="tag">สวนดูแลง่าย • งานทางเดิน • งานปรับพื้นที่รอบบ้าน</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="work">
+      <div class="container">
+        <div class="section-head">
+          <h2>ผลงานที่ลูกค้าดูแล้ว<br>นึกภาพบ้านตัวเองออก</h2>
+          <p>ควรใส่ภาพงานจริงแบบ Before / After พร้อมขนาดพื้นที่ งบประมาณ และรายละเอียดที่ทำในแต่ละโครงการ</p>
+        </div>
+
+        <div class="projects" id="projectsGrid">
+          <div style="grid-column:1/-1;padding:28px;text-align:center;color:#777">กำลังโหลดผลงาน...</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="services">
+      <div class="container">
+        <div class="section-head">
+          <h2>บริการหลัก</h2>
+          <p>ลูกค้าไม่ต้องรู้ชื่อวัสดุทั้งหมดก่อนก็ได้ แค่เลือกว่าต้องการแก้ปัญหาพื้นที่แบบไหน</p>
+        </div>
+        <div class="services">
+          <div class="service"><div class="icon">◫</div><h3>ปูแผ่นทางเดิน</h3><p>วางระบบพื้น ปรับระดับ ปูแผ่น โรยหิน และทำขอบ</p></div>
+          <div class="service"><div class="icon">◌</div><h3>สวนหิน</h3><p>สำหรับพื้นที่ดูแลง่าย ลดวัชพืช และช่วยให้บ้านดูเป็นระเบียบ</p></div>
+          <div class="service"><div class="icon">⌂</div><h3>พื้นที่รอบบ้าน</h3><p>จัดการทางเดิน ข้างบ้าน หลังบ้าน สโลป และจุดบ่อพัก</p></div>
+          <div class="service"><div class="icon">↔</div><h3>ปิดโพรง</h3><p>ลดช่องว่างใต้บ้านและช่วยให้งานรอบบ้านเรียบร้อยขึ้น</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="price">
+      <div class="container">
+        <div class="section-head">
+          <h2>ดูงบก่อนตัดสินใจ</h2>
+          <p>แสดงช่วงราคาเพื่อให้ลูกค้าประเมินตัวเองได้ โดยไม่ล็อกราคาหน้างานตายตัว</p>
+        </div>
+
+        <div class="price-wrap">
+          <div class="price-card">
+            <h3 style="font-size:25px;margin-top:0">ราคาโดยประมาณ</h3>
+            <div class="price-row"><span>งานปูแผ่นทางเดิน</span><span>เริ่ม 1,250 บาท/ตร.ม.</span></div>
+            <div class="price-row"><span>ปูหญ้าจริง</span><span>ประมาณ 450 บาท/ตร.ม.</span></div>
+            <div class="price-row"><span>ปูหญ้าเทียม</span><span>ประมาณ 850 บาท/ตร.ม.</span></div>
+            <div class="price-row"><span>ปิดโพรง</span><span>ประมาณ 850 บาท/เมตร</span></div>
+            <div class="price-row"><span>งานปูขั้นต่ำ</span><span>30 ตร.ม.</span></div>
+            <div class="note">* ราคาจริงขึ้นอยู่กับชนิดวัสดุ สภาพพื้นที่ ระยะทาง การเตรียมพื้น และรายละเอียดหน้างาน</div>
+          </div>
+
+          <div class="calc-card" id="estimate">
+            <h3 style="font-size:25px;margin-top:0">ประเมินงบเบื้องต้น</h3>
+            <label>ขนาดพื้นที่โดยประมาณ (ตร.ม.)</label>
+            <input id="area" type="number" value="50" min="1" />
+            <label>ประเภทงาน</label>
+            <select id="type">
+              <option value="1250">ปูแผ่นทางเดิน — Standard</option>
+              <option value="1500">สวนหิน + ทางเดิน</option>
+              <option value="850">หญ้าเทียม</option>
+              <option value="450">หญ้าจริง</option>
+            </select>
+            <label>ระดับวัสดุ</label>
+            <select id="grade">
+              <option value="1">Standard</option>
+              <option value="1.18">Premium</option>
+              <option value="1.35">Signature</option>
+            </select>
+            <button class="cta" style="margin-top:18px;width:100%" onclick="estimate()">คำนวณงบ</button>
+            <div class="result">
+              งบประมาณโดยประมาณ
+              <b id="budget">62,500–78,125 บาท</b>
+              <span style="font-size:12px;color:#666">เพื่อใช้วางงบเท่านั้น ราคาจริงประเมินหลังดูรายละเอียดพื้นที่</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="process">
+      <div class="container">
+        <div class="section-head">
+          <h2>จากรูปพื้นที่<br>จนถึงส่งมอบงาน</h2>
+          <p>ทำให้ลูกค้าเข้าใจกระบวนการตั้งแต่ก่อนนัดสำรวจ ลดความไม่แน่ใจและลดคำถามซ้ำ</p>
+        </div>
+        <div class="steps">
+          <div class="step"><div class="num">01</div><h3>ส่งข้อมูล</h3><p>รูปพื้นที่ + Maps + ขนาดคร่าว ๆ</p></div>
+          <div class="step"><div class="num">02</div><h3>ประเมินงบ</h3><p>แจ้งช่วงราคาก่อนตัดสินใจ</p></div>
+          <div class="step"><div class="num">03</div><h3>สำรวจ</h3><p>นัดทีมเข้าดูพื้นที่จริง</p></div>
+          <div class="step"><div class="num">04</div><h3>ออกแบบ 2D</h3><p>เลือกสไตล์ ลาย และวัสดุ</p></div>
+          <div class="step"><div class="num">05</div><h3>ใบเสนอราคา</h3><p>สรุปขอบเขตและค่าใช้จ่าย</p></div>
+          <div class="step"><div class="num">06</div><h3>ติดตั้ง</h3><p>มัดจำ 60% แล้วเริ่มงาน</p></div>
+          <div class="step"><div class="num">07</div><h3>ส่งมอบ</h3><p>ตรวจงานและชำระส่วนที่เหลือ</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="container">
+        <div class="contact">
+          <div>
+            <h2>ยังไม่รู้ว่าพื้นที่บ้านควรทำแบบไหน?</h2>
+            <p>ส่งรูปพื้นที่และ Location มาให้ทีมช่วยแนะนำรูปแบบพร้อมประเมินงบคร่าว ๆ ได้ก่อน</p>
+          </div>
+          <a class="cta" href="https://line.me/R/ti/p/@siladon" target="_blank">ส่งรูปผ่าน LINE</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+
+  <div class="modal" id="projectModal" onclick="if(event.target===this) closeProject()">
+    <div class="modal-card">
+      <div class="modal-top"><strong id="modalTitle">รายละเอียดโครงการ</strong><button class="modal-close" onclick="closeProject()">×</button></div>
+      <div class="modal-body" id="modalBody"></div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="container">
+      SILADON LANDSCAPE — แนวคิดเว็บไซต์ตัวอย่าง • สามารถเปลี่ยนภาพตัวอย่างทั้งหมดเป็นภาพผลงานจริงของร้านได้
+    </div>
+  </footer>
+
+  <div class="mobile-bar">
+    <a class="cta alt" href="#estimate">ประเมินงบ</a>
+    <a class="cta" href="https://line.me/R/ti/p/@siladon" target="_blank">LINE ปรึกษา</a>
+  </div>
+
+<script>
+let projectData = [];
+
+function esc(s=''){
+  return String(s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[c]));
+}
+
+async function loadProjects(){
+  try{
+    const res = await fetch('/data/projects.json?ts=' + Date.now());
+    const data = await res.json();
+    projectData = (data.projects || []).filter(p => p.visible !== false);
+    const grid = document.getElementById('projectsGrid');
+    if(!projectData.length){
+      grid.innerHTML = '<div style="grid-column:1/-1;padding:28px;text-align:center;color:#777">ยังไม่มีผลงานที่เผยแพร่</div>';
+      return;
+    }
+    grid.innerHTML = projectData.map((p,i)=>{
+      const tags=(p.tags||[]).map(t=>`<span class="chip">${esc(t)}</span>`).join('');
+      const budget = [p.budget_min,p.budget_max].filter(Boolean).map(Number).map(x=>x.toLocaleString('th-TH')).join('–');
+      const meta = [p.area ? `พื้นที่ ${esc(p.area)} ตร.ม.` : '', budget ? `งบประมาณ ${budget} บาท` : ''].filter(Boolean).join(' • ');
+      return `<article class="project" onclick="openProject(${i})">
+        <div class="project-img" style="background-image:url('${esc(p.cover||'')}')"></div>
+        <div class="project-body">
+          <small>${esc(p.category||'LANDSCAPE PROJECT')}</small>
+          <h3>${esc(p.title||'ผลงานจัดสวน')}</h3>
+          <p>${meta}</p>
+          <div class="chips">${tags}</div>
+        </div>
+      </article>`;
+    }).join('');
+  }catch(e){
+    document.getElementById('projectsGrid').innerHTML = '<div style="grid-column:1/-1;padding:28px;text-align:center;color:#777">ไม่สามารถโหลดผลงานได้</div>';
+    console.error(e);
+  }
+}
+
+function openProject(i){
+  const p=projectData[i]; if(!p) return;
+  document.getElementById('modalTitle').textContent=p.title||'รายละเอียดโครงการ';
+  const budget=[p.budget_min,p.budget_max].filter(Boolean).map(Number).map(x=>x.toLocaleString('th-TH')).join('–');
+  const gallery=(p.gallery||[]).map(x=>`<img src="${esc(typeof x==='string'?x:x.image||'')}" alt="${esc(p.title||'ผลงาน')}">`).join('');
+  document.getElementById('modalBody').innerHTML=`
+    ${p.cover?`<img class="modal-cover" src="${esc(p.cover)}" alt="${esc(p.title||'ผลงาน')}">`:''}
+    <div class="modal-meta">
+      <div><small>พื้นที่</small><br><b>${p.area?esc(p.area)+' ตร.ม.':'—'}</b></div>
+      <div><small>งบประมาณ</small><br><b>${budget?budget+' บาท':'สอบถามเพิ่มเติม'}</b></div>
+      <div><small>ระยะเวลา</small><br><b>${esc(p.duration||'—')}</b></div>
+    </div>
+    ${p.description?`<p>${esc(p.description).replace(/\n/g,'<br>')}</p>`:''}
+    ${gallery?`<h3>Gallery</h3><div class="gallery">${gallery}</div>`:''}
+  `;
+  document.getElementById('projectModal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeProject(){
+  document.getElementById('projectModal').classList.remove('open');
+  document.body.style.overflow='';
+}
+
+function estimate(){
+  const area = Math.max(parseFloat(document.getElementById('area').value)||0, 0);
+  const type = parseFloat(document.getElementById('type').value)||0;
+  const grade = parseFloat(document.getElementById('grade').value)||1;
+  const baseArea = type >= 1000 ? Math.max(area,30) : area;
+  const low = baseArea*type*grade;
+  const high = low*1.25;
+  const fmt = n => Math.round(n).toLocaleString('th-TH');
+  document.getElementById('budget').textContent = fmt(low)+'–'+fmt(high)+' บาท';
+}
+
+document.addEventListener('DOMContentLoaded', ()=>{ estimate(); loadProjects(); });
+if(window.netlifyIdentity){
+  window.netlifyIdentity.on('init', user=>{
+    if(!user && window.location.hash.includes('invite_token')) window.netlifyIdentity.open('signup');
+  });
+}
+</script>
+</body>
+</html>
