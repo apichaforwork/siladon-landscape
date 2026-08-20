@@ -104,7 +104,9 @@
           window.netlifyIdentity.close();
           loadCms();
         });
-        window.netlifyIdentity.init();
+        window.netlifyIdentity.init({
+          APIUrl: 'https://siladonlandscape.netlify.app/.netlify/identity'
+        });
       }
 
       loginButton.disabled = true;
