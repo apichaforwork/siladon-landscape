@@ -60,7 +60,6 @@
       display: none;
     }
   </style>
-  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 </head>
 <body>
   <div class="login-screen" id="login-screen">
@@ -76,6 +75,7 @@
       var loginScreen = document.getElementById('login-screen');
       var loginButton = document.getElementById('login-button');
       var cmsLoaded = false;
+      var identityReady = false;
 
       function loadCms() {
         if (cmsLoaded) return;
@@ -88,12 +88,15 @@
       }
 
       function openLogin() {
-        if (window.netlifyIdentity) {
-          window.netlifyIdentity.open('login');
-        }
+        if (!identityReady || !window.netlifyIdentity) return;
+        window.netlifyIdentity.open('login');
       }
 
-      if (window.netlifyIdentity) {
+      function setupIdentity() {
+        if (!window.netlifyIdentity) return;
+        identityReady = true;
+        loginButton.disabled = false;
+
         window.netlifyIdentity.on('init', function (user) {
           if (user) loadCms();
         });
@@ -104,7 +107,13 @@
         window.netlifyIdentity.init();
       }
 
+      loginButton.disabled = true;
       loginButton.addEventListener('click', openLogin);
+
+      var identityScript = document.createElement('script');
+      identityScript.src = 'https://identity.netlify.com/v1/netlify-identity-widget.js';
+      identityScript.onload = setupIdentity;
+      document.head.appendChild(identityScript);
     }());
   </script>
 </body>
