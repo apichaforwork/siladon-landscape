@@ -1,8 +1,6 @@
 backend:
   name: git-gateway
   branch: main
-  identity_url: https://siladonlandscape.netlify.app/garden-api
-  gateway_url: https://siladonlandscape.netlify.app/garden-sync/github
 
 media_folder: "images/uploads"
 public_folder: "/images/uploads"
