@@ -1,0 +1,55 @@
+{
+  "projects": [
+    {
+      "title": "ทางเดินข้างบ้าน",
+      "category": "MODERN WALKWAY",
+      "cover": "https://images.unsplash.com/photo-1598902108854-10e335adac99?auto=format&fit=crop&w=1000&q=80",
+      "area": 52,
+      "budget_min": 65000,
+      "budget_max": 85000,
+      "duration": "ตัวอย่าง 3–5 วัน",
+      "description": "ตัวอย่างข้อมูลโครงการสำหรับทดสอบ CMS สามารถแก้ไขหรือลบได้จากหลังบ้าน",
+      "tags": [
+        "แผ่นทางเดิน",
+        "หินโรย",
+        "ขอบกั้น"
+      ],
+      "gallery": [],
+      "visible": true
+    },
+    {
+      "title": "สวนหินดูแลง่าย",
+      "category": "LOW MAINTENANCE",
+      "cover": "https://images.unsplash.com/photo-1558521958-0a228e77e984?auto=format&fit=crop&w=1000&q=80",
+      "area": 38,
+      "budget_min": 48000,
+      "budget_max": 70000,
+      "duration": "ตัวอย่าง 2–4 วัน",
+      "description": "ตัวอย่างข้อมูลโครงการสำหรับทดสอบ CMS",
+      "tags": [
+        "Geotextile",
+        "หิน",
+        "ปรับระดับ"
+      ],
+      "gallery": [],
+      "visible": true
+    },
+    {
+      "title": "ปรับพื้นที่รอบบ้าน",
+      "category": "HOUSE PERIMETER",
+      "cover": "https://images.unsplash.com/photo-1591825729269-caeb344f6df2?auto=format&fit=crop&w=1000&q=80",
+      "area": 76,
+      "budget_min": 95000,
+      "budget_max": 130000,
+      "duration": "ตัวอย่าง 4–7 วัน",
+      "description": "ตัวอย่างข้อมูลโครงการสำหรับทดสอบ CMS",
+      "tags": [
+        "ปรับ slope",
+        "ปูแผ่น",
+        "ปิดโพรง"
+      ],
+      "gallery": [],
+      "visible": true
+    }
+  ]
+}
