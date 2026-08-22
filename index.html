@@ -342,9 +342,17 @@
 
 <script>
 let projectData = [];
+const RAW_UPLOAD_BASE = 'https://raw.githubusercontent.com/apichaforwork/siladon-landscape/main/';
 
 function esc(s=''){
   return String(s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[c]));
+}
+
+function imageUrl(src=''){
+  src = String(src || '');
+  if(src.startsWith('/images/uploads/')) return RAW_UPLOAD_BASE + src.slice(1);
+  if(src.startsWith('images/uploads/')) return RAW_UPLOAD_BASE + src;
+  return src;
 }
 
 async function loadProjects(){
@@ -374,7 +382,7 @@ async function loadProjects(){
       const material = [p.brand, p.model].filter(Boolean).map(esc).join(' · ');
       const meta = [area, material, p.duration ? `ใช้เวลา ${esc(p.duration)}` : ''].filter(Boolean).join(' • ');
       return `<article class="project" onclick="openProject(${i})">
-        <div class="project-img" style="background-image:url('${esc(p.cover||'')}')"></div>
+        <div class="project-img" style="background-image:url('${esc(imageUrl(p.cover||''))}')"></div>
         <div class="project-body">
           <small>${esc(p.category||'LANDSCAPE PROJECT')}</small>
           <h3>${esc(p.title||'ผลงานจัดสวน')}</h3>
@@ -392,9 +400,9 @@ async function loadProjects(){
 function openProject(i){
   const p=projectData[i]; if(!p) return;
   document.getElementById('modalTitle').textContent=p.title||'รายละเอียดโครงการ';
-  const gallery=(p.gallery||[]).map(x=>`<img src="${esc(typeof x==='string'?x:x.image||'')}" alt="${esc(p.title||'ผลงาน')}">`).join('');
+  const gallery=(p.gallery||[]).map(x=>`<img src="${esc(imageUrl(typeof x==='string'?x:x.image||''))}" alt="${esc(p.title||'ผลงาน')}">`).join('');
   document.getElementById('modalBody').innerHTML=`
-    ${p.cover?`<img class="modal-cover" src="${esc(p.cover)}" alt="${esc(p.title||'ผลงาน')}">`:''}
+    ${p.cover?`<img class="modal-cover" src="${esc(imageUrl(p.cover))}" alt="${esc(p.title||'ผลงาน')}">`:''}
     <div class="modal-meta">
       <div><small>พื้นที่</small><br><b>${p.area?esc(p.area)+(String(p.area).includes('ตร.ม.')?'':' ตร.ม.'):'—'}</b></div>
       <div><small>แบรนด์</small><br><b>${esc(p.brand||'—')}</b></div>
