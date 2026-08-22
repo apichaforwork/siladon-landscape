@@ -7,52 +7,19 @@
       "area": "52",
       "brand": "Siladon Stone",
       "model": "ศิลาเทา 3/4",
-      "duration": "ตัวอย่าง 3–5 วัน",
-      "description": "ตัวอย่างข้อมูลโครงการสำหรับทดสอบ CMS สามารถแก้ไขหรือลบได้จากหลังบ้าน",
+      "duration": "3–5 วัน",
+      "description": "งานปูทางเดินข้างบ้านด้วยแผ่นทางเดินและหินโรย ช่วยลดดินเลอะและทำให้เดินรอบบ้านสะดวกขึ้น",
       "tags": [
         "แผ่นทางเดิน",
         "หินโรย",
-        "ขอบกั้น"
+        "ขอบกั้น",
+        "ข้างบ้าน"
       ],
       "gallery": [
         "https://raw.githubusercontent.com/apichaforwork/siladon-landscape/main/images/uploads/1787387766589-gag6ph-779239046-1630246805778184-1908871125689229029-n.jpg",
         "https://raw.githubusercontent.com/apichaforwork/siladon-landscape/main/images/uploads/1787387768381-kw9jkm-779278284-1630246875778177-4761824388991942569-n.jpg",
         "https://raw.githubusercontent.com/apichaforwork/siladon-landscape/main/images/uploads/1787387769784-inlu3n-780160796-1630246802444851-4701723938285776848-n.jpg"
       ],
-      "visible": true
-    },
-    {
-      "title": "สวนหินดูแลง่าย",
-      "category": "LOW MAINTENANCE",
-      "cover": "https://images.unsplash.com/photo-1558521958-0a228e77e984?auto=format&fit=crop&w=1000&q=80",
-      "area": 38,
-      "brand": "สวนหินศิลาดล",
-      "model": "หินแม่น้ำคละสี",
-      "duration": "ตัวอย่าง 2–4 วัน",
-      "description": "ตัวอย่างข้อมูลโครงการสำหรับทดสอบ CMS",
-      "tags": [
-        "Geotextile",
-        "หิน",
-        "ปรับระดับ"
-      ],
-      "gallery": [],
-      "visible": true
-    },
-    {
-      "title": "ปรับพื้นที่รอบบ้าน",
-      "category": "HOUSE PERIMETER",
-      "cover": "https://images.unsplash.com/photo-1591825729269-caeb344f6df2?auto=format&fit=crop&w=1000&q=80",
-      "area": 76,
-      "brand": "SCG",
-      "model": "แผ่นทางเดินลายหิน",
-      "duration": "ตัวอย่าง 4–7 วัน",
-      "description": "ตัวอย่างข้อมูลโครงการสำหรับทดสอบ CMS",
-      "tags": [
-        "ปรับ slope",
-        "ปูแผ่น",
-        "ปิดโพรง"
-      ],
-      "gallery": [],
       "visible": true
     }
   ]
