@@ -143,16 +143,42 @@
     .project{cursor:pointer}
     .modal{display:none;position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.62);padding:24px;overflow:auto}
     .modal.open{display:block}
-    .modal-card{width:min(980px,100%);margin:30px auto;background:#fff;border-radius:26px;overflow:hidden;box-shadow:var(--shadow)}
+    .modal-card{width:min(1080px,100%);margin:30px auto;background:#fff;border-radius:26px;overflow:hidden;box-shadow:var(--shadow)}
     .modal-top{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;border-bottom:1px solid var(--line)}
     .modal-close{border:0;background:#f2f2f2;border-radius:999px;width:38px;height:38px;font-size:22px;cursor:pointer}
     .modal-body{padding:24px}
-    .modal-cover{width:100%;height:min(52vw,500px);object-fit:cover;border-radius:18px}
+    .album-intro{display:grid;grid-template-columns:220px 1fr;gap:18px;align-items:start;margin-bottom:18px}
+    .album-cover{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:16px}
+    .album-copy p{margin:0;color:#333;font-size:16px}
     .modal-meta{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0}
     .modal-meta div{background:#f6f6f6;border-radius:14px;padding:13px}
     .gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px}
-    .gallery img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:12px}
-    @media(max-width:640px){.modal-meta,.gallery{grid-template-columns:1fr 1fr}}
+    .gallery-photo{border:0;background:transparent;padding:0;cursor:zoom-in}
+    .gallery-photo img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:12px;display:block}
+    .photo-lightbox{
+      display:none;position:fixed;inset:0;z-index:120;background:rgba(0,0,0,.88);
+      padding:26px;align-items:center;justify-content:center
+    }
+    .photo-lightbox.open{display:flex}
+    .photo-lightbox img{max-width:92vw;max-height:86vh;object-fit:contain;border-radius:14px;background:#111}
+    .lightbox-close,.lightbox-nav{
+      position:absolute;border:0;background:rgba(255,255,255,.92);color:#111;
+      border-radius:999px;cursor:pointer;font-weight:800
+    }
+    .lightbox-close{top:18px;right:18px;width:44px;height:44px;font-size:26px}
+    .lightbox-nav{top:50%;transform:translateY(-50%);width:48px;height:48px;font-size:34px}
+    .lightbox-prev{left:18px}
+    .lightbox-next{right:18px}
+    .lightbox-count{
+      position:absolute;left:50%;bottom:18px;transform:translateX(-50%);
+      color:white;background:rgba(0,0,0,.45);border-radius:999px;padding:7px 12px;font-size:13px
+    }
+    @media(max-width:640px){
+      .album-intro{grid-template-columns:1fr}
+      .album-cover{max-height:220px}
+      .modal-meta,.gallery{grid-template-columns:1fr 1fr}
+      .lightbox-nav{display:none}
+    }
 
     @media(max-width:950px){
       .menu{display:none}
@@ -329,6 +355,14 @@
     </div>
   </div>
 
+  <div class="photo-lightbox" id="photoLightbox" onclick="if(event.target===this) closeLightbox()">
+    <button class="lightbox-close" type="button" onclick="closeLightbox()">×</button>
+    <button class="lightbox-nav lightbox-prev" type="button" onclick="showLightboxImage(activeLightboxIndex - 1)">‹</button>
+    <img id="lightboxImage" src="" alt="รูปผลงานแบบเต็ม">
+    <button class="lightbox-nav lightbox-next" type="button" onclick="showLightboxImage(activeLightboxIndex + 1)">›</button>
+    <div class="lightbox-count" id="lightboxCount"></div>
+  </div>
+
   <footer>
     <div class="container">
       SILADON LANDSCAPE — แนวคิดเว็บไซต์ตัวอย่าง • สามารถเปลี่ยนภาพตัวอย่างทั้งหมดเป็นภาพผลงานจริงของร้านได้
@@ -342,6 +376,8 @@
 
 <script>
 let projectData = [];
+let activeAlbumImages = [];
+let activeLightboxIndex = 0;
 const RAW_UPLOAD_BASE = 'https://raw.githubusercontent.com/apichaforwork/siladon-landscape/main/';
 const PROJECT_DATA_URL = 'https://raw.githubusercontent.com/apichaforwork/siladon-landscape/main/data/projects.json';
 
@@ -358,19 +394,9 @@ function imageUrl(src=''){
 
 async function loadProjects(){
   try{
-    const preview = localStorage.getItem('siladonPreviewProjects');
-    let data;
-    if(preview){
-      try{
-        data = JSON.parse(preview);
-      }catch(e){
-        localStorage.removeItem('siladonPreviewProjects');
-      }
-    }
-    if(!data){
-      const res = await fetch(PROJECT_DATA_URL + '?ts=' + Date.now());
-      data = await res.json();
-    }
+    try{ localStorage.removeItem('siladonPreviewProjects'); }catch(e){}
+    const res = await fetch(PROJECT_DATA_URL + '?ts=' + Date.now());
+    const data = await res.json();
     projectData = (data.projects || []).filter(p => p.visible !== false);
     const grid = document.getElementById('projectsGrid');
     if(!projectData.length){
@@ -401,17 +427,29 @@ async function loadProjects(){
 function openProject(i){
   const p=projectData[i]; if(!p) return;
   document.getElementById('modalTitle').textContent=p.title||'รายละเอียดโครงการ';
-  const gallery=(p.gallery||[]).map(x=>`<img src="${esc(imageUrl(typeof x==='string'?x:x.image||''))}" alt="${esc(p.title||'ผลงาน')}">`).join('');
+  const cover = imageUrl(p.cover || '');
+  const gallerySources = (p.gallery || []).map(x => imageUrl(typeof x === 'string' ? x : x.image || '')).filter(Boolean);
+  const allImages = [cover, ...gallerySources].filter((src, idx, arr) => src && arr.indexOf(src) === idx);
+  activeAlbumImages = allImages;
+  const gallery = allImages.map((src,idx)=>`
+    <button class="gallery-photo" type="button" onclick="openLightbox(${idx})" aria-label="ดูรูปที่ ${idx + 1} แบบเต็มจอ">
+      <img src="${esc(src)}" alt="${esc(p.title||'ผลงาน')} รูปที่ ${idx + 1}">
+    </button>
+  `).join('');
   document.getElementById('modalBody').innerHTML=`
-    ${p.cover?`<img class="modal-cover" src="${esc(imageUrl(p.cover))}" alt="${esc(p.title||'ผลงาน')}">`:''}
+    <div class="album-intro">
+      ${cover?`<img class="album-cover" src="${esc(cover)}" alt="${esc(p.title||'ผลงาน')}">`:''}
+      <div class="album-copy">
+        ${p.description?`<p>${esc(p.description).replace(/\n/g,'<br>')}</p>`:''}
+      </div>
+    </div>
     <div class="modal-meta">
       <div><small>พื้นที่</small><br><b>${p.area?esc(p.area)+(String(p.area).includes('ตร.ม.')?'':' ตร.ม.'):'—'}</b></div>
       <div><small>แบรนด์</small><br><b>${esc(p.brand||'—')}</b></div>
       <div><small>รุ่น / ลาย</small><br><b>${esc(p.model||'—')}</b></div>
       <div><small>ระยะเวลา</small><br><b>${esc(p.duration||'—')}</b></div>
     </div>
-    ${p.description?`<p>${esc(p.description).replace(/\n/g,'<br>')}</p>`:''}
-    ${gallery?`<h3>Gallery</h3><div class="gallery">${gallery}</div>`:''}
+    ${gallery?`<h3>รูปในอัลบั้ม</h3><div class="gallery">${gallery}</div>`:''}
   `;
   document.getElementById('projectModal').classList.add('open');
   document.body.style.overflow='hidden';
@@ -420,6 +458,26 @@ function closeProject(){
   document.getElementById('projectModal').classList.remove('open');
   document.body.style.overflow='';
 }
+function openLightbox(index){
+  if(!activeAlbumImages.length) return;
+  showLightboxImage(index);
+  document.getElementById('photoLightbox').classList.add('open');
+}
+function showLightboxImage(index){
+  if(!activeAlbumImages.length) return;
+  activeLightboxIndex = (index + activeAlbumImages.length) % activeAlbumImages.length;
+  document.getElementById('lightboxImage').src = activeAlbumImages[activeLightboxIndex];
+  document.getElementById('lightboxCount').textContent = `${activeLightboxIndex + 1} / ${activeAlbumImages.length}`;
+}
+function closeLightbox(){
+  document.getElementById('photoLightbox').classList.remove('open');
+}
+document.addEventListener('keydown', e=>{
+  if(!document.getElementById('photoLightbox').classList.contains('open')) return;
+  if(e.key === 'Escape') closeLightbox();
+  if(e.key === 'ArrowLeft') showLightboxImage(activeLightboxIndex - 1);
+  if(e.key === 'ArrowRight') showLightboxImage(activeLightboxIndex + 1);
+});
 
 function estimate(){
   const area = Math.max(parseFloat(document.getElementById('area').value)||0, 0);
