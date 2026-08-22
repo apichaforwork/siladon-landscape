@@ -6,6 +6,8 @@
   <title>Siladon Landscape | ออกแบบและติดตั้งพื้นที่สวน</title>
   <meta name="description" content="บริการออกแบบและติดตั้งพื้นที่สวน ทางเดิน สวนหิน และงานภูมิทัศน์ พร้อมประเมินงบเบื้องต้น" />
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@500;600;700;800&family=Noto+Sans+Thai:wght@400;500;600;700;800&display=swap');
+
     :root{
       --green:#2F8F1F;
       --green2:#3FAE2A;
@@ -22,10 +24,11 @@
     html{scroll-behavior:smooth}
     body{
       margin:0;
-      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans Thai","Tahoma",sans-serif;
+      font-family:"Noto Sans Thai",-apple-system,BlinkMacSystemFont,"Segoe UI",Tahoma,sans-serif;
       color:var(--ink);
       background:var(--bg);
       line-height:1.55;
+      font-weight:500;
     }
     a{text-decoration:none;color:inherit}
     .container{width:min(1180px,92%);margin:auto}
@@ -38,7 +41,7 @@
     .nav-inner{
       min-height:72px;display:flex;align-items:center;justify-content:space-between;gap:20px;
     }
-    .brand{font-weight:900;letter-spacing:.3px;font-size:21px}
+    .brand{font-family:"Kanit","Noto Sans Thai",sans-serif;font-weight:800;letter-spacing:0;font-size:21px}
     .brand span{color:var(--green)}
     .menu{display:flex;gap:22px;font-size:14px;color:#333}
     .cta{
@@ -52,7 +55,7 @@
       display:grid;grid-template-columns:1.02fr .98fr;gap:42px;align-items:center;
     }
     .eyebrow{color:var(--green);font-weight:800;font-size:14px;margin-bottom:10px}
-    h1{font-size:clamp(42px,6vw,76px);line-height:1.05;margin:0 0 20px;letter-spacing:-2.2px}
+    h1{font-family:"Kanit","Noto Sans Thai",sans-serif;font-size:clamp(42px,6vw,76px);line-height:1.08;margin:0 0 20px;letter-spacing:0;font-weight:800}
     .lead{font-size:18px;color:var(--muted);max-width:640px;margin-bottom:26px}
     .hero-actions{display:flex;gap:12px;flex-wrap:wrap}
     .hero-card{
@@ -75,7 +78,7 @@
     .section-head{
       display:flex;justify-content:space-between;align-items:end;gap:22px;margin-bottom:28px
     }
-    h2{font-size:clamp(30px,4vw,48px);line-height:1.1;margin:0;letter-spacing:-1.2px}
+    h2{font-family:"Kanit","Noto Sans Thai",sans-serif;font-size:clamp(30px,4vw,48px);line-height:1.14;margin:0;letter-spacing:0;font-weight:750}
     .section-head p{max-width:560px;color:var(--muted);margin:0}
     .projects{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
     .project{
@@ -86,14 +89,14 @@
     .project-img{height:230px;background-size:cover;background-position:center}
     .project-body{padding:20px}
     .project-body small{color:var(--green);font-weight:800}
-    .project-body h3{margin:5px 0 8px;font-size:22px}
+    .project-body h3{font-family:"Kanit","Noto Sans Thai",sans-serif;margin:5px 0 8px;font-size:24px;font-weight:700;line-height:1.22}
     .project-body p{color:var(--muted);margin:0 0 14px;font-size:14px}
     .chips{display:flex;gap:7px;flex-wrap:wrap}
     .chip{font-size:12px;padding:7px 10px;background:#f4f4f4;border-radius:999px}
     .services{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
     .service{background:white;border:1px solid var(--line);border-radius:20px;padding:22px}
     .service .icon{font-size:28px}
-    .service h3{margin:12px 0 5px}
+    .service h3{font-family:"Kanit","Noto Sans Thai",sans-serif;margin:12px 0 5px;font-weight:700}
     .service p{margin:0;color:var(--muted);font-size:14px}
     .price-wrap{
       display:grid;grid-template-columns:.92fr 1.08fr;gap:20px;align-items:stretch
@@ -121,7 +124,7 @@
       background:white;border:1px solid var(--line);border-radius:18px;padding:18px;min-height:160px
     }
     .num{font-size:12px;font-weight:900;color:var(--green)}
-    .step h3{font-size:17px;margin:10px 0 6px}
+    .step h3{font-family:"Kanit","Noto Sans Thai",sans-serif;font-size:17px;margin:10px 0 6px;font-weight:700}
     .step p{font-size:13px;color:var(--muted);margin:0}
     .contact{
       background:#151515;color:white;border-radius:30px;padding:46px;
@@ -145,7 +148,7 @@
     .modal-close{border:0;background:#f2f2f2;border-radius:999px;width:38px;height:38px;font-size:22px;cursor:pointer}
     .modal-body{padding:24px}
     .modal-cover{width:100%;height:min(52vw,500px);object-fit:cover;border-radius:18px}
-    .modal-meta{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:18px 0}
+    .modal-meta{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0}
     .modal-meta div{background:#f6f6f6;border-radius:14px;padding:13px}
     .gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px}
     .gallery img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:12px}
@@ -162,7 +165,7 @@
     }
     @media(max-width:640px){
       .hero{padding-top:34px}
-      h1{letter-spacing:-1.3px}
+      h1{letter-spacing:0}
       .projects,.services,.steps{grid-template-columns:1fr}
       .section-head{display:block}
       .section-head p{margin-top:12px}
@@ -217,7 +220,7 @@
       <div class="container">
         <div class="section-head">
           <h2>ผลงานที่ลูกค้าดูแล้ว<br>นึกภาพบ้านตัวเองออก</h2>
-          <p>ควรใส่ภาพงานจริงแบบ Before / After พร้อมขนาดพื้นที่ งบประมาณ และรายละเอียดที่ทำในแต่ละโครงการ</p>
+          <p>รวมภาพงานจริงพร้อมขนาดพื้นที่ แบรนด์ รุ่น/ลายวัสดุ และรายละเอียดที่ทำในแต่ละโครงการ</p>
         </div>
 
         <div class="projects" id="projectsGrid">
@@ -346,8 +349,19 @@ function esc(s=''){
 
 async function loadProjects(){
   try{
-    const res = await fetch('/data/projects.json?ts=' + Date.now());
-    const data = await res.json();
+    const preview = localStorage.getItem('siladonPreviewProjects');
+    let data;
+    if(preview){
+      try{
+        data = JSON.parse(preview);
+      }catch(e){
+        localStorage.removeItem('siladonPreviewProjects');
+      }
+    }
+    if(!data){
+      const res = await fetch('/data/projects.json?ts=' + Date.now());
+      data = await res.json();
+    }
     projectData = (data.projects || []).filter(p => p.visible !== false);
     const grid = document.getElementById('projectsGrid');
     if(!projectData.length){
@@ -356,8 +370,9 @@ async function loadProjects(){
     }
     grid.innerHTML = projectData.map((p,i)=>{
       const tags=(p.tags||[]).map(t=>`<span class="chip">${esc(t)}</span>`).join('');
-      const budget = [p.budget_min,p.budget_max].filter(Boolean).map(Number).map(x=>x.toLocaleString('th-TH')).join('–');
-      const meta = [p.area ? `พื้นที่ ${esc(p.area)} ตร.ม.` : '', budget ? `งบประมาณ ${budget} บาท` : ''].filter(Boolean).join(' • ');
+      const area = p.area ? `พื้นที่ ${esc(p.area)}${String(p.area).includes('ตร.ม.') ? '' : ' ตร.ม.'}` : '';
+      const material = [p.brand, p.model].filter(Boolean).map(esc).join(' · ');
+      const meta = [area, material, p.duration ? `ใช้เวลา ${esc(p.duration)}` : ''].filter(Boolean).join(' • ');
       return `<article class="project" onclick="openProject(${i})">
         <div class="project-img" style="background-image:url('${esc(p.cover||'')}')"></div>
         <div class="project-body">
@@ -377,13 +392,13 @@ async function loadProjects(){
 function openProject(i){
   const p=projectData[i]; if(!p) return;
   document.getElementById('modalTitle').textContent=p.title||'รายละเอียดโครงการ';
-  const budget=[p.budget_min,p.budget_max].filter(Boolean).map(Number).map(x=>x.toLocaleString('th-TH')).join('–');
   const gallery=(p.gallery||[]).map(x=>`<img src="${esc(typeof x==='string'?x:x.image||'')}" alt="${esc(p.title||'ผลงาน')}">`).join('');
   document.getElementById('modalBody').innerHTML=`
     ${p.cover?`<img class="modal-cover" src="${esc(p.cover)}" alt="${esc(p.title||'ผลงาน')}">`:''}
     <div class="modal-meta">
-      <div><small>พื้นที่</small><br><b>${p.area?esc(p.area)+' ตร.ม.':'—'}</b></div>
-      <div><small>งบประมาณ</small><br><b>${budget?budget+' บาท':'สอบถามเพิ่มเติม'}</b></div>
+      <div><small>พื้นที่</small><br><b>${p.area?esc(p.area)+(String(p.area).includes('ตร.ม.')?'':' ตร.ม.'):'—'}</b></div>
+      <div><small>แบรนด์</small><br><b>${esc(p.brand||'—')}</b></div>
+      <div><small>รุ่น / ลาย</small><br><b>${esc(p.model||'—')}</b></div>
       <div><small>ระยะเวลา</small><br><b>${esc(p.duration||'—')}</b></div>
     </div>
     ${p.description?`<p>${esc(p.description).replace(/\n/g,'<br>')}</p>`:''}
