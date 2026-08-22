@@ -9,60 +9,442 @@
       window.location.replace('https://siladonlandscape.netlify.app/admin/');
     }
   </script>
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@500;600;700;800&family=Noto+Sans+Thai:wght@400;500;600;700;800&display=swap');
+
+    :root {
+      --ink: #21322a;
+      --muted: #6b746e;
+      --line: #dde2d8;
+      --paper: #fbfaf6;
+      --panel: #ffffff;
+      --green: #2f6848;
+      --green-soft: #e7f0e9;
+      --danger: #b44434;
+      --shadow: 0 18px 48px rgba(32, 44, 36, 0.12);
+    }
+
+    * { box-sizing: border-box; }
     body {
       margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #f6f4ed;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: "Noto Sans Thai", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-weight: 500;
     }
+
+    button, input, textarea, select { font: inherit; }
+    button { cursor: pointer; }
+    button:disabled { cursor: wait; opacity: .65; }
+    h1, h2, h3, .brand strong { font-family: "Kanit", "Noto Sans Thai", sans-serif; letter-spacing: 0; }
 
     .login-screen {
       min-height: 100vh;
       display: grid;
       place-items: center;
       padding: 24px;
-      color: #21362b;
     }
 
     .login-panel {
-      width: min(420px, 100%);
-      padding: 28px;
+      width: min(440px, 100%);
+      padding: 30px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
       background: #fff;
-      border: 1px solid #e5e0d5;
+      box-shadow: var(--shadow);
+    }
+
+    .login-panel h1 { margin: 0 0 8px; font-size: 28px; line-height: 1.2; }
+    .login-panel p { margin: 0 0 20px; color: var(--muted); line-height: 1.65; }
+
+    .shell {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 22px 18px;
+      color: #f8fbf7;
+      background: #23362c;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 4px 4px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .brand-mark {
+      width: 42px;
+      height: 42px;
       border-radius: 8px;
-      box-shadow: 0 16px 40px rgba(32, 45, 37, 0.12);
+      display: grid;
+      place-items: center;
+      background: #d6e3d2;
+      color: #23362c;
+      font-weight: 800;
     }
 
-    .login-panel h1 {
-      margin: 0 0 8px;
-      font-size: 24px;
-      line-height: 1.25;
-    }
+    .brand strong { display: block; font-size: 15px; line-height: 1.25; }
+    .brand span { display: block; margin-top: 3px; color: #cbd8cd; font-size: 12px; }
 
-    .login-panel p {
-      margin: 0 0 20px;
-      color: #667166;
-      line-height: 1.6;
-    }
-
-    .login-panel button {
-      width: 100%;
-      min-height: 44px;
+    .nav { display: grid; gap: 6px; }
+    .nav button {
+      min-height: 42px;
       border: 0;
-      border-radius: 6px;
-      background: #2f6b45;
+      border-radius: 8px;
+      padding: 0 12px;
+      color: #dbe5dd;
+      background: transparent;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .nav button.active { color: #23362c; background: #eef4eb; font-weight: 750; }
+
+    .side-card {
+      margin-top: auto;
+      padding: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.06);
+    }
+    .side-card small { color: #cbd8cd; line-height: 1.5; }
+
+    .topbar {
+      min-height: 74px;
+      padding: 16px 28px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(251, 250, 246, 0.92);
+      backdrop-filter: blur(16px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+    .topbar h1 { margin: 0; font-size: 24px; line-height: 1.2; }
+    .topbar p { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+
+    .actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .primary-btn, .plain-btn, .danger-btn, .icon-btn {
+      min-height: 40px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: var(--ink);
+    }
+    .primary-btn {
+      border-color: var(--green);
+      padding: 0 16px;
       color: #fff;
-      font: inherit;
+      background: var(--green);
+      font-weight: 750;
+    }
+    .plain-btn { padding: 0 14px; color: var(--green); font-weight: 700; }
+    .danger-btn { padding: 0 14px; color: var(--danger); font-weight: 700; }
+    .icon-btn { width: 42px; display: grid; place-items: center; }
+
+    .content {
+      padding: 26px 28px 38px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(360px, .95fr);
+      gap: 24px;
+      align-items: start;
+    }
+
+    .overview {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .metric {
+      min-height: 104px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      box-shadow: 0 8px 24px rgba(32, 44, 36, 0.06);
+    }
+    .metric span { display: block; color: var(--muted); font-size: 13px; }
+    .metric strong { display: block; margin-top: 10px; font-size: 28px; line-height: 1; }
+    .metric small { display: block; margin-top: 10px; color: var(--green); font-weight: 700; }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .panel-head {
+      min-height: 62px;
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+    .panel-head h2 { margin: 0; font-size: 17px; line-height: 1.25; }
+    .panel-head p { margin: 3px 0 0; color: var(--muted); font-size: 12px; }
+
+    .filters {
+      padding: 14px 18px;
+      display: grid;
+      grid-template-columns: 1fr 160px;
+      gap: 10px;
+      border-bottom: 1px solid var(--line);
+      background: #fbfcf9;
+    }
+
+    .field { display: grid; gap: 7px; }
+    .field label { color: var(--muted); font-size: 12px; font-weight: 700; }
+    .field input, .field textarea, .field select {
+      width: 100%;
+      min-height: 42px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 0 12px;
+      color: var(--ink);
+      background: #fff;
+    }
+    .field textarea { min-height: 104px; padding-top: 10px; line-height: 1.55; resize: vertical; }
+    .field.full { grid-column: 1 / -1; }
+
+    .project-list { display: grid; }
+    .project-row {
+      min-height: 118px;
+      padding: 14px 18px;
+      border: 0;
+      border-bottom: 1px solid var(--line);
+      display: grid;
+      grid-template-columns: 92px minmax(0, 1fr) auto;
+      gap: 14px;
+      align-items: center;
+      background: #fff;
+      text-align: left;
+    }
+    .project-row.active { background: #f3f8f1; box-shadow: inset 4px 0 0 var(--green); }
+    .project-row:hover { background: #f8fbf6; }
+    .project-row:last-child { border-bottom: 0; }
+    .thumb { width: 92px; height: 76px; border-radius: 8px; object-fit: cover; background: #e5e0d5; }
+    .project-row h3 { margin: 0; font-size: 16px; line-height: 1.25; }
+    .meta { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 8px; color: var(--muted); font-size: 12px; }
+    .pill {
+      min-height: 24px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      color: #2c4a38;
+      background: var(--green-soft);
+      font-size: 12px;
       font-weight: 700;
-      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+    }
+    .pill.hidden { color: #72523c; background: #f5eadf; }
+
+    .hero-upload {
+      position: relative;
+      min-height: 220px;
+      background: linear-gradient(180deg, rgba(20,35,28,.08), rgba(20,35,28,.58)), #dfe5dc;
+      background-size: cover;
+      background-position: center;
+    }
+    .upload-actions {
+      position: absolute;
+      left: 18px;
+      right: 18px;
+      bottom: 18px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: end;
+      color: #fff;
+    }
+    .upload-actions strong { display: block; font-size: 18px; }
+    .upload-actions span { display: block; margin-top: 4px; color: rgba(255,255,255,.82); font-size: 12px; }
+    .light-btn {
+      min-height: 38px;
+      border: 1px solid rgba(255,255,255,.5);
+      border-radius: 8px;
+      padding: 0 12px;
+      color: #fff;
+      background: rgba(255,255,255,.16);
+      backdrop-filter: blur(10px);
+      font-weight: 700;
     }
 
-    .login-panel button:hover {
-      background: #245438;
+    .form-grid {
+      padding: 18px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
     }
 
-    .is-hidden {
-      display: none;
+    .toggle-line {
+      grid-column: 1 / -1;
+      min-height: 54px;
+      padding: 0 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: #fbfcf9;
+    }
+    .toggle-line span { color: var(--muted); font-size: 13px; }
+    .switch {
+      width: 48px;
+      height: 28px;
+      border: 0;
+      border-radius: 999px;
+      background: var(--green);
+      padding: 3px;
+      display: flex;
+      justify-content: flex-end;
+    }
+    .switch.off { justify-content: flex-start; background: #b7bdb8; }
+    .switch::after {
+      content: "";
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 2px 6px rgba(0,0,0,.2);
+    }
+
+    .tag-editor {
+      grid-column: 1 / -1;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+    .tag-editor .pill { background: #edf4f5; color: #496f82; }
+    .add-tag {
+      min-height: 28px;
+      border: 1px dashed #aab8ae;
+      border-radius: 999px;
+      padding: 0 10px;
+      color: var(--green);
+      background: transparent;
+      font-weight: 700;
+    }
+
+    .gallery {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+    .gallery-item, .gallery button {
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: 8px;
+    }
+    .gallery-item { position: relative; overflow: hidden; background: #e8ece5; }
+    .gallery img { width: 100%; height: 100%; object-fit: cover; }
+    .gallery-add {
+      border: 1px dashed #aab8ae;
+      color: var(--green);
+      background: #fbfcf9;
+      font-weight: 800;
+      font-size: 22px;
+    }
+    .delete-image {
+      position: absolute;
+      top: 7px;
+      right: 7px;
+      width: 30px;
+      height: 30px;
+      border: 0;
+      border-radius: 999px;
+      color: #fff;
+      background: rgba(25,30,26,.78);
+      font-size: 18px;
+      display: grid;
+      place-items: center;
+    }
+
+    .preview-band {
+      grid-column: 1 / -1;
+      padding: 16px 18px;
+      border-top: 1px solid var(--line);
+      background: #f8f7f1;
+    }
+    .preview-card { min-height: 130px; display: grid; grid-template-columns: 150px 1fr; gap: 14px; align-items: center; }
+    .preview-card img { width: 150px; height: 104px; border-radius: 8px; object-fit: cover; }
+    .preview-card h3 { margin: 0; font-size: 18px; }
+    .preview-meta { display: block; margin-top: 8px; color: var(--green); font-size: 13px; font-weight: 750; }
+    .preview-card p { margin: 8px 0 0; color: var(--muted); font-size: 13px; line-height: 1.55; }
+    .bottom-actions {
+      grid-column: 1 / -1;
+      padding: 14px 18px 18px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      background: #fff;
+    }
+    .status-line { color: var(--muted); font-size: 12px; align-self: center; }
+    .toast {
+      position: fixed;
+      right: 22px;
+      bottom: 22px;
+      z-index: 20;
+      max-width: min(420px, calc(100vw - 44px));
+      padding: 14px 16px;
+      border-radius: 8px;
+      color: #fff;
+      background: #2f6848;
+      box-shadow: var(--shadow);
+      opacity: 0;
+      transform: translateY(12px);
+      pointer-events: none;
+      transition: .2s ease;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .is-hidden { display: none !important; }
+    .file-input { position: fixed; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+    .empty-state { padding: 24px 18px; color: var(--muted); display: none; }
+    .empty-state.show { display: block; }
+
+    @media (max-width: 1080px) {
+      .shell { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .content { grid-template-columns: 1fr; }
+      .overview { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 640px) {
+      .topbar { align-items: flex-start; flex-direction: column; padding: 18px; }
+      .actions, .bottom-actions { width: 100%; }
+      .primary-btn, .plain-btn, .danger-btn { flex: 1; }
+      .content { padding: 18px; }
+      .overview, .form-grid { grid-template-columns: 1fr; }
+      .filters { grid-template-columns: 1fr; }
+      .project-row { grid-template-columns: 78px minmax(0, 1fr); }
+      .gallery { grid-template-columns: repeat(2, 1fr); }
+      .preview-card { grid-template-columns: 1fr; }
+      .preview-card img { width: 100%; height: auto; aspect-ratio: 16 / 10; }
     }
   </style>
 </head>
@@ -70,56 +452,585 @@
   <div class="login-screen" id="login-screen">
     <div class="login-panel">
       <h1>Siladon Landscape Admin</h1>
-      <p>เข้าสู่ระบบก่อนแก้ไขผลงานจัดสวน</p>
-      <button type="button" id="login-button">เข้าสู่ระบบด้วย Netlify Identity</button>
+      <p>เข้าสู่ระบบด้วยบัญชีที่เชิญไว้ เพื่อแก้ผลงานและเผยแพร่ขึ้นเว็บไซต์จริง</p>
+      <button class="primary-btn" type="button" id="login-button">เข้าสู่ระบบ</button>
     </div>
   </div>
 
+  <div class="shell is-hidden" id="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">S</div>
+        <div>
+          <strong>Siladon Landscape</strong>
+          <span>ระบบจัดการผลงาน</span>
+        </div>
+      </div>
+      <nav class="nav" aria-label="เมนูหลังบ้าน">
+        <button class="active" type="button">▦ ผลงานจัดสวน</button>
+        <button type="button" id="side-add">＋ เพิ่มงานใหม่</button>
+        <button type="button" id="open-site-side">◉ ดูหน้าเว็บ</button>
+      </nav>
+      <div class="side-card">
+        <small>กดเผยแพร่แล้วระบบจะ commit ข้อมูลเข้า GitHub และ Netlify จะ deploy เว็บไซต์ให้อัตโนมัติ</small>
+      </div>
+    </aside>
+
+    <main>
+      <header class="topbar">
+        <div>
+          <h1>ผลงานจัดสวน</h1>
+          <p>เพิ่มรูป ใส่แบรนด์ รุ่น/ลาย รายละเอียด และเปิด/ปิดงานที่อยากโชว์บนเว็บ</p>
+        </div>
+        <div class="actions">
+          <button class="plain-btn" type="button" id="open-site">ดูหน้าเว็บ</button>
+          <button class="plain-btn" type="button" id="reload">โหลดข้อมูลใหม่</button>
+          <button class="primary-btn" type="button" id="add-project">＋ เพิ่มผลงาน</button>
+        </div>
+      </header>
+
+      <section class="content">
+        <div class="overview">
+          <div class="metric"><span>ผลงานทั้งหมด</span><strong id="count-all">0</strong><small id="count-visible">เปิดแสดง 0 งาน</small></div>
+          <div class="metric"><span>แบรนด์/รุ่นที่บันทึก</span><strong id="count-materials">0</strong><small>ใช้ช่วยค้นหาและทำ SEO</small></div>
+          <div class="metric"><span>รูป Gallery</span><strong id="count-gallery">0</strong><small>รวมรูปเพิ่มเติมทั้งหมด</small></div>
+          <div class="metric"><span>สถานะ</span><strong id="save-state">พร้อม</strong><small id="save-detail">ยังไม่มีการแก้ล่าสุด</small></div>
+        </div>
+
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <h2>รายการผลงาน</h2>
+              <p>เลือกงานทางซ้าย แล้วแก้รายละเอียดทางขวา</p>
+            </div>
+          </div>
+          <div class="filters">
+            <div class="field">
+              <label for="search">ค้นหา</label>
+              <input id="search" placeholder="ค้นหาชื่อ แบรนด์ รุ่น หรืองาน" />
+            </div>
+            <div class="field">
+              <label for="status">สถานะ</label>
+              <select id="status">
+                <option>ทั้งหมด</option>
+                <option>เปิดแสดง</option>
+                <option>ซ่อนไว้</option>
+              </select>
+            </div>
+          </div>
+          <div class="project-list" id="project-list">
+            <div class="empty-state show">กำลังโหลดข้อมูล...</div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="hero-upload" id="cover-preview">
+            <div class="upload-actions">
+              <div>
+                <strong>รูปปกผลงาน</strong>
+                <span>กดเปลี่ยนรูปเพื่ออัปโหลดรูปปกใหม่</span>
+              </div>
+              <button class="light-btn" type="button" id="change-cover">เปลี่ยนรูป</button>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="field full">
+              <label for="title">ชื่อโครงการ</label>
+              <input id="title" />
+            </div>
+            <div class="field">
+              <label for="category">หัวข้อสีเขียว / หมวด</label>
+              <input id="category" placeholder="เช่น MODERN WALKWAY" />
+            </div>
+            <div class="field">
+              <label for="area">ขนาดพื้นที่</label>
+              <input id="area" placeholder="เช่น 52 หรือ 52 ตร.ม." />
+            </div>
+            <div class="field">
+              <label for="duration">ระยะเวลาทำงาน</label>
+              <input id="duration" placeholder="เช่น 3-5 วัน" />
+            </div>
+            <div class="field">
+              <label for="brand">แบรนด์</label>
+              <input id="brand" />
+            </div>
+            <div class="field">
+              <label for="model">รุ่น / ลาย</label>
+              <input id="model" />
+            </div>
+            <div class="field full">
+              <label for="description">รายละเอียดงาน</label>
+              <textarea id="description"></textarea>
+            </div>
+            <div class="field full">
+              <label>รายการงาน / Tags</label>
+              <div class="tag-editor" id="tag-editor"></div>
+            </div>
+            <div class="field full">
+              <label>Gallery เพิ่มเติม</label>
+              <div class="gallery" id="gallery"></div>
+              <input class="file-input" id="gallery-upload" type="file" accept="image/*" multiple />
+              <input class="file-input" id="cover-upload" type="file" accept="image/*" />
+            </div>
+            <div class="toggle-line">
+              <div>
+                <strong>แสดงงานนี้บนเว็บไซต์</strong>
+                <span>ปิดไว้ได้ถ้ายังแก้ไม่เสร็จ</span>
+              </div>
+              <button class="switch" type="button" id="visible-toggle" aria-label="เปิดแสดง"></button>
+            </div>
+          </div>
+
+          <div class="preview-band">
+            <div class="panel-head" style="padding:0 0 12px;border:0;min-height:0">
+              <div>
+                <h2>ตัวอย่างบนหน้าเว็บ</h2>
+                <p>ดูภาพรวมก่อนกดเผยแพร่</p>
+              </div>
+            </div>
+            <div class="preview-card">
+              <img id="preview-image" alt="" />
+              <div>
+                <span class="pill" id="preview-category">LANDSCAPE PROJECT</span>
+                <h3 id="preview-title">ยังไม่ได้ตั้งชื่อโครงการ</h3>
+                <strong class="preview-meta" id="preview-meta">ยังไม่ได้ใส่แบรนด์/รุ่น</strong>
+                <p id="preview-description">เพิ่มรายละเอียดงานเพื่อให้ลูกค้าเข้าใจภาพรวมของผลงาน</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="bottom-actions">
+            <button class="danger-btn" type="button" id="delete-project">ลบผลงานนี้</button>
+            <div class="status-line" id="status-line">พร้อมแก้ไข</div>
+            <button class="primary-btn" type="button" id="publish">เผยแพร่ขึ้นเว็บไซต์</button>
+          </div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <div class="toast" role="status" aria-live="polite" id="toast"></div>
+
   <script>
-    (function () {
-      var loginScreen = document.getElementById('login-screen');
-      var loginButton = document.getElementById('login-button');
-      var cmsLoaded = false;
-      var identityReady = false;
+    const SITE_URL = 'https://siladonlandscape.netlify.app';
+    const BRANCH = 'main';
+    const DATA_PATH = 'data/projects.json';
+    const UPLOAD_DIR = 'images/uploads';
+    const FALLBACK_COVER = 'https://images.unsplash.com/photo-1598902108854-10e335adac99?auto=format&fit=crop&w=1200&q=80';
 
-      function loadCms() {
-        if (cmsLoaded) return;
-        cmsLoaded = true;
-        loginScreen.classList.add('is-hidden');
+    const $ = (selector) => document.querySelector(selector);
+    const fields = {
+      title: $('#title'),
+      category: $('#category'),
+      area: $('#area'),
+      duration: $('#duration'),
+      brand: $('#brand'),
+      model: $('#model'),
+      description: $('#description')
+    };
 
-        var cmsScript = document.createElement('script');
-        cmsScript.src = 'https://unpkg.com/decap-cms@3.8.3/dist/decap-cms.js';
-        document.body.appendChild(cmsScript);
+    let user = null;
+    let projects = [];
+    let dataSha = '';
+    let activeProject = 0;
+    let saving = false;
+    let toastTimer;
+
+    function showToast(message) {
+      $('#toast').textContent = message;
+      $('#toast').classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => $('#toast').classList.remove('show'), 2800);
+    }
+
+    function setBusy(isBusy, message) {
+      saving = isBusy;
+      document.querySelectorAll('button').forEach((button) => button.disabled = isBusy);
+      $('#status-line').textContent = message || (isBusy ? 'กำลังทำงาน...' : 'พร้อมแก้ไข');
+      $('#save-state').textContent = isBusy ? 'กำลังบันทึก' : 'พร้อม';
+      $('#save-detail').textContent = message || 'พร้อมใช้งาน';
+    }
+
+    async function getToken() {
+      if (!user) throw new Error('กรุณาเข้าสู่ระบบก่อน');
+      return user.jwt();
+    }
+
+    async function gitFetch(path, options = {}) {
+      const token = await getToken();
+      const headers = {
+        'Authorization': 'Bearer ' + token,
+        ...(options.headers || {})
+      };
+      if (!headers['Content-Type'] && options.body) headers['Content-Type'] = 'application/json';
+      const response = await fetch('/.netlify/git/github/' + path, {
+        ...options,
+        headers
+      });
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(text || ('Git Gateway error ' + response.status));
       }
+      return response.json();
+    }
 
-      function openLogin() {
-        if (!identityReady || !window.netlifyIdentity) return;
-        window.netlifyIdentity.open('login');
+    function utf8ToBase64(value) {
+      return btoa(unescape(encodeURIComponent(value)));
+    }
+
+    function base64ToUtf8(value) {
+      return decodeURIComponent(escape(atob(value.replace(/\n/g, ''))));
+    }
+
+    function normalizeProject(project = {}) {
+      return {
+        title: project.title || '',
+        category: project.category || project.model || 'LANDSCAPE PROJECT',
+        cover: project.cover || FALLBACK_COVER,
+        area: project.area || '',
+        duration: project.duration || '',
+        brand: project.brand || '',
+        model: project.model || '',
+        description: project.description || '',
+        tags: Array.isArray(project.tags) ? project.tags : [],
+        gallery: Array.isArray(project.gallery) ? project.gallery.map((item) => typeof item === 'string' ? item : item.image).filter(Boolean) : [],
+        visible: project.visible !== false
+      };
+    }
+
+    async function loadProjects() {
+      setBusy(true, 'กำลังโหลดข้อมูลจากเว็บไซต์...');
+      try {
+        const file = await gitFetch('contents/' + DATA_PATH + '?ref=' + BRANCH, { method: 'GET' });
+        dataSha = file.sha;
+        const data = JSON.parse(base64ToUtf8(file.content));
+        projects = (data.projects || []).map(normalizeProject);
+        if (!projects.length) projects = [createBlankProject()];
+        activeProject = Math.min(activeProject, projects.length - 1);
+        renderAll();
+        showToast('โหลดข้อมูลล่าสุดแล้ว');
+      } catch (error) {
+        showToast('โหลดข้อมูลไม่ได้: ' + friendlyError(error));
+      } finally {
+        setBusy(false, 'พร้อมแก้ไข');
       }
+    }
 
-      function setupIdentity() {
-        if (!window.netlifyIdentity) return;
-        identityReady = true;
-        loginButton.disabled = false;
+    function createBlankProject() {
+      return normalizeProject({
+        title: 'ผลงานใหม่',
+        category: 'LANDSCAPE PROJECT',
+        cover: FALLBACK_COVER,
+        visible: false,
+        tags: [],
+        gallery: []
+      });
+    }
 
-        window.netlifyIdentity.on('init', function (user) {
-          if (user) loadCms();
+    function renderAll() {
+      renderMetrics();
+      renderList();
+      renderEditor();
+      filterProjects();
+    }
+
+    function renderMetrics() {
+      const visibleCount = projects.filter((project) => project.visible).length;
+      const materialCount = projects.filter((project) => project.brand || project.model).length;
+      const galleryCount = projects.reduce((sum, project) => sum + project.gallery.length, 0);
+      $('#count-all').textContent = projects.length;
+      $('#count-visible').textContent = 'เปิดแสดง ' + visibleCount + ' งาน';
+      $('#count-materials').textContent = materialCount;
+      $('#count-gallery').textContent = galleryCount;
+    }
+
+    function renderList() {
+      const list = $('#project-list');
+      list.innerHTML = projects.map((project, index) => `
+        <article class="project-row ${index === activeProject ? 'active' : ''}" role="button" tabindex="0" data-project="${index}">
+          <img class="thumb" src="${esc(project.cover || FALLBACK_COVER)}" alt="" />
+          <div>
+            <h3>${esc(project.title || 'ยังไม่ได้ตั้งชื่อ')}</h3>
+            <div class="meta">
+              ${project.area ? `<span>${esc(project.area)}${String(project.area).includes('ตร.ม.') ? '' : ' ตร.ม.'}</span>` : ''}
+              ${project.brand ? `<span>${esc(project.brand)}</span>` : ''}
+              ${project.model ? `<span>${esc(project.model)}</span>` : ''}
+              ${project.duration ? `<span>${esc(project.duration)}</span>` : ''}
+            </div>
+            <span class="pill ${project.visible ? '' : 'hidden'}">${project.visible ? 'เปิดแสดงบนเว็บ' : 'ซ่อนไว้ก่อน'}</span>
+          </div>
+          <div class="meta">${project.gallery.length} รูป</div>
+        </article>
+      `).join('') + '<div class="empty-state" id="empty-state">ไม่เจอผลงานที่ค้นหา</div>';
+
+      list.querySelectorAll('.project-row').forEach((row) => {
+        row.addEventListener('click', () => setProject(Number(row.dataset.project)));
+        row.addEventListener('keydown', (event) => {
+          if (event.key !== 'Enter' && event.key !== ' ') return;
+          event.preventDefault();
+          setProject(Number(row.dataset.project));
         });
-        window.netlifyIdentity.on('login', function () {
-          window.netlifyIdentity.close();
-          loadCms();
+      });
+    }
+
+    function setProject(index) {
+      updateProjectFromFields();
+      activeProject = index;
+      renderAll();
+    }
+
+    function renderEditor() {
+      const project = projects[activeProject] || createBlankProject();
+      fields.title.value = project.title;
+      fields.category.value = project.category;
+      fields.area.value = project.area;
+      fields.duration.value = project.duration;
+      fields.brand.value = project.brand;
+      fields.model.value = project.model;
+      fields.description.value = project.description;
+      $('#visible-toggle').classList.toggle('off', !project.visible);
+      $('#cover-preview').style.backgroundImage = `linear-gradient(180deg, rgba(20,35,28,.08), rgba(20,35,28,.58)), url("${project.cover || FALLBACK_COVER}")`;
+      renderTags(project.tags);
+      renderGallery(project.gallery);
+      updatePreview();
+    }
+
+    function renderTags(tags) {
+      const editor = $('#tag-editor');
+      editor.innerHTML = tags.map((tag, index) => `
+        <span class="pill">${esc(tag)} <button class="delete-tag" type="button" data-index="${index}" aria-label="ลบ tag ${esc(tag)}" style="margin-left:6px;border:0;background:transparent;color:inherit">×</button></span>
+      `).join('') + '<button class="add-tag" type="button" id="add-tag">＋ เพิ่ม tag</button>';
+    }
+
+    function renderGallery(images) {
+      const gallery = $('#gallery');
+      gallery.innerHTML = images.map((src, index) => `
+        <div class="gallery-item">
+          <img src="${esc(src)}" alt="รูปแกลอรี่ ${index + 1}" />
+          <button class="delete-image" type="button" data-index="${index}" aria-label="ลบรูปที่ ${index + 1}">×</button>
+        </div>
+      `).join('') + '<button class="gallery-add" type="button" id="gallery-add" aria-label="เพิ่มรูป">＋</button>';
+    }
+
+    function updateProjectFromFields() {
+      if (!projects.length) return;
+      const project = projects[activeProject];
+      project.title = fields.title.value.trim();
+      project.category = fields.category.value.trim() || 'LANDSCAPE PROJECT';
+      project.area = fields.area.value.trim();
+      project.duration = fields.duration.value.trim();
+      project.brand = fields.brand.value.trim();
+      project.model = fields.model.value.trim();
+      project.description = fields.description.value.trim();
+    }
+
+    function updatePreview() {
+      updateProjectFromFields();
+      const project = projects[activeProject] || createBlankProject();
+      $('#preview-image').src = project.cover || FALLBACK_COVER;
+      $('#preview-category').textContent = project.category || 'LANDSCAPE PROJECT';
+      $('#preview-title').textContent = project.title || 'ยังไม่ได้ตั้งชื่อโครงการ';
+      $('#preview-meta').textContent = [project.brand, project.model].filter(Boolean).join(' · ') || 'ยังไม่ได้ใส่แบรนด์/รุ่น';
+      $('#preview-description').textContent = project.description || 'เพิ่มรายละเอียดงานเพื่อให้ลูกค้าเข้าใจภาพรวมของผลงาน';
+      renderMetrics();
+    }
+
+    function filterProjects() {
+      const keyword = $('#search').value.trim().toLowerCase();
+      const status = $('#status').value;
+      let shown = 0;
+      document.querySelectorAll('.project-row').forEach((row) => {
+        const project = projects[Number(row.dataset.project)];
+        const text = [project.title, project.category, project.area, project.duration, project.brand, project.model, project.description, ...project.tags].join(' ').toLowerCase();
+        const matchesText = text.includes(keyword);
+        const matchesStatus = status === 'ทั้งหมด' || (status === 'เปิดแสดง' && project.visible) || (status === 'ซ่อนไว้' && !project.visible);
+        const shouldShow = matchesText && matchesStatus;
+        row.style.display = shouldShow ? 'grid' : 'none';
+        if (shouldShow) shown += 1;
+      });
+      const empty = $('#empty-state');
+      if (empty) empty.classList.toggle('show', shown === 0);
+    }
+
+    async function uploadImage(file) {
+      const extension = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg';
+      const cleanName = file.name.replace(/\.[^.]+$/, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'image';
+      const path = `${UPLOAD_DIR}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}-${cleanName}.${extension}`;
+      const content = await fileToBase64(file);
+      await gitFetch('contents/' + path, {
+        method: 'PUT',
+        body: JSON.stringify({
+          message: 'Upload image for Siladon project',
+          content,
+          branch: BRANCH
+        })
+      });
+      return '/' + path;
+    }
+
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result).split(',')[1]);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function publish() {
+      updateProjectFromFields();
+      setBusy(true, 'กำลังเผยแพร่ขึ้นเว็บไซต์จริง...');
+      try {
+        const payload = {
+          projects: projects.map((project) => ({
+            title: project.title,
+            category: project.category,
+            cover: project.cover,
+            area: project.area,
+            brand: project.brand,
+            model: project.model,
+            duration: project.duration,
+            description: project.description,
+            tags: project.tags,
+            gallery: project.gallery,
+            visible: project.visible
+          }))
+        };
+        const result = await gitFetch('contents/' + DATA_PATH, {
+          method: 'PUT',
+          body: JSON.stringify({
+            message: 'Update Siladon landscape projects',
+            content: utf8ToBase64(JSON.stringify(payload, null, 2) + '\n'),
+            sha: dataSha,
+            branch: BRANCH
+          })
         });
-        window.netlifyIdentity.init();
+        dataSha = result.content.sha;
+        showToast('เผยแพร่แล้ว รอ Netlify อัปเดตหน้าเว็บสักครู่');
+        setTimeout(() => window.open(SITE_URL + '/?v=' + Date.now(), '_blank'), 1200);
+      } catch (error) {
+        showToast('เผยแพร่ไม่ได้: ' + friendlyError(error));
+      } finally {
+        setBusy(false, 'พร้อมแก้ไข');
       }
+    }
 
-      loginButton.disabled = true;
-      loginButton.addEventListener('click', openLogin);
+    function friendlyError(error) {
+      const text = String(error && error.message ? error.message : error);
+      if (text.includes('401') || text.includes('JWT') || text.includes('token')) return 'สิทธิ์ล็อกอินหมดอายุ ลองออกเข้าใหม่';
+      if (text.includes('409')) return 'มีข้อมูลใหม่บนเว็บแล้ว กดโหลดข้อมูลใหม่ก่อนเผยแพร่';
+      if (text.includes('413') || text.includes('too large')) return 'รูปใหญ่เกินไป ลองใช้รูปขนาดเล็กลง';
+      return text.slice(0, 180);
+    }
 
-      var identityScript = document.createElement('script');
-      identityScript.src = 'https://identity.netlify.com/v1/netlify-identity-widget.js';
-      identityScript.onload = setupIdentity;
-      document.head.appendChild(identityScript);
-    }());
+    function esc(value = '') {
+      return String(value).replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[char]));
+    }
+
+    Object.values(fields).forEach((field) => field.addEventListener('input', updatePreview));
+    $('#search').addEventListener('input', filterProjects);
+    $('#status').addEventListener('change', filterProjects);
+    $('#reload').addEventListener('click', loadProjects);
+    $('#open-site').addEventListener('click', () => window.open(SITE_URL, '_blank'));
+    $('#open-site-side').addEventListener('click', () => window.open(SITE_URL, '_blank'));
+    $('#publish').addEventListener('click', publish);
+    $('#add-project').addEventListener('click', addProject);
+    $('#side-add').addEventListener('click', addProject);
+    $('#delete-project').addEventListener('click', () => {
+      if (projects.length <= 1) {
+        showToast('ต้องเหลือผลงานไว้อย่างน้อย 1 งาน');
+        return;
+      }
+      if (!confirm('ลบผลงานนี้ออกจากรายการใช่ไหม?')) return;
+      projects.splice(activeProject, 1);
+      activeProject = Math.max(0, activeProject - 1);
+      renderAll();
+      showToast('ลบผลงานแล้ว กดเผยแพร่เพื่ออัปเดตเว็บจริง');
+    });
+    $('#visible-toggle').addEventListener('click', () => {
+      projects[activeProject].visible = !projects[activeProject].visible;
+      renderAll();
+    });
+    $('#change-cover').addEventListener('click', () => $('#cover-upload').click());
+    $('#cover-upload').addEventListener('change', async () => {
+      const file = $('#cover-upload').files[0];
+      if (!file) return;
+      setBusy(true, 'กำลังอัปโหลดรูปปก...');
+      try {
+        projects[activeProject].cover = await uploadImage(file);
+        renderAll();
+        showToast('อัปโหลดรูปปกแล้ว กดเผยแพร่เพื่ออัปเดตเว็บจริง');
+      } catch (error) {
+        showToast('อัปโหลดรูปไม่ได้: ' + friendlyError(error));
+      } finally {
+        $('#cover-upload').value = '';
+        setBusy(false, 'พร้อมแก้ไข');
+      }
+    });
+    $('#gallery').addEventListener('click', (event) => {
+      if (event.target.classList.contains('delete-image')) {
+        projects[activeProject].gallery.splice(Number(event.target.dataset.index), 1);
+        renderAll();
+        showToast('ลบรูปแล้ว กดเผยแพร่เพื่ออัปเดตเว็บจริง');
+        return;
+      }
+      if (event.target.classList.contains('gallery-add')) $('#gallery-upload').click();
+    });
+    $('#gallery-upload').addEventListener('change', async () => {
+      const files = Array.from($('#gallery-upload').files || []);
+      if (!files.length) return;
+      setBusy(true, 'กำลังอัปโหลดรูป Gallery...');
+      try {
+        for (const file of files) {
+          if (file.type.startsWith('image/')) projects[activeProject].gallery.push(await uploadImage(file));
+        }
+        renderAll();
+        showToast('อัปโหลดรูป Gallery แล้ว กดเผยแพร่เพื่ออัปเดตเว็บจริง');
+      } catch (error) {
+        showToast('อัปโหลดรูปไม่ได้: ' + friendlyError(error));
+      } finally {
+        $('#gallery-upload').value = '';
+        setBusy(false, 'พร้อมแก้ไข');
+      }
+    });
+    $('#tag-editor').addEventListener('click', (event) => {
+      if (event.target.classList.contains('delete-tag')) {
+        projects[activeProject].tags.splice(Number(event.target.dataset.index), 1);
+        renderAll();
+        return;
+      }
+      if (!event.target.classList.contains('add-tag')) return;
+      const tag = prompt('พิมพ์ tag ใหม่ เช่น สวนหิน, ทางเดิน, น้ำตก');
+      if (!tag) return;
+      projects[activeProject].tags.push(tag.trim());
+      renderAll();
+    });
+
+    function addProject() {
+      updateProjectFromFields();
+      projects.unshift(createBlankProject());
+      activeProject = 0;
+      renderAll();
+      showToast('เพิ่มผลงานใหม่แล้ว กรอกข้อมูลแล้วกดเผยแพร่');
+    }
+
+    function showApp(currentUser) {
+      user = currentUser;
+      $('#login-screen').classList.add('is-hidden');
+      $('#app').classList.remove('is-hidden');
+      loadProjects();
+    }
+
+    $('#login-button').addEventListener('click', () => window.netlifyIdentity.open('login'));
+    window.netlifyIdentity.on('init', (currentUser) => {
+      if (currentUser) showApp(currentUser);
+    });
+    window.netlifyIdentity.on('login', (currentUser) => {
+      window.netlifyIdentity.close();
+      showApp(currentUser);
+    });
+    window.netlifyIdentity.init();
   </script>
 </body>
 </html>
