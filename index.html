@@ -110,6 +110,15 @@
     .price-row:last-child{border-bottom:0}
     .price-row span:last-child{font-weight:850;text-align:right}
     .note{font-size:12px;color:#777;margin-top:15px}
+    .rate-list{display:grid;gap:8px;margin-top:14px}
+    .rate-pill{display:flex;justify-content:space-between;gap:12px;background:#f7faf6;border:1px solid #e2eadf;border-radius:14px;padding:10px 12px;font-size:13px}
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .extra-box{display:grid;gap:10px;margin-top:10px}
+    .check-row{display:grid;grid-template-columns:auto 1fr 120px;gap:10px;align-items:center;padding:11px;border:1px solid #e3e3e3;border-radius:14px;background:#fff}
+    .check-row input[type="checkbox"]{width:auto}
+    .check-row input[type="number"]{padding:10px 11px}
+    .calc-detail{font-size:13px;color:#555;margin-top:10px;white-space:pre-line}
+    .line-send{width:100%;margin-top:12px;background:#1f8f1f}
     label{display:block;font-size:13px;font-weight:750;margin:15px 0 7px}
     select,input{
       width:100%;padding:13px 14px;border:1px solid #dcdcdc;border-radius:12px;background:white;
@@ -193,6 +202,9 @@
       .hero{padding-top:34px}
       h1{letter-spacing:0}
       .projects,.services,.steps{grid-template-columns:1fr}
+      .form-grid{grid-template-columns:1fr}
+      .check-row{grid-template-columns:auto 1fr}
+      .check-row input[type="number"]{grid-column:2}
       .section-head{display:block}
       .section-head p{margin-top:12px}
       .hero-card{min-height:360px}
@@ -280,37 +292,69 @@
         <div class="price-wrap">
           <div class="price-card">
             <h3 style="font-size:25px;margin-top:0">ราคาโดยประมาณ</h3>
-            <div class="price-row"><span>งานปูแผ่นทางเดิน</span><span>เริ่ม 1,250 บาท/ตร.ม.</span></div>
+            <div class="price-row"><span>งานปูแผ่นทางเดิน 40×40 ซม.</span><span>เริ่ม 1,250 บาท/ตร.ม.</span></div>
             <div class="price-row"><span>ปูหญ้าจริง</span><span>ประมาณ 450 บาท/ตร.ม.</span></div>
             <div class="price-row"><span>ปูหญ้าเทียม</span><span>ประมาณ 850 บาท/ตร.ม.</span></div>
             <div class="price-row"><span>ปิดโพรง</span><span>ประมาณ 850 บาท/เมตร</span></div>
             <div class="price-row"><span>งานปูขั้นต่ำ</span><span>30 ตร.ม.</span></div>
+            <div class="rate-list">
+              <div class="rate-pill"><span>P Stone / Gods Stone</span><b>1,250</b></div>
+              <div class="rate-pill"><span>Supersun</span><b>1,350</b></div>
+              <div class="rate-pill"><span>Superior / SCG ลอนดอนหรือปารีส</span><b>1,450</b></div>
+              <div class="rate-pill"><span>SCG รุ่นอื่น ๆ</span><b>1,700</b></div>
+            </div>
             <div class="note">* ราคาจริงขึ้นอยู่กับชนิดวัสดุ สภาพพื้นที่ ระยะทาง การเตรียมพื้น และรายละเอียดหน้างาน</div>
           </div>
 
           <div class="calc-card" id="estimate">
             <h3 style="font-size:25px;margin-top:0">ประเมินงบเบื้องต้น</h3>
-            <label>ขนาดพื้นที่โดยประมาณ (ตร.ม.)</label>
-            <input id="area" type="number" value="50" min="1" />
-            <label>ประเภทงาน</label>
-            <select id="type">
-              <option value="1250">ปูแผ่นทางเดิน — Standard</option>
-              <option value="1500">สวนหิน + ทางเดิน</option>
-              <option value="850">หญ้าเทียม</option>
-              <option value="450">หญ้าจริง</option>
+            <div class="form-grid">
+              <div>
+                <label>ขนาดพื้นที่โดยประมาณ (ตร.ม.)</label>
+                <input id="area" type="number" value="50" min="1" />
+              </div>
+              <div>
+                <label>ระยะทางจากร้านโดยประมาณ</label>
+                <select id="distance">
+                  <option value="0">0–20 กม.</option>
+                  <option value="21">21–30 กม.</option>
+                  <option value="31">31–40 กม.</option>
+                  <option value="41">41–50 กม.</option>
+                  <option value="51">51–55 กม.</option>
+                  <option value="56">มากกว่า 55 กม.</option>
+                </select>
+              </div>
+            </div>
+            <label>ประเภทงานหลัก</label>
+            <select id="workType">
+              <option value="paving">ปูแผ่นทางเดิน</option>
+              <option value="pavingStone">ทางเดิน + โรยหิน / สวนหิน</option>
+              <option value="realLawn">ปูหญ้าจริง</option>
+              <option value="artificialLawn">ปูหญ้าเทียม</option>
+              <option value="voidOnly">ปิดโพรงอย่างเดียว</option>
             </select>
-            <label>ระดับวัสดุ</label>
-            <select id="grade">
-              <option value="1">Standard</option>
-              <option value="1.18">Premium</option>
-              <option value="1.35">Signature</option>
+            <label>รุ่นแผ่นทางเดิน</label>
+            <select id="paverRate">
+              <option value="1250">P Stone / Gods Stone — 1,250 บาท/ตร.ม.</option>
+              <option value="1350">Supersun — 1,350 บาท/ตร.ม.</option>
+              <option value="1450">Superior / SCG ลอนดอนหรือปารีส — 1,450 บาท/ตร.ม.</option>
+              <option value="1700">SCG รุ่นอื่น ๆ — 1,700 บาท/ตร.ม.</option>
             </select>
+            <label>งานเพิ่มเติม</label>
+            <div class="extra-box">
+              <label class="check-row"><input id="extraConcrete" type="checkbox"> <span>ปูบนพื้นปูน / โรงจอดรถ เพิ่ม 550 บาท/ตร.ม.</span></label>
+              <label class="check-row"><input id="extraVoid" type="checkbox"> <span>ปิดโพรงร่วมกับงานปู 850 บาท/เมตร</span><input id="voidLength" type="number" value="10" min="0" aria-label="ความยาวปิดโพรง"></label>
+              <label class="check-row"><input id="extraGravel" type="checkbox"> <span>ปรับระดับหินเกล็ด 10 บาท/ซม./ตร.ม.</span><input id="gravelCm" type="number" value="5" min="0" aria-label="ความหนาหินเกล็ด"></label>
+              <label class="check-row"><input id="extraCement" type="checkbox"> <span>ปรับระดับปูน 100 บาท/ซม./ตร.ม.</span><input id="cementCm" type="number" value="3" min="0" aria-label="ความหนาปูน"></label>
+            </div>
             <button class="cta" style="margin-top:18px;width:100%" onclick="estimate()">คำนวณงบ</button>
             <div class="result">
               งบประมาณโดยประมาณ
               <b id="budget">62,500–78,125 บาท</b>
-              <span style="font-size:12px;color:#666">เพื่อใช้วางงบเท่านั้น ราคาจริงประเมินหลังดูรายละเอียดพื้นที่</span>
+              <div class="calc-detail" id="calcDetail"></div>
+              <span style="font-size:12px;color:#666">ราคานี้เป็นเพียงประมาณการเบื้องต้น ราคาจริงขึ้นอยู่กับสภาพพื้นที่ รุ่นวัสดุ ระยะทาง ขอบเขตงาน และรายละเอียดหน้างาน</span>
             </div>
+            <a class="cta line-send" id="lineEstimate" href="https://line.me/R/ti/p/@siladon" target="_blank">ส่งข้อมูลนี้ให้ทีมงานประเมินต่อ</a>
           </div>
         </div>
       </div>
@@ -481,16 +525,110 @@ document.addEventListener('keydown', e=>{
 
 function estimate(){
   const area = Math.max(parseFloat(document.getElementById('area').value)||0, 0);
-  const type = parseFloat(document.getElementById('type').value)||0;
-  const grade = parseFloat(document.getElementById('grade').value)||1;
-  const baseArea = type >= 1000 ? Math.max(area,30) : area;
-  const low = baseArea*type*grade;
-  const high = low*1.25;
+  const workType = document.getElementById('workType').value;
+  const paverRate = parseFloat(document.getElementById('paverRate').value)||1250;
+  const distance = document.getElementById('distance').value;
+  const voidLength = Math.max(parseFloat(document.getElementById('voidLength').value)||0, 0);
+  const gravelCm = Math.max(parseFloat(document.getElementById('gravelCm').value)||0, 0);
+  const cementCm = Math.max(parseFloat(document.getElementById('cementCm').value)||0, 0);
+  const hasConcrete = document.getElementById('extraConcrete').checked;
+  const hasVoid = document.getElementById('extraVoid').checked;
+  const hasGravel = document.getElementById('extraGravel').checked;
+  const hasCement = document.getElementById('extraCement').checked;
   const fmt = n => Math.round(n).toLocaleString('th-TH');
-  document.getElementById('budget').textContent = fmt(low)+'–'+fmt(high)+' บาท';
+  const distanceRates = {
+    '0':{small:0,large:0,min:30,label:'0–20 กม.'},
+    '21':{small:50,large:30,min:30,label:'21–30 กม.'},
+    '31':{small:100,large:80,min:50,label:'31–40 กม.'},
+    '41':{small:150,large:100,min:50,label:'41–50 กม.'},
+    '51':{small:250,large:200,min:50,label:'51–55 กม.'},
+    '56':{small:null,large:null,min:null,label:'มากกว่า 55 กม.'}
+  };
+  const labels = {
+    paving:'ปูแผ่นทางเดิน',
+    pavingStone:'ทางเดิน + โรยหิน / สวนหิน',
+    realLawn:'ปูหญ้าจริง',
+    artificialLawn:'ปูหญ้าเทียม',
+    voidOnly:'ปิดโพรงอย่างเดียว'
+  };
+  let subtotal = 0;
+  let notes = [];
+  let billableArea = area;
+  if(workType === 'realLawn'){
+    subtotal += area * 450;
+    notes.push(`ปูหญ้าจริง ${fmt(area)} ตร.ม. × 450`);
+  }else if(workType === 'artificialLawn'){
+    subtotal += area * 850;
+    notes.push(`ปูหญ้าเทียม ${fmt(area)} ตร.ม. × 850`);
+  }else if(workType === 'voidOnly'){
+    const meters = Math.max(voidLength || 0, 30);
+    subtotal += meters * 850;
+    notes.push(`ปิดโพรง ${fmt(meters)} เมตร × 850 (ขั้นต่ำ 30 เมตร)`);
+  }else{
+    const dist = distanceRates[distance] || distanceRates['0'];
+    if(dist.small === null){
+      document.getElementById('budget').textContent = 'สอบถามทีมงานเพิ่มเติม';
+      document.getElementById('calcDetail').textContent = 'พื้นที่มากกว่า 55 กม. อยู่นอกพื้นที่ให้บริการมาตรฐาน ต้องให้ทีมงานประเมินตามหน้างาน';
+      updateLineEstimate(labels[workType], area, document.getElementById('paverRate').selectedOptions[0].textContent, 'สอบถามทีมงานเพิ่มเติม');
+      return;
+    }
+    billableArea = Math.max(area, dist.min || 30);
+    const distanceAdd = billableArea >= 80 ? dist.large : dist.small;
+    let rate = paverRate + distanceAdd;
+    if(workType === 'pavingStone') rate += 150;
+    subtotal += billableArea * rate;
+    notes.push(`พื้นที่คิดราคา ${fmt(billableArea)} ตร.ม. × ${fmt(rate)} บาท/ตร.ม.`);
+    if(area < billableArea) notes.push(`ขั้นต่ำตามเรทนี้ ${fmt(billableArea)} ตร.ม.`);
+    if(distanceAdd > 0) notes.push(`รวมบวกระยะทาง ${dist.label} แล้ว`);
+    if(hasConcrete){
+      subtotal += billableArea * 550;
+      notes.push(`ปูบนพื้นปูน / โรงจอดรถ เพิ่ม ${fmt(billableArea)} ตร.ม. × 550`);
+    }
+    if(hasVoid){
+      const meters = Math.max(voidLength || 0, 10);
+      subtotal += meters * 850;
+      notes.push(`ปิดโพรงร่วมกับงานปู ${fmt(meters)} เมตร × 850 (ขั้นต่ำ 10 เมตร)`);
+    }
+    if(hasGravel){
+      subtotal += billableArea * gravelCm * 10;
+      notes.push(`ปรับระดับหินเกล็ด ${fmt(gravelCm)} ซม. × ${fmt(billableArea)} ตร.ม. × 10`);
+    }
+    if(hasCement){
+      subtotal += billableArea * cementCm * 100;
+      notes.push(`ปรับระดับปูน ${fmt(cementCm)} ซม. × ${fmt(billableArea)} ตร.ม. × 100`);
+    }
+  }
+  const low = subtotal;
+  const high = subtotal * 1.12;
+  const budgetText = fmt(low)+'–'+fmt(high)+' บาท';
+  document.getElementById('budget').textContent = budgetText;
+  document.getElementById('calcDetail').textContent = notes.join('\n');
+  updateLineEstimate(labels[workType], area, document.getElementById('paverRate').selectedOptions[0].textContent, budgetText);
 }
 
-document.addEventListener('DOMContentLoaded', ()=>{ estimate(); loadProjects(); });
+function updateLineEstimate(workType, area, material, budgetText){
+  const distance = document.getElementById('distance').selectedOptions[0].textContent;
+  const message = `สวัสดีค่ะ สนใจประเมินงาน Siladon Landscape
+
+พื้นที่ประมาณ: ${area || '-'} ตร.ม.
+ประเภทงาน: ${workType}
+รุ่น/วัสดุ: ${material}
+ระยะทางโดยประมาณ: ${distance}
+งบประมาณจากเว็บไซต์: ${budgetText}
+
+Location:
+[กรุณาแนบ Google Maps]
+
+รูปพื้นที่:
+[กรุณาส่งรูปพื้นที่หลายมุม]`;
+  document.getElementById('lineEstimate').href = 'https://line.me/R/oaMessage/@siladon/?' + encodeURIComponent(message);
+}
+
+document.addEventListener('DOMContentLoaded', ()=>{
+  estimate();
+  loadProjects();
+  document.querySelectorAll('#estimate input,#estimate select').forEach(el=>el.addEventListener('input', estimate));
+});
 if(window.netlifyIdentity){
   window.netlifyIdentity.on('init', user=>{
     if(!user && window.location.hash.includes('invite_token')) window.netlifyIdentity.open('signup');
