@@ -192,10 +192,21 @@
     .faq-item .todo{color:#8a5a00}
     .contact{
       background:#151515;color:white;border-radius:30px;padding:46px;
-      display:flex;justify-content:space-between;align-items:center;gap:25px
+      display:flex;justify-content:space-between;align-items:flex-start;gap:28px;flex-wrap:wrap
     }
+    .contact-main{flex:1 1 420px}
     .contact h2{max-width:650px}
     .contact p{color:#cfcfcf}
+    .contact-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+    .contact-actions .cta.alt{background:#fff;color:#151515;border-color:#fff}
+    .contact-info{
+      flex:1 1 300px;border:1px solid rgba(255,255,255,.12);border-radius:20px;
+      padding:22px;background:rgba(255,255,255,.07)
+    }
+    .contact-info h3{font-family:"Kanit","Noto Sans Thai",sans-serif;margin:0 0 8px;font-size:22px}
+    .contact-info p{margin:0 0 14px}
+    .contact-list{display:grid;gap:8px;font-size:14px;color:#e9e9e9}
+    .contact-list a,.contact-list span{color:#e9e9e9}
     footer{padding:42px 0 110px;color:#666;font-size:14px;background:#f7f8f7;border-top:1px solid var(--line)}
     .footer-grid{display:grid;grid-template-columns:1.2fr repeat(3,1fr);gap:28px}
     .footer-brand{font-family:"Kanit","Noto Sans Thai",sans-serif;font-size:22px;font-weight:800;color:#111;margin-bottom:8px}
@@ -204,7 +215,7 @@
     .footer-col a,.footer-col span{display:block;margin:7px 0;color:#555}
     .copyright{grid-column:1/-1;margin-top:8px;padding-top:18px;border-top:1px solid #ddd;color:#777}
     .mobile-bar{
-      position:fixed;left:50%;transform:translateX(-50%);bottom:14px;z-index:30;
+      position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom));z-index:30;
       width:min(620px,92%);display:grid;grid-template-columns:1fr;gap:8px;
       background:rgba(255,255,255,.94);padding:8px;border-radius:18px;
       box-shadow:0 12px 40px rgba(0,0,0,.16);backdrop-filter:blur(10px)
@@ -474,14 +485,14 @@
           <p>มีข้อมูลครบ ช่วยให้ทีมงานประเมินเบื้องต้นได้รวดเร็วและแม่นยำขึ้น</p>
         </div>
         <div class="prep-grid">
-          <div class="prep-card"><small>01</small><h3>รูปพื้นที่</h3><p>ถ่ายหลายมุมให้เห็นสภาพหน้างาน</p></div>
-          <div class="prep-card"><small>02</small><h3>ขนาดพื้นที่</h3><p>แจ้ง กว้าง × ยาว หรือจำนวน ตร.ม. โดยประมาณ</p></div>
-          <div class="prep-card"><small>03</small><h3>Google Maps</h3><p>ใช้สำหรับดู Location และระยะทาง</p></div>
-          <div class="prep-card"><small>04</small><h3>แบบที่ต้องการ</h3><p>ส่ง Reference หรือเลือกจากผลงานของ Siladon</p></div>
+          <div class="prep-card"><small>01</small><h3>รูปพื้นที่</h3><p>ถ่ายหลายมุม ให้เห็นสภาพพื้นที่โดยรวม พื้นเดิม กำแพง บ่อพัก หรือสิ่งกีดขวางที่เกี่ยวข้อง</p></div>
+          <div class="prep-card"><small>02</small><h3>ขนาดพื้นที่</h3><p>แจ้งขนาดโดยประมาณ เช่น กว้าง × ยาว หรือจำนวน ตร.ม.</p></div>
+          <div class="prep-card"><small>03</small><h3>Google Maps</h3><p>ส่ง Location เพื่อใช้ตรวจสอบระยะทางและพื้นที่ให้บริการ</p></div>
+          <div class="prep-card"><small>04</small><h3>แบบที่ต้องการ</h3><p>ส่งภาพ Reference หรือเลือกแนวทางจากผลงานของ Siladon Landscape</p></div>
         </div>
         <div class="prep-note">
           <p>มีข้อมูลครบ ช่วยให้ทีมงานประเมินเบื้องต้นได้รวดเร็วและแม่นยำขึ้น</p>
-          <a class="cta" href="https://line.me/R/ti/p/@siladon" target="_blank">ส่งข้อมูลผ่าน LINE</a>
+          <a class="cta" id="prepareLine" href="https://line.me/R/ti/p/@siladon" target="_blank">ส่งข้อมูลผ่าน LINE</a>
         </div>
       </div>
     </section>
@@ -490,25 +501,23 @@
       <div class="container">
         <div class="section-head">
           <h2>คำถามที่พบบ่อย</h2>
-          <p>รวมคำตอบพื้นฐานก่อนทัก LINE เพื่อให้ประเมินงานได้เร็วขึ้น</p>
+          <p>รวมคำถามที่ลูกค้าสอบถามบ่อย เพื่อช่วยให้คุณประเมินและเตรียมข้อมูลเบื้องต้นก่อนติดต่อทีมงาน</p>
         </div>
         <div class="faq-list">
-          <details class="faq-item"><summary>งานปูขั้นต่ำเท่าไหร่?</summary><p>งานปูคิดขั้นต่ำ 30 ตร.ม. ตามเรทมาตรฐานของร้าน</p></details>
-          <details class="faq-item"><summary>พื้นที่ต่ำกว่า 30 ตร.ม. รับไหม?</summary><p>รับประเมินได้ แต่การคิดราคาจะอ้างอิงขั้นต่ำ 30 ตร.ม. สำหรับงานปู</p></details>
-          <details class="faq-item"><summary>สามารถประเมินราคาก่อนสำรวจได้ไหม?</summary><p>ได้ หากมีรูปพื้นที่ ขนาดพื้นที่โดยประมาณ Google Maps และรายละเอียดงานที่ต้องการ</p></details>
-          <details class="faq-item"><summary>ต้องส่งข้อมูลอะไรเพื่อประเมินราคา?</summary><p>ส่งรูปพื้นที่หลายมุม ขนาดพื้นที่โดยประมาณ Location และแบบหรือสไตล์ที่ต้องการ</p></details>
+          <details class="faq-item"><summary>งานปูมีขั้นต่ำเท่าไหร่?</summary><p>รับงานขั้นต่ำ 30 ตร.ม. หากพื้นที่น้อยกว่า 30 ตร.ม. ให้คิดราคาเหมาที่ขั้นต่ำ 30 ตร.ม.</p></details>
+          <details class="faq-item"><summary>สามารถประเมินราคาก่อนเข้าสำรวจได้ไหม?</summary><p>ได้ โดยส่งรูปพื้นที่ ขนาดพื้นที่โดยประมาณ Google Maps และรายละเอียดงานที่ต้องการ เพื่อให้ทีมงานประเมินงบเบื้องต้น</p></details>
           <details class="faq-item"><summary>มีค่าเข้าสำรวจหรือไม่?</summary><p>มีค่าบริการสำรวจ 2,500 บาท</p></details>
-          <details class="faq-item"><summary>ค่าเข้าสำรวจ 2,500 บาทสามารถหักจากค่างานได้อย่างไร?</summary><p>สามารถนำไปหักจากยอดงานได้เมื่อดำเนินงานติดตั้ง <span class="todo">ขั้นตอนเอกสาร/เงื่อนไขละเอียดต้องให้ทีมร้านยืนยัน</span></p></details>
-          <details class="faq-item"><summary>หลังเข้าสำรวจลูกค้าจะได้รับอะไร?</summary><p>ทีมงานจะตรวจสภาพพื้นที่ วัดพื้นที่ และจัดทำแบบ 2D ก่อนจัดทำใบเสนอราคา</p></details>
-          <details class="faq-item"><summary>ต้องเข้าสำรวจทุกงานหรือไม่?</summary><p>งานติดตั้งที่ต้องยืนยันสภาพพื้นที่ควรให้ทีมสำรวจก่อน ส่วนงานขายหรือส่งวัสดุอย่างเดียวให้ทีมยืนยันตามรายการ</p></details>
-          <details class="faq-item"><summary>เลือกวัสดุเองได้ไหม?</summary><p>ได้ สามารถเลือกวัสดุจากสินค้าที่ร้านมี หรือแจ้งสไตล์ที่ต้องการเพื่อให้ทีมงานแนะนำ</p></details>
-          <details class="faq-item"><summary>มีบริการขาย/ส่งวัสดุอย่างเดียวไหม?</summary><p>มีบริการขายและจัดส่งวัสดุอย่างเดียว</p></details>
-          <details class="faq-item"><summary>ค่าขนส่งคิดอย่างไร?</summary><p>ค่าขนส่งและค่าเดินทางขึ้นอยู่กับระยะทางจากร้าน พื้นที่ให้บริการ และประเภทงาน</p></details>
-          <details class="faq-item"><summary>ใช้เวลาติดตั้งประมาณกี่วัน?</summary><p>ขึ้นอยู่กับขนาดพื้นที่และรายละเอียดงาน โดยงานใน Portfolio จะแสดงช่วงเวลาประมาณการของแต่ละโครงการ</p></details>
-          <details class="faq-item"><summary>ฝนตกสามารถติดตั้งได้ไหม?</summary><p>ขึ้นอยู่กับสภาพหน้างานและประเภทงาน อาจต้องเลื่อนบางขั้นตอนหากสภาพอากาศไม่เหมาะสม</p></details>
-          <details class="faq-item"><summary>มีรับประกันงานหรือไม่?</summary><p>รับประกันงานติดตั้ง 6 เดือน ตามเงื่อนไขของบริษัท</p></details>
-          <details class="faq-item"><summary>เงื่อนไขการชำระเงินเป็นอย่างไร?</summary><p>มัดจำ 60% ก่อนเริ่มงาน และชำระส่วนที่เหลือ 40% หลังติดตั้ง/ส่งมอบงาน</p></details>
-          <details class="faq-item"><summary>ราคาจาก Calculator เป็นราคาสุดท้ายหรือไม่?</summary><p>ไม่ใช่ เป็นราคาประเมินเบื้องต้น ราคาจริงจะยืนยันหลังทราบรายละเอียดพื้นที่ วัสดุ ระยะทาง และสภาพหน้างาน</p></details>
+          <details class="faq-item"><summary>ค่าสำรวจ 2,500 บาทหักจากค่างานได้ไหม?</summary><p>ได้ หากลูกค้าดำเนินงานติดตั้งกับร้าน สามารถนำค่าสำรวจ 2,500 บาทไปหักจากยอดค่างานได้</p></details>
+          <details class="faq-item"><summary>หลังเข้าสำรวจจะได้รับอะไร?</summary><p>ทีมงานตรวจสภาพพื้นที่ วัดขนาดหน้างาน และจัดทำแบบ 2D เพื่อใช้ประกอบการเสนอราคา</p></details>
+          <details class="faq-item"><summary>จำเป็นต้องเข้าสำรวจทุกงานไหม?</summary><p>ไม่จำเป็นต้องสำรวจตั้งแต่ขั้นแรก ลูกค้าสามารถส่งข้อมูลเพื่อประเมินงบเบื้องต้นก่อนได้ หากต้องการดำเนินงานจริงจึงนัดสำรวจตามความเหมาะสมของงาน</p></details>
+          <details class="faq-item"><summary>ลูกค้าเลือกวัสดุเองได้ไหม?</summary><p>ได้ สามารถเลือกแผ่นทางเดิน หิน และวัสดุตกแต่งจากสินค้าของร้าน หรือส่ง Reference เพื่อให้ทีมงานช่วยแนะนำได้</p></details>
+          <details class="faq-item"><summary>มีบริการขายและจัดส่งวัสดุอย่างเดียวไหม?</summary><p>มีบริการจำหน่ายและจัดส่งวัสดุ โดยไม่จำเป็นต้องใช้บริการติดตั้ง</p></details>
+          <details class="faq-item"><summary>ค่าขนส่งคิดอย่างไร?</summary><p>ขึ้นอยู่กับระยะทาง ประเภทสินค้า ปริมาณสินค้า และประเภทรถที่ใช้จัดส่ง</p></details>
+          <details class="faq-item"><summary>ใช้เวลาติดตั้งกี่วัน?</summary><p>ขึ้นอยู่กับขนาดพื้นที่ สภาพหน้างาน และประเภทงาน โดยทีมงานจะแจ้งระยะเวลาโดยประมาณก่อนเริ่มงาน</p></details>
+          <details class="faq-item"><summary>ฝนตกสามารถติดตั้งได้ไหม?</summary><p>ขึ้นอยู่กับสภาพหน้างานและขั้นตอนการติดตั้ง บางขั้นตอนอาจต้องเลื่อนเพื่อให้ได้คุณภาพงานที่เหมาะสม</p></details>
+          <details class="faq-item"><summary>มีรับประกันงานติดตั้งไหม?</summary><p>รับประกันงานติดตั้ง 6 เดือน ตามเงื่อนไขของบริษัท</p></details>
+          <details class="faq-item"><summary>ชำระเงินอย่างไร?</summary><p>มัดจำ 60% ก่อนเริ่มดำเนินงาน และชำระส่วนที่เหลือ 40% หลังติดตั้งและส่งมอบงาน</p></details>
+          <details class="faq-item"><summary>ราคาจากเครื่องคำนวณบนเว็บไซต์เป็นราคาสุดท้ายหรือไม่?</summary><p>ไม่ใช่ เป็นเพียงการประเมินเบื้องต้น ราคาจริงขึ้นอยู่กับวัสดุ สภาพพื้นที่ ระยะทาง และรายละเอียดหน้างานจริง</p></details>
         </div>
       </div>
     </section>
@@ -516,11 +525,26 @@
     <section id="contact">
       <div class="container">
         <div class="contact">
-          <div>
-            <h2>ยังไม่รู้ว่าพื้นที่บ้านควรทำแบบไหน?</h2>
-            <p>ส่งรูปพื้นที่และ Location มาให้ทีมช่วยแนะนำรูปแบบพร้อมประเมินงบคร่าว ๆ ได้ก่อน</p>
+          <div class="contact-main">
+            <h2>พร้อมปรับพื้นที่รอบบ้านแล้วหรือยัง?</h2>
+            <p>ส่งรูปพื้นที่ ขนาดโดยประมาณ และ Google Maps ให้ทีมงานประเมินงบเบื้องต้นก่อนได้</p>
+            <div class="contact-actions">
+              <a class="cta" id="contactLine" href="https://line.me/R/ti/p/@siladon" target="_blank">ส่งรูปพื้นที่ผ่าน LINE</a>
+              <a class="cta alt" href="tel:0646961144">โทรสอบถาม</a>
+              <span class="cta alt">Facebook</span>
+              <a class="cta alt" href="https://www.tiktok.com/@siladon.nonthaburi" target="_blank">TikTok</a>
+            </div>
           </div>
-          <a class="cta" href="https://line.me/R/ti/p/@siladon" target="_blank">ส่งรูปผ่าน LINE</a>
+          <div class="contact-info">
+            <h3>สวนหินศิลาดล — Siladon Landscape</h3>
+            <p>ศูนย์รวมวัสดุตกแต่งพื้นทางเดินและสวน พร้อมบริการจัดส่งและติดตั้ง</p>
+            <div class="contact-list">
+              <a href="https://line.me/R/ti/p/@siladon" target="_blank">LINE @siladon</a>
+              <span>Facebook: สวนหินศิลาดล</span>
+              <a href="https://www.tiktok.com/@siladon.nonthaburi" target="_blank">TikTok: @siladon.nonthaburi</a>
+              <span>เบอร์ติดต่อฝ่ายขาย: 064-696-1144, 097-357-9339, 064-478-8289</span>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -554,13 +578,14 @@
         <a href="#services">บริการ</a>
         <a href="#price">ประเมินงบ</a>
         <a href="#faq">FAQ</a>
+        <a href="#contact">ติดต่อ</a>
       </div>
       <div class="footer-col">
         <h3>ติดต่อ</h3>
         <a href="https://line.me/R/ti/p/@siladon" target="_blank">LINE @siladon</a>
         <span>Facebook: สวนหินศิลาดล</span>
-        <span>TikTok: สวนหินศิลาดล</span>
-        <span>โทรศัพท์: ติดต่อผ่าน LINE @siladon</span>
+        <a href="https://www.tiktok.com/@siladon.nonthaburi" target="_blank">TikTok: @siladon.nonthaburi</a>
+        <span>โทรศัพท์: 064-696-1144, 097-357-9339, 064-478-8289</span>
       </div>
       <div class="footer-col">
         <h3>ข้อมูลบริการ</h3>
@@ -573,7 +598,7 @@
   </footer>
 
   <div class="mobile-bar">
-    <a class="cta" href="https://line.me/R/ti/p/@siladon" target="_blank">LINE | ส่งรูปพื้นที่</a>
+    <a class="cta" id="mobileLine" href="https://line.me/R/ti/p/@siladon" target="_blank">LINE | ส่งรูปพื้นที่</a>
   </div>
 
 <script>
@@ -583,6 +608,15 @@ let activeLightboxIndex = 0;
 let activePortfolioFilter = 'all';
 const RAW_UPLOAD_BASE = 'https://raw.githubusercontent.com/apichaforwork/siladon-landscape/main/';
 const PROJECT_DATA_URL = 'https://raw.githubusercontent.com/apichaforwork/siladon-landscape/main/data/projects.json';
+const LINE_MESSAGE_TEMPLATE = `สวัสดีค่ะ สนใจขอประเมินงาน
+
+พื้นที่ประมาณ:
+ประเภทพื้นที่:
+งานที่ต้องการ:
+Google Maps:
+งบประมาณโดยประมาณ:
+
+แนบรูปพื้นที่และภาพ Reference เพิ่มเติมได้เลยค่ะ`;
 const CALCULATOR_CONFIG = {
   // TODO: ให้เจ้าของร้านยืนยันว่าใช้ช่วงเผื่อราคา +12% เป็นค่า production หรือไม่
   estimateRangePercent: 0.12
@@ -597,6 +631,10 @@ function imageUrl(src=''){
   if(src.startsWith('/images/uploads/')) return RAW_UPLOAD_BASE + src.slice(1);
   if(src.startsWith('images/uploads/')) return RAW_UPLOAD_BASE + src;
   return src;
+}
+
+function lineMessageUrl(message){
+  return 'https://line.me/R/oaMessage/@siladon/?' + encodeURIComponent(message);
 }
 
 async function loadProjects(){
@@ -837,12 +875,16 @@ Location:
 
 รูปพื้นที่:
 [กรุณาส่งรูปพื้นที่หลายมุม]`;
-  document.getElementById('lineEstimate').href = 'https://line.me/R/oaMessage/@siladon/?' + encodeURIComponent(message);
+  document.getElementById('lineEstimate').href = lineMessageUrl(message);
 }
 
 document.addEventListener('DOMContentLoaded', ()=>{
   estimate();
   loadProjects();
+  ['prepareLine','contactLine','mobileLine'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) el.href = lineMessageUrl(LINE_MESSAGE_TEMPLATE);
+  });
   document.querySelectorAll('#estimate input,#estimate select').forEach(el=>el.addEventListener('input', estimate));
   document.querySelectorAll('#areaFilters .area-card').forEach(button=>{
     button.addEventListener('click', ()=>{
