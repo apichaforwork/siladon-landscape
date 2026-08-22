@@ -343,6 +343,7 @@
 <script>
 let projectData = [];
 const RAW_UPLOAD_BASE = 'https://raw.githubusercontent.com/apichaforwork/siladon-landscape/main/';
+const PROJECT_DATA_URL = 'https://raw.githubusercontent.com/apichaforwork/siladon-landscape/main/data/projects.json';
 
 function esc(s=''){
   return String(s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[c]));
@@ -367,7 +368,7 @@ async function loadProjects(){
       }
     }
     if(!data){
-      const res = await fetch('/data/projects.json?ts=' + Date.now());
+      const res = await fetch(PROJECT_DATA_URL + '?ts=' + Date.now());
       data = await res.json();
     }
     projectData = (data.projects || []).filter(p => p.visible !== false);
