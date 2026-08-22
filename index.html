@@ -60,14 +60,44 @@
     .hero-actions{display:flex;gap:12px;flex-wrap:wrap}
     .hero-card{
       min-height:520px;border-radius:30px;overflow:hidden;position:relative;
-      background:
-        linear-gradient(to top,rgba(0,0,0,.45),rgba(0,0,0,.05)),
-        url("https://images.unsplash.com/photo-1558904541-efa843a96f01?auto=format&fit=crop&w=1400&q=85") center/cover;
+      background:#111;
       box-shadow:var(--shadow);
     }
+    .hero-slide{
+      position:absolute;inset:0;background-size:cover;background-position:center;
+      opacity:0;animation:heroFade 15s infinite
+    }
+    .hero-slide::after{
+      content:"";position:absolute;inset:0;
+      background:linear-gradient(to top,rgba(0,0,0,.46),rgba(0,0,0,.04) 58%,rgba(0,0,0,.08))
+    }
+    .hero-slide:nth-child(1){animation-delay:0s}
+    .hero-slide:nth-child(2){animation-delay:5s}
+    .hero-slide:nth-child(3){animation-delay:10s}
+    @keyframes heroFade{
+      0%,28%{opacity:1}
+      36%,92%{opacity:0}
+      100%{opacity:1}
+    }
     .hero-card .tag{
-      position:absolute;left:22px;bottom:22px;background:rgba(255,255,255,.93);
+      position:absolute;left:22px;bottom:22px;z-index:2;background:rgba(255,255,255,.93);
       border-radius:18px;padding:15px 17px;font-weight:800;max-width:280px;
+    }
+    .hero-card .step-label{
+      display:block;color:var(--green);font-size:12px;margin-bottom:3px
+    }
+    .hero-dots{position:absolute;right:22px;bottom:28px;z-index:2;display:flex;gap:7px}
+    .hero-dots span{width:8px;height:8px;border-radius:999px;background:rgba(255,255,255,.72);animation:dotPulse 15s infinite}
+    .hero-dots span:nth-child(2){animation-delay:5s}
+    .hero-dots span:nth-child(3){animation-delay:10s}
+    @keyframes dotPulse{
+      0%,28%{transform:scale(1.35);background:#fff}
+      36%,92%{transform:scale(1);background:rgba(255,255,255,.72)}
+      100%{transform:scale(1.35);background:#fff}
+    }
+    @media (prefers-reduced-motion: reduce){
+      .hero-slide,.hero-dots span{animation:none}
+      .hero-slide:first-child{opacity:1}
     }
     .trust{
       margin-top:28px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:620px
@@ -248,8 +278,12 @@
             <div><b>6 เดือน</b>รับประกันงานติดตั้ง</div>
           </div>
         </div>
-        <div class="hero-card">
-          <div class="tag">สวนดูแลง่าย • งานทางเดิน • งานปรับพื้นที่รอบบ้าน</div>
+        <div class="hero-card" aria-label="ตัวอย่างขั้นตอนงานติดตั้ง">
+          <div class="hero-slide" style="background-image:url('https://raw.githubusercontent.com/apichaforwork/siladon-landscape/main/images/uploads/1787387766589-gag6ph-779239046-1630246805778184-1908871125689229029-n.jpg')"></div>
+          <div class="hero-slide" style="background-image:url('https://raw.githubusercontent.com/apichaforwork/siladon-landscape/main/images/uploads/1787387768381-kw9jkm-779278284-1630246875778177-4761824388991942569-n.jpg')"></div>
+          <div class="hero-slide" style="background-image:url('https://raw.githubusercontent.com/apichaforwork/siladon-landscape/main/images/uploads/1787387751186-j8jjcn-780160796-1630246802444851-4701723938285776848-n.jpg')"></div>
+          <div class="tag"><span class="step-label">ตัวอย่างงานจริง</span>วัดพื้นที่ • ปรับระดับ • ติดตั้งและเก็บขอบ</div>
+          <div class="hero-dots" aria-hidden="true"><span></span><span></span><span></span></div>
         </div>
       </div>
     </section>
