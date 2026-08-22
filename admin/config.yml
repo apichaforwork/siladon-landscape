@@ -19,14 +19,14 @@ collections:
           - label: "ผลงานทั้งหมด"
             name: "projects"
             widget: "list"
-            summary: "{{fields.title}} — {{fields.area}} ตร.ม."
+            summary: "{{fields.title}} — {{fields.brand}} {{fields.model}}"
             fields:
               - { label: "ชื่อโครงการ", name: "title", widget: "string" }
               - { label: "หมวด / หัวข้อสีเขียว", name: "category", widget: "string", required: false }
               - { label: "รูปหน้าปก", name: "cover", widget: "image" }
               - { label: "ขนาดพื้นที่ (ตร.ม.)", name: "area", widget: "number", value_type: "float", required: false }
-              - { label: "งบประมาณต่ำสุด", name: "budget_min", widget: "number", value_type: "int", required: false }
-              - { label: "งบประมาณสูงสุด", name: "budget_max", widget: "number", value_type: "int", required: false }
+              - { label: "แบรนด์", name: "brand", widget: "string", required: false }
+              - { label: "รุ่น / ลาย", name: "model", widget: "string", required: false }
               - { label: "ระยะเวลาทำงาน", name: "duration", widget: "string", required: false }
               - { label: "รายละเอียดงาน", name: "description", widget: "text", required: false }
               - label: "Tags / รายการงาน"
