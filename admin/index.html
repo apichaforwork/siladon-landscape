@@ -617,6 +617,7 @@
     const BRANCH = 'main';
     const DATA_PATH = 'data/projects.json';
     const UPLOAD_DIR = 'images/uploads';
+    const RAW_BASE = 'https://raw.githubusercontent.com/apichaforwork/siladon-landscape/main/';
     const FALLBACK_COVER = 'https://images.unsplash.com/photo-1598902108854-10e335adac99?auto=format&fit=crop&w=1200&q=80';
 
     const $ = (selector) => document.querySelector(selector);
@@ -687,16 +688,23 @@
       return {
         title: project.title || '',
         category: project.category || project.model || 'LANDSCAPE PROJECT',
-        cover: project.cover || FALLBACK_COVER,
+        cover: normalizeImageUrl(project.cover || FALLBACK_COVER),
         area: project.area || '',
         duration: project.duration || '',
         brand: project.brand || '',
         model: project.model || '',
         description: project.description || '',
         tags: Array.isArray(project.tags) ? project.tags : [],
-        gallery: Array.isArray(project.gallery) ? project.gallery.map((item) => typeof item === 'string' ? item : item.image).filter(Boolean) : [],
+        gallery: Array.isArray(project.gallery) ? project.gallery.map((item) => normalizeImageUrl(typeof item === 'string' ? item : item.image)).filter(Boolean) : [],
         visible: project.visible !== false
       };
+    }
+
+    function normalizeImageUrl(src = '') {
+      if (!src) return '';
+      if (src.startsWith('/images/uploads/')) return RAW_BASE + src.slice(1);
+      if (src.startsWith('images/uploads/')) return RAW_BASE + src;
+      return src;
     }
 
     async function loadProjects() {
@@ -866,7 +874,7 @@
           branch: BRANCH
         })
       });
-      return '/' + path;
+      return RAW_BASE + path;
     }
 
     function fileToBase64(file) {
