@@ -840,8 +840,8 @@ function estimate(){
     }
   }
   const low = subtotal;
-  const high = subtotal * (1 + CALCULATOR_CONFIG.estimateRangePercent);
-  const budgetText = fmt(low)+'–'+fmt(high)+' บาท';
+  const high = workType === 'voidOnly' ? subtotal : subtotal * (1 + CALCULATOR_CONFIG.estimateRangePercent);
+  const budgetText = low === high ? fmt(low)+' บาท' : fmt(low)+'–'+fmt(high)+' บาท';
   document.getElementById('budget').textContent = budgetText;
   renderCalcSummary({
     amountLabel: workType === 'voidOnly' ? 'ความยาว' : 'พื้นที่',
