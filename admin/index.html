@@ -6,7 +6,7 @@
   <title>Siladon Landscape Admin</title>
   <script>
     if (window.location.protocol === 'file:') {
-      window.location.replace('https://siladonlandscape.netlify.app/admin/');
+      window.location.replace('https://apichaforwork.github.io/siladon-landscape/admin/');
     }
   </script>
   <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
@@ -57,6 +57,16 @@
 
     .login-panel h1 { margin: 0 0 8px; font-size: 28px; line-height: 1.2; }
     .login-panel p { margin: 0 0 20px; color: var(--muted); line-height: 1.65; }
+    .token-login {
+      margin-top: 18px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+      display: grid;
+      gap: 10px;
+    }
+    .token-login small { color: var(--muted); line-height: 1.5; }
+    .remember-line { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 13px; }
+    .remember-line input { width: auto; min-height: auto; }
 
     .shell {
       min-height: 100vh;
@@ -541,8 +551,17 @@
   <div class="login-screen" id="login-screen">
     <div class="login-panel">
       <h1>Siladon Landscape Admin</h1>
-      <p>เข้าสู่ระบบด้วยบัญชีที่เชิญไว้ เพื่อแก้ผลงานและเผยแพร่ขึ้นเว็บไซต์จริง</p>
-      <button class="primary-btn" type="button" id="login-button">เข้าสู่ระบบ</button>
+      <p>เข้าสู่ระบบเพื่อแก้ผลงาน รูปสไลด์หน้าแรก และเผยแพร่ขึ้นเว็บไซต์จริง</p>
+      <button class="primary-btn" type="button" id="login-button">เข้าสู่ระบบผ่าน Netlify</button>
+      <div class="token-login">
+        <div class="field">
+          <label for="github-token">GitHub token สำหรับอัปโหลดเอง</label>
+          <input id="github-token" type="password" autocomplete="off" placeholder="วาง token ที่มีสิทธิ์แก้ repository นี้" />
+        </div>
+        <label class="remember-line"><input id="remember-token" type="checkbox" checked /> จำไว้ในเครื่องนี้</label>
+        <button class="plain-btn" type="button" id="github-token-login">เข้าใช้งานด้วย GitHub</button>
+        <small>ใช้เมื่อ Netlify deploy ถูก pause หรือหลังบ้าน Netlify ยังไม่อัปเดต Token นี้ใช้คุยกับ GitHub โดยตรงจากเครื่องคุณ</small>
+      </div>
     </div>
   </div>
 
@@ -560,9 +579,10 @@
         <button type="button" id="nav-hero">▣ รูปสไลด์หน้าแรก</button>
         <button type="button" id="side-add">＋ เพิ่มงานใหม่</button>
         <button type="button" id="open-site-side">◉ ดูหน้าเว็บ</button>
+        <button type="button" id="logout">↺ ออกจากระบบ</button>
       </nav>
       <div class="side-card">
-        <small>กดเผยแพร่แล้วระบบจะ commit ข้อมูลเข้า GitHub และ Netlify จะ deploy เว็บไซต์ให้อัตโนมัติ</small>
+        <small>กดเผยแพร่แล้วระบบจะบันทึกข้อมูลเข้า GitHub หน้าเว็บ GitHub Pages จะอัปเดตให้อัตโนมัติ</small>
       </div>
     </aside>
 
@@ -732,7 +752,9 @@
   <div class="toast" role="status" aria-live="polite" id="toast"></div>
 
   <script>
-    const SITE_URL = 'https://siladonlandscape.netlify.app';
+    const SITE_URL = 'https://apichaforwork.github.io/siladon-landscape';
+    const GITHUB_OWNER = 'apichaforwork';
+    const GITHUB_REPO = 'siladon-landscape';
     const BRANCH = 'main';
     const DATA_PATH = 'data/projects.json';
     const SITE_DATA_PATH = 'data/site.json';
@@ -769,6 +791,7 @@
     };
 
     let user = null;
+    let authMode = 'netlify';
     let projects = [];
     let siteSettings = { heroSlides: DEFAULT_HERO_SLIDES.map((slide) => ({ ...slide })) };
     let dataSha = '';
@@ -796,6 +819,7 @@
 
     async function getToken() {
       if (!user) throw new Error('กรุณาเข้าสู่ระบบก่อน');
+      if (authMode === 'github') return user.token;
       return user.jwt();
     }
 
@@ -806,7 +830,14 @@
         ...(options.headers || {})
       };
       if (!headers['Content-Type'] && options.body) headers['Content-Type'] = 'application/json';
-      const response = await fetch('/.netlify/git/github/' + path, {
+      const endpoint = authMode === 'github'
+        ? `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/${path}`
+        : '/.netlify/git/github/' + path;
+      if (authMode === 'github') {
+        headers.Accept = 'application/vnd.github+json';
+        headers['X-GitHub-Api-Version'] = '2022-11-28';
+      }
+      const response = await fetch(endpoint, {
         ...options,
         headers
       });
@@ -1185,7 +1216,8 @@
 
     function friendlyError(error) {
       const text = String(error && error.message ? error.message : error);
-      if (text.includes('401') || text.includes('JWT') || text.includes('token')) return 'สิทธิ์ล็อกอินหมดอายุ ลองออกเข้าใหม่';
+      if (text.includes('401') || text.includes('JWT') || text.includes('token') || text.includes('Bad credentials')) return 'สิทธิ์ล็อกอินหมดอายุ หรือ GitHub token ไม่ถูกต้อง';
+      if (text.includes('403')) return 'GitHub token ยังไม่มีสิทธิ์แก้ไฟล์ใน repository นี้';
       if (text.includes('409')) return 'มีข้อมูลใหม่บนเว็บแล้ว กดโหลดข้อมูลใหม่ก่อนเผยแพร่';
       if (text.includes('413') || text.includes('too large')) return 'รูปใหญ่เกินไป ลองใช้รูปขนาดเล็กลง';
       return text.slice(0, 180);
@@ -1203,6 +1235,11 @@
     $('#nav-hero').addEventListener('click', () => setView('hero'));
     $('#open-site').addEventListener('click', () => window.open(SITE_URL, '_blank'));
     $('#open-site-side').addEventListener('click', () => window.open(SITE_URL, '_blank'));
+    $('#logout').addEventListener('click', () => {
+      localStorage.removeItem('siladonGithubToken');
+      if (window.netlifyIdentity && window.netlifyIdentity.currentUser()) window.netlifyIdentity.logout();
+      window.location.reload();
+    });
     $('#publish').addEventListener('click', publish);
     $('#publish-hero').addEventListener('click', publishHeroSettings);
     $('#upload-hero').addEventListener('click', () => $('#hero-upload').click());
@@ -1352,22 +1389,49 @@
       showToast('เพิ่มผลงานใหม่แล้ว กรอกข้อมูลแล้วกดเผยแพร่');
     }
 
-    function showApp(currentUser) {
+    function showApp(currentUser, mode = 'netlify') {
       user = currentUser;
+      authMode = mode;
       $('#login-screen').classList.add('is-hidden');
       $('#app').classList.remove('is-hidden');
       loadProjects();
     }
 
-    $('#login-button').addEventListener('click', () => window.netlifyIdentity.open('login'));
-    window.netlifyIdentity.on('init', (currentUser) => {
-      if (currentUser) showApp(currentUser);
+    function loginWithGithubToken() {
+      const token = $('#github-token').value.trim();
+      if (!token) {
+        showToast('กรุณาใส่ GitHub token ก่อน');
+        return;
+      }
+      if ($('#remember-token').checked) localStorage.setItem('siladonGithubToken', token);
+      showApp({ token }, 'github');
+    }
+
+    $('#login-button').addEventListener('click', () => {
+      if (!window.netlifyIdentity) {
+        showToast('Netlify Identity ยังไม่พร้อม ใช้ GitHub token แทนได้');
+        return;
+      }
+      window.netlifyIdentity.open('login');
     });
-    window.netlifyIdentity.on('login', (currentUser) => {
-      window.netlifyIdentity.close();
-      showApp(currentUser);
+    $('#github-token-login').addEventListener('click', loginWithGithubToken);
+    $('#github-token').addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') loginWithGithubToken();
     });
-    window.netlifyIdentity.init();
+    const savedGithubToken = localStorage.getItem('siladonGithubToken');
+    if (savedGithubToken) {
+      $('#github-token').value = savedGithubToken;
+      showApp({ token: savedGithubToken }, 'github');
+    } else if (window.netlifyIdentity) {
+      window.netlifyIdentity.on('init', (currentUser) => {
+        if (currentUser) showApp(currentUser, 'netlify');
+      });
+      window.netlifyIdentity.on('login', (currentUser) => {
+        window.netlifyIdentity.close();
+        showApp(currentUser, 'netlify');
+      });
+      window.netlifyIdentity.init();
+    }
   </script>
 </body>
 </html>
