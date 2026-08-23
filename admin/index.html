@@ -165,6 +165,10 @@
       gap: 24px;
       align-items: start;
     }
+    .content.single {
+      grid-template-columns: 1fr;
+      max-width: 1180px;
+    }
 
     .overview {
       grid-column: 1 / -1;
@@ -406,6 +410,87 @@
       background: #fff;
     }
     .status-line { color: var(--muted); font-size: 12px; align-self: center; }
+
+    .hero-slide-list {
+      padding: 18px;
+      display: grid;
+      gap: 14px;
+    }
+    .hero-slide-editor {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcf9;
+      display: grid;
+      grid-template-columns: 168px minmax(0, 1fr) auto;
+      gap: 14px;
+      align-items: center;
+    }
+    .hero-slide-editor img {
+      width: 168px;
+      height: 112px;
+      border-radius: 8px;
+      object-fit: cover;
+      background: #e5e0d5;
+    }
+    .hero-slide-fields {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr);
+      gap: 10px;
+    }
+    .hero-slide-actions {
+      display: grid;
+      gap: 8px;
+      min-width: 96px;
+    }
+    .hero-add-card {
+      min-height: 104px;
+      border: 1px dashed #9caf9f;
+      border-radius: 8px;
+      color: var(--green);
+      background: #fbfcf9;
+      font-weight: 800;
+      font-size: 18px;
+    }
+    .hero-admin-preview {
+      margin: 18px;
+      min-height: 360px;
+      border-radius: 18px;
+      overflow: hidden;
+      position: relative;
+      background: #15221a;
+      box-shadow: 0 14px 34px rgba(32, 44, 36, 0.12);
+    }
+    .hero-admin-preview img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .hero-admin-preview::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,.46), rgba(0,0,0,.05) 58%);
+    }
+    .hero-admin-preview .caption {
+      position: absolute;
+      left: 18px;
+      bottom: 18px;
+      z-index: 1;
+      max-width: 320px;
+      padding: 16px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.92);
+      font-weight: 800;
+    }
+    .hero-admin-preview .caption span {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--green);
+      font-size: 12px;
+    }
     .toast {
       position: fixed;
       right: 22px;
@@ -445,6 +530,10 @@
       .gallery { grid-template-columns: repeat(2, 1fr); }
       .preview-card { grid-template-columns: 1fr; }
       .preview-card img { width: 100%; height: auto; aspect-ratio: 16 / 10; }
+      .hero-slide-editor { grid-template-columns: 1fr; }
+      .hero-slide-editor img { width: 100%; height: auto; aspect-ratio: 16 / 10; }
+      .hero-slide-fields { grid-template-columns: 1fr; }
+      .hero-slide-actions { grid-template-columns: repeat(3, 1fr); }
     }
   </style>
 </head>
@@ -467,7 +556,8 @@
         </div>
       </div>
       <nav class="nav" aria-label="เมนูหลังบ้าน">
-        <button class="active" type="button">▦ ผลงานจัดสวน</button>
+        <button class="active" type="button" id="nav-projects">▦ ผลงานจัดสวน</button>
+        <button type="button" id="nav-hero">▣ รูปสไลด์หน้าแรก</button>
         <button type="button" id="side-add">＋ เพิ่มงานใหม่</button>
         <button type="button" id="open-site-side">◉ ดูหน้าเว็บ</button>
       </nav>
@@ -479,8 +569,8 @@
     <main>
       <header class="topbar">
         <div>
-          <h1>ผลงานจัดสวน</h1>
-          <p>เพิ่มรูป ใส่แบรนด์ รุ่น/ลาย รายละเอียด และเปิด/ปิดงานที่อยากโชว์บนเว็บ</p>
+          <h1 id="page-title">ผลงานจัดสวน</h1>
+          <p id="page-subtitle">เพิ่มรูป ใส่แบรนด์ รุ่น/ลาย รายละเอียด และเปิด/ปิดงานที่อยากโชว์บนเว็บ</p>
         </div>
         <div class="actions">
           <button class="plain-btn" type="button" id="open-site">ดูหน้าเว็บ</button>
@@ -489,7 +579,7 @@
         </div>
       </header>
 
-      <section class="content">
+      <section class="content" id="projects-view">
         <div class="overview">
           <div class="metric"><span>ผลงานทั้งหมด</span><strong id="count-all">0</strong><small id="count-visible">เปิดแสดง 0 งาน</small></div>
           <div class="metric"><span>แบรนด์/รุ่นที่บันทึก</span><strong id="count-materials">0</strong><small>ใช้ช่วยค้นหาและทำ SEO</small></div>
@@ -607,6 +697,35 @@
           </div>
         </section>
       </section>
+
+      <section class="content single is-hidden" id="hero-view">
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <h2>รูปสไลด์หน้าแรก</h2>
+              <p>เลือกกี่รูปก็ได้ ระบบจะเลื่อนอัตโนมัติตามลำดับจากบนลงล่าง</p>
+            </div>
+            <button class="plain-btn" type="button" id="upload-hero">อัปโหลดรูป</button>
+          </div>
+          <div class="hero-slide-list" id="hero-slide-list"></div>
+          <input class="file-input" id="hero-upload" type="file" accept="image/*" multiple />
+          <div class="bottom-actions">
+            <button class="plain-btn" type="button" id="reset-hero">ใช้ชุดรูปเริ่มต้น</button>
+            <div class="status-line" id="hero-status-line">พร้อมแก้ไขรูปหน้าแรก</div>
+            <button class="primary-btn" type="button" id="publish-hero">เผยแพร่รูปหน้าแรก</button>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <h2>พรีวิวรูปแรกบนหน้าเว็บ</h2>
+              <p>หน้าเว็บจริงจะเลื่อนรูปทั้งหมดอัตโนมัติ</p>
+            </div>
+          </div>
+          <div class="hero-admin-preview" id="hero-admin-preview"></div>
+        </section>
+      </section>
     </main>
   </div>
 
@@ -616,9 +735,27 @@
     const SITE_URL = 'https://siladonlandscape.netlify.app';
     const BRANCH = 'main';
     const DATA_PATH = 'data/projects.json';
+    const SITE_DATA_PATH = 'data/site.json';
     const UPLOAD_DIR = 'images/uploads';
     const RAW_BASE = 'https://raw.githubusercontent.com/apichaforwork/siladon-landscape/main/';
     const FALLBACK_COVER = 'https://images.unsplash.com/photo-1598902108854-10e335adac99?auto=format&fit=crop&w=1200&q=80';
+    const DEFAULT_HERO_SLIDES = [
+      {
+        image: 'https://raw.githubusercontent.com/apichaforwork/siladon-landscape/main/images/uploads/1787387766589-gag6ph-779239046-1630246805778184-1908871125689229029-n.jpg',
+        label: 'ภาพงานจริง',
+        caption: 'วัดพื้นที่ • ปรับระดับ • ติดตั้งและเก็บขอบ'
+      },
+      {
+        image: 'https://raw.githubusercontent.com/apichaforwork/siladon-landscape/main/images/uploads/1787387768381-kw9jkm-779278284-1630246875778177-4761824388991942569-n.jpg',
+        label: 'ภาพงานจริง',
+        caption: 'จัดแนวทางเดิน • เช็กระดับ • เก็บรายละเอียด'
+      },
+      {
+        image: 'https://raw.githubusercontent.com/apichaforwork/siladon-landscape/main/images/uploads/1787387751186-j8jjcn-780160796-1630246802444851-4701723938285776848-n.jpg',
+        label: 'ภาพงานจริง',
+        caption: 'ส่งมอบพื้นที่เรียบร้อยพร้อมใช้งาน'
+      }
+    ];
 
     const $ = (selector) => document.querySelector(selector);
     const fields = {
@@ -633,8 +770,11 @@
 
     let user = null;
     let projects = [];
+    let siteSettings = { heroSlides: DEFAULT_HERO_SLIDES.map((slide) => ({ ...slide })) };
     let dataSha = '';
+    let siteDataSha = '';
     let activeProject = 0;
+    let activeView = 'projects';
     let saving = false;
     let toastTimer;
 
@@ -649,6 +789,7 @@
       saving = isBusy;
       document.querySelectorAll('button').forEach((button) => button.disabled = isBusy);
       $('#status-line').textContent = message || (isBusy ? 'กำลังทำงาน...' : 'พร้อมแก้ไข');
+      $('#hero-status-line').textContent = message || (isBusy ? 'กำลังทำงาน...' : 'พร้อมแก้ไขรูปหน้าแรก');
       $('#save-state').textContent = isBusy ? 'กำลังบันทึก' : 'พร้อม';
       $('#save-detail').textContent = message || 'พร้อมใช้งาน';
     }
@@ -707,6 +848,26 @@
       return src;
     }
 
+    function normalizeHeroSlide(slide = {}) {
+      if (typeof slide === 'string') {
+        return { image: normalizeImageUrl(slide), label: 'ภาพงานจริง', caption: '' };
+      }
+      return {
+        image: normalizeImageUrl(slide.image || slide.src || ''),
+        label: slide.label || 'ภาพงานจริง',
+        caption: slide.caption || ''
+      };
+    }
+
+    function normalizeSiteSettings(data = {}) {
+      const slides = Array.isArray(data.heroSlides)
+        ? data.heroSlides.map(normalizeHeroSlide).filter((slide) => slide.image)
+        : [];
+      return {
+        heroSlides: slides.length ? slides : DEFAULT_HERO_SLIDES.map((slide) => ({ ...slide }))
+      };
+    }
+
     async function loadProjects() {
       setBusy(true, 'กำลังโหลดข้อมูลจากเว็บไซต์...');
       try {
@@ -716,12 +877,25 @@
         projects = (data.projects || []).map(normalizeProject);
         if (!projects.length) projects = [createBlankProject()];
         activeProject = Math.min(activeProject, projects.length - 1);
+        await loadSiteSettings();
         renderAll();
+        renderHeroSettings();
         showToast('โหลดข้อมูลล่าสุดแล้ว');
       } catch (error) {
         showToast('โหลดข้อมูลไม่ได้: ' + friendlyError(error));
       } finally {
         setBusy(false, 'พร้อมแก้ไข');
+      }
+    }
+
+    async function loadSiteSettings() {
+      try {
+        const file = await gitFetch('contents/' + SITE_DATA_PATH + '?ref=' + BRANCH, { method: 'GET' });
+        siteDataSha = file.sha;
+        siteSettings = normalizeSiteSettings(JSON.parse(base64ToUtf8(file.content)));
+      } catch (error) {
+        siteDataSha = '';
+        siteSettings = normalizeSiteSettings({});
       }
     }
 
@@ -741,6 +915,61 @@
       renderList();
       renderEditor();
       filterProjects();
+    }
+
+    function setView(view) {
+      activeView = view;
+      const isHero = view === 'hero';
+      $('#projects-view').classList.toggle('is-hidden', isHero);
+      $('#hero-view').classList.toggle('is-hidden', !isHero);
+      $('#nav-projects').classList.toggle('active', !isHero);
+      $('#nav-hero').classList.toggle('active', isHero);
+      $('#side-add').classList.toggle('is-hidden', isHero);
+      $('#add-project').classList.toggle('is-hidden', isHero);
+      $('#page-title').textContent = isHero ? 'รูปสไลด์หน้าแรก' : 'ผลงานจัดสวน';
+      $('#page-subtitle').textContent = isHero
+        ? 'อัปโหลด เลือกจำนวนรูป และเรียงลำดับรูปที่เลื่อนบนหน้าแรก'
+        : 'เพิ่มรูป ใส่แบรนด์ รุ่น/ลาย รายละเอียด และเปิด/ปิดงานที่อยากโชว์บนเว็บ';
+      if (isHero) renderHeroSettings();
+    }
+
+    function renderHeroSettings() {
+      const slides = siteSettings.heroSlides || [];
+      const list = $('#hero-slide-list');
+      list.innerHTML = slides.map((slide, index) => `
+        <article class="hero-slide-editor" data-hero-slide="${index}">
+          <img src="${esc(slide.image)}" alt="รูปสไลด์หน้าแรก ${index + 1}" />
+          <div class="hero-slide-fields">
+            <div class="field">
+              <label>ป้ายเขียวบนรูป</label>
+              <input value="${esc(slide.label)}" data-hero-field="label" placeholder="เช่น ภาพงานจริง" />
+            </div>
+            <div class="field">
+              <label>ข้อความบนรูป</label>
+              <input value="${esc(slide.caption)}" data-hero-field="caption" placeholder="เช่น วัดพื้นที่ • ปรับระดับ • ส่งมอบ" />
+            </div>
+          </div>
+          <div class="hero-slide-actions">
+            <button class="plain-btn" type="button" data-hero-action="up" ${index === 0 ? 'disabled' : ''}>ขึ้น</button>
+            <button class="plain-btn" type="button" data-hero-action="down" ${index === slides.length - 1 ? 'disabled' : ''}>ลง</button>
+            <button class="danger-btn" type="button" data-hero-action="delete">ลบ</button>
+          </div>
+        </article>
+      `).join('') + '<button class="hero-add-card" type="button" id="hero-add-card">＋ เพิ่มรูปสไลด์</button>';
+      renderHeroAdminPreview();
+    }
+
+    function renderHeroAdminPreview() {
+      const slide = (siteSettings.heroSlides || [])[0];
+      const preview = $('#hero-admin-preview');
+      if (!slide) {
+        preview.innerHTML = '<div class="caption"><span>ยังไม่มีรูป</span>กดอัปโหลดรูปเพื่อเริ่มทำสไลด์หน้าแรก</div>';
+        return;
+      }
+      preview.innerHTML = `
+        <img src="${esc(slide.image)}" alt="พรีวิวรูปแรกบนหน้าเว็บ" />
+        <div class="caption"><span>${esc(slide.label || 'ภาพงานจริง')}</span>${esc(slide.caption || '')}</div>
+      `;
     }
 
     function renderMetrics() {
@@ -924,6 +1153,36 @@
       }
     }
 
+    async function publishHeroSettings() {
+      setBusy(true, 'กำลังเผยแพร่รูปสไลด์หน้าแรก...');
+      try {
+        const payload = {
+          heroSlides: (siteSettings.heroSlides || []).map((slide) => ({
+            image: slide.image,
+            label: slide.label,
+            caption: slide.caption
+          }))
+        };
+        const body = {
+          message: 'Update Siladon homepage hero slides',
+          content: utf8ToBase64(JSON.stringify(payload, null, 2) + '\n'),
+          branch: BRANCH
+        };
+        if (siteDataSha) body.sha = siteDataSha;
+        const result = await gitFetch('contents/' + SITE_DATA_PATH, {
+          method: 'PUT',
+          body: JSON.stringify(body)
+        });
+        siteDataSha = result.content.sha;
+        showToast('เผยแพร่รูปหน้าแรกแล้ว รอเว็บอัปเดตสักครู่');
+        setTimeout(() => window.open(SITE_URL + '/?v=' + Date.now(), '_blank'), 1200);
+      } catch (error) {
+        showToast('เผยแพร่รูปหน้าแรกไม่ได้: ' + friendlyError(error));
+      } finally {
+        setBusy(false, 'พร้อมแก้ไขรูปหน้าแรก');
+      }
+    }
+
     function friendlyError(error) {
       const text = String(error && error.message ? error.message : error);
       if (text.includes('401') || text.includes('JWT') || text.includes('token')) return 'สิทธิ์ล็อกอินหมดอายุ ลองออกเข้าใหม่';
@@ -940,9 +1199,19 @@
     $('#search').addEventListener('input', filterProjects);
     $('#status').addEventListener('change', filterProjects);
     $('#reload').addEventListener('click', loadProjects);
+    $('#nav-projects').addEventListener('click', () => setView('projects'));
+    $('#nav-hero').addEventListener('click', () => setView('hero'));
     $('#open-site').addEventListener('click', () => window.open(SITE_URL, '_blank'));
     $('#open-site-side').addEventListener('click', () => window.open(SITE_URL, '_blank'));
     $('#publish').addEventListener('click', publish);
+    $('#publish-hero').addEventListener('click', publishHeroSettings);
+    $('#upload-hero').addEventListener('click', () => $('#hero-upload').click());
+    $('#reset-hero').addEventListener('click', () => {
+      if (!confirm('กลับไปใช้ชุดรูปเริ่มต้นของหน้าแรกใช่ไหม?')) return;
+      siteSettings.heroSlides = DEFAULT_HERO_SLIDES.map((slide) => ({ ...slide }));
+      renderHeroSettings();
+      showToast('ใช้ชุดรูปเริ่มต้นแล้ว กดเผยแพร่เพื่ออัปเดตเว็บจริง');
+    });
     $('#add-project').addEventListener('click', addProject);
     $('#side-add').addEventListener('click', addProject);
     $('#delete-project').addEventListener('click', () => {
@@ -1000,6 +1269,66 @@
       } finally {
         $('#gallery-upload').value = '';
         setBusy(false, 'พร้อมแก้ไข');
+      }
+    });
+    $('#hero-slide-list').addEventListener('input', (event) => {
+      const field = event.target.dataset.heroField;
+      if (!field) return;
+      const row = event.target.closest('[data-hero-slide]');
+      const index = Number(row.dataset.heroSlide);
+      if (!siteSettings.heroSlides[index]) return;
+      siteSettings.heroSlides[index][field] = event.target.value.trim();
+      renderHeroAdminPreview();
+    });
+    $('#hero-slide-list').addEventListener('click', (event) => {
+      if (event.target.id === 'hero-add-card') {
+        $('#hero-upload').click();
+        return;
+      }
+      const action = event.target.dataset.heroAction;
+      if (!action) return;
+      const row = event.target.closest('[data-hero-slide]');
+      const index = Number(row.dataset.heroSlide);
+      const slides = siteSettings.heroSlides;
+      if (action === 'delete') {
+        if (slides.length <= 1) {
+          showToast('ต้องมีรูปหน้าแรกอย่างน้อย 1 รูป');
+          return;
+        }
+        slides.splice(index, 1);
+        renderHeroSettings();
+        showToast('ลบรูปสไลด์แล้ว กดเผยแพร่เพื่ออัปเดตเว็บจริง');
+        return;
+      }
+      if (action === 'up' && index > 0) {
+        [slides[index - 1], slides[index]] = [slides[index], slides[index - 1]];
+        renderHeroSettings();
+      }
+      if (action === 'down' && index < slides.length - 1) {
+        [slides[index], slides[index + 1]] = [slides[index + 1], slides[index]];
+        renderHeroSettings();
+      }
+    });
+    $('#hero-upload').addEventListener('change', async () => {
+      const files = Array.from($('#hero-upload').files || []);
+      if (!files.length) return;
+      setBusy(true, 'กำลังอัปโหลดรูปสไลด์หน้าแรก...');
+      try {
+        for (const file of files) {
+          if (!file.type.startsWith('image/')) continue;
+          siteSettings.heroSlides.push({
+            image: await uploadImage(file),
+            label: 'ภาพงานจริง',
+            caption: 'วัดพื้นที่ • ปรับระดับ • ติดตั้งและเก็บขอบ'
+          });
+        }
+        renderHeroSettings();
+        showToast('อัปโหลดรูปสไลด์แล้ว กดเผยแพร่เพื่ออัปเดตเว็บจริง');
+      } catch (error) {
+        showToast('อัปโหลดรูปไม่ได้: ' + friendlyError(error));
+      } finally {
+        $('#hero-upload').value = '';
+        setBusy(false, 'พร้อมแก้ไขรูปหน้าแรก');
       }
     });
     $('#tag-editor').addEventListener('click', (event) => {
