@@ -65,19 +65,12 @@
     }
     .hero-slide{
       position:absolute;inset:0;background-size:cover;background-position:center;
-      opacity:0;animation:heroFade 15s infinite
+      opacity:0;transition:opacity .65s ease
     }
+    .hero-slide.active{opacity:1}
     .hero-slide::after{
       content:"";position:absolute;inset:0;
       background:linear-gradient(to top,rgba(0,0,0,.46),rgba(0,0,0,.04) 58%,rgba(0,0,0,.08))
-    }
-    .hero-slide:nth-child(1){animation-delay:0s}
-    .hero-slide:nth-child(2){animation-delay:5s}
-    .hero-slide:nth-child(3){animation-delay:10s}
-    @keyframes heroFade{
-      0%,28%{opacity:1}
-      36%,92%{opacity:0}
-      100%{opacity:1}
     }
     .hero-card .tag{
       position:absolute;left:22px;bottom:22px;z-index:2;background:rgba(255,255,255,.93);
@@ -87,17 +80,10 @@
       display:block;color:var(--green);font-size:12px;margin-bottom:3px
     }
     .hero-dots{position:absolute;right:22px;bottom:28px;z-index:2;display:flex;gap:7px}
-    .hero-dots span{width:8px;height:8px;border-radius:999px;background:rgba(255,255,255,.72);animation:dotPulse 15s infinite}
-    .hero-dots span:nth-child(2){animation-delay:5s}
-    .hero-dots span:nth-child(3){animation-delay:10s}
-    @keyframes dotPulse{
-      0%,28%{transform:scale(1.35);background:#fff}
-      36%,92%{transform:scale(1);background:rgba(255,255,255,.72)}
-      100%{transform:scale(1.35);background:#fff}
-    }
+    .hero-dots span{width:8px;height:8px;border-radius:999px;background:rgba(255,255,255,.72);transition:.25s ease}
+    .hero-dots span.active{transform:scale(1.35);background:#fff}
     @media (prefers-reduced-motion: reduce){
-      .hero-slide,.hero-dots span{animation:none}
-      .hero-slide:first-child{opacity:1}
+      .hero-slide,.hero-dots span{transition:none}
     }
     .trust{
       margin-top:28px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:620px
@@ -327,12 +313,10 @@
             <div><b>6 เดือน</b>รับประกันงานติดตั้ง</div>
           </div>
         </div>
-        <div class="hero-card" aria-label="ภาพขั้นตอนงานติดตั้ง">
-          <div class="hero-slide" style="background-image:url('https://raw.githubusercontent.com/apichaforwork/siladon-landscape/main/images/uploads/1787387766589-gag6ph-779239046-1630246805778184-1908871125689229029-n.jpg')"></div>
-          <div class="hero-slide" style="background-image:url('https://raw.githubusercontent.com/apichaforwork/siladon-landscape/main/images/uploads/1787387768381-kw9jkm-779278284-1630246875778177-4761824388991942569-n.jpg')"></div>
-          <div class="hero-slide" style="background-image:url('https://raw.githubusercontent.com/apichaforwork/siladon-landscape/main/images/uploads/1787387751186-j8jjcn-780160796-1630246802444851-4701723938285776848-n.jpg')"></div>
-          <div class="tag"><span class="step-label">ภาพงานจริง</span>วัดพื้นที่ • ปรับระดับ • ติดตั้งและเก็บขอบ</div>
-          <div class="hero-dots" aria-hidden="true"><span></span><span></span><span></span></div>
+        <div class="hero-card" id="heroCard" aria-label="ภาพขั้นตอนงานติดตั้ง">
+          <div id="heroSlides"></div>
+          <div class="tag" id="heroTag"><span class="step-label">ภาพงานจริง</span><span id="heroCaption">วัดพื้นที่ • ปรับระดับ • ติดตั้งและเก็บขอบ</span></div>
+          <div class="hero-dots" id="heroDots" aria-hidden="true"></div>
         </div>
       </div>
     </section>
@@ -609,8 +593,28 @@ let projectData = [];
 let activeAlbumImages = [];
 let activeLightboxIndex = 0;
 let activePortfolioFilter = 'all';
+let heroTimer = null;
+let activeHeroSlide = 0;
 const RAW_UPLOAD_BASE = 'https://raw.githubusercontent.com/apichaforwork/siladon-landscape/main/';
 const PROJECT_DATA_URL = 'https://raw.githubusercontent.com/apichaforwork/siladon-landscape/main/data/projects.json';
+const SITE_DATA_URL = 'https://raw.githubusercontent.com/apichaforwork/siladon-landscape/main/data/site.json';
+const DEFAULT_HERO_SLIDES = [
+  {
+    image: 'https://raw.githubusercontent.com/apichaforwork/siladon-landscape/main/images/uploads/1787387766589-gag6ph-779239046-1630246805778184-1908871125689229029-n.jpg',
+    label: 'ภาพงานจริง',
+    caption: 'วัดพื้นที่ • ปรับระดับ • ติดตั้งและเก็บขอบ'
+  },
+  {
+    image: 'https://raw.githubusercontent.com/apichaforwork/siladon-landscape/main/images/uploads/1787387768381-kw9jkm-779278284-1630246875778177-4761824388991942569-n.jpg',
+    label: 'ภาพงานจริง',
+    caption: 'จัดแนวทางเดิน • เช็กระดับ • เก็บรายละเอียด'
+  },
+  {
+    image: 'https://raw.githubusercontent.com/apichaforwork/siladon-landscape/main/images/uploads/1787387751186-j8jjcn-780160796-1630246802444851-4701723938285776848-n.jpg',
+    label: 'ภาพงานจริง',
+    caption: 'ส่งมอบพื้นที่เรียบร้อยพร้อมใช้งาน'
+  }
+];
 const LINE_MESSAGE_TEMPLATE = `สวัสดีค่ะ สนใจขอประเมินงาน
 
 พื้นที่ประมาณ:
@@ -638,6 +642,62 @@ function imageUrl(src=''){
 
 function lineMessageUrl(message){
   return 'https://line.me/R/oaMessage/@siladon/?' + encodeURIComponent(message);
+}
+
+function normalizeHeroSlides(slides){
+  const cleanSlides = (Array.isArray(slides) ? slides : []).map((slide)=>{
+    if(typeof slide === 'string') return { image: imageUrl(slide), label: 'ภาพงานจริง', caption: '' };
+    return {
+      image: imageUrl(slide.image || slide.src || ''),
+      label: slide.label || 'ภาพงานจริง',
+      caption: slide.caption || ''
+    };
+  }).filter(slide => slide.image);
+  return cleanSlides.length ? cleanSlides : DEFAULT_HERO_SLIDES;
+}
+
+function showHeroSlide(index){
+  const slides = Array.from(document.querySelectorAll('.hero-slide'));
+  if(!slides.length) return;
+  const dots = Array.from(document.querySelectorAll('#heroDots span'));
+  activeHeroSlide = (index + slides.length) % slides.length;
+  slides.forEach((slide, i)=>slide.classList.toggle('active', i === activeHeroSlide));
+  dots.forEach((dot, i)=>dot.classList.toggle('active', i === activeHeroSlide));
+  const activeSlide = slides[activeHeroSlide];
+  const label = activeSlide.dataset.label || 'ภาพงานจริง';
+  const caption = activeSlide.dataset.caption || '';
+  const labelEl = document.querySelector('#heroTag .step-label');
+  const captionEl = document.getElementById('heroCaption');
+  if(labelEl) labelEl.textContent = label;
+  if(captionEl) captionEl.textContent = caption;
+}
+
+function renderHeroSlides(slides){
+  const finalSlides = normalizeHeroSlides(slides);
+  const slidesEl = document.getElementById('heroSlides');
+  const dotsEl = document.getElementById('heroDots');
+  if(!slidesEl || !dotsEl) return;
+  slidesEl.innerHTML = finalSlides.map((slide, index)=>`
+    <div class="hero-slide ${index === 0 ? 'active' : ''}" data-label="${esc(slide.label)}" data-caption="${esc(slide.caption)}" style="background-image:url('${esc(imageUrl(slide.image))}')"></div>
+  `).join('');
+  dotsEl.innerHTML = finalSlides.map((_, index)=>`<span class="${index === 0 ? 'active' : ''}"></span>`).join('');
+  clearInterval(heroTimer);
+  showHeroSlide(0);
+  if(finalSlides.length > 1 && !window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    heroTimer = setInterval(()=>showHeroSlide(activeHeroSlide + 1), 5000);
+  }
+}
+
+async function loadSiteSettings(){
+  renderHeroSlides(DEFAULT_HERO_SLIDES);
+  try{
+    const res = await fetch(SITE_DATA_URL + '?ts=' + Date.now());
+    if(!res.ok) throw new Error('site settings not found');
+    const data = await res.json();
+    renderHeroSlides(data.heroSlides || []);
+  }catch(e){
+    renderHeroSlides(DEFAULT_HERO_SLIDES);
+  }
 }
 
 async function loadProjects(){
@@ -913,6 +973,7 @@ function syncCalculatorMode(){
 document.addEventListener('DOMContentLoaded', ()=>{
   syncCalculatorMode();
   estimate();
+  loadSiteSettings();
   loadProjects();
   ['prepareLine','contactLine','mobileLine'].forEach(id=>{
     const el = document.getElementById(id);
