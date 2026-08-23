@@ -801,9 +801,21 @@ function estimate(){
   }else if(workType === 'artificialLawn'){
     subtotal += area * 850;
   }else if(workType === 'voidOnly'){
-    const meters = Math.max(area || 0, 30);
-    subtotal += meters * 850;
-    if(area < 30) selectedExtras.push('ขั้นต่ำปิดโพรง 30 เมตร');
+    if(area < 30){
+      const budgetText = 'กรุณาสอบถามอัตราค่าบริการโดยตรงกับทางร้าน';
+      document.getElementById('budget').textContent = budgetText;
+      renderCalcSummary({
+        amountLabel: 'ความยาว',
+        area: `${fmt(area)} เมตร`,
+        workType: labels[workType],
+        distance: 'ไม่คิดตามระยะทาง',
+        material: materialLabel,
+        extras: 'ความยาวต่ำกว่า 30 เมตร'
+      });
+      updateLineEstimate(labels[workType], area, materialLabel, 'ไม่คิดตามระยะทาง', ['ความยาวต่ำกว่า 30 เมตร'], budgetText, 'เมตร');
+      return;
+    }
+    subtotal += area * 850;
   }else{
     const dist = distanceRates[distance] || distanceRates['0'];
     if(dist.small === null){
