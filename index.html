@@ -160,6 +160,7 @@
     .check-row{display:grid;grid-template-columns:auto 1fr 120px;gap:10px;align-items:center;padding:11px;border:1px solid #e3e3e3;border-radius:14px;background:#fff}
     .check-row input[type="checkbox"]{width:auto}
     .check-row input[type="number"]{padding:10px 11px}
+    .is-hidden{display:none!important}
     .calc-detail{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
     .calc-detail div{background:rgba(255,255,255,.72);border-radius:12px;padding:10px;font-size:13px;color:#555}
     .calc-detail b{display:block;color:#111;font-size:14px;margin-top:2px}
@@ -409,11 +410,11 @@
           <div class="calc-card" id="estimate">
             <h3 style="font-size:25px;margin-top:0">ประเมินงบเบื้องต้น</h3>
             <div class="form-grid">
-              <div>
-                <label>ขนาดพื้นที่โดยประมาณ (ตร.ม.)</label>
+              <div id="primaryAmountField">
+                <label id="areaLabel">ขนาดพื้นที่โดยประมาณ (ตร.ม.)</label>
                 <input id="area" type="number" value="50" min="1" />
               </div>
-              <div>
+              <div id="distanceField">
                 <label>ระยะทางจากร้านโดยประมาณ</label>
                 <select id="distance">
                   <option value="0">0–20 กม.</option>
@@ -433,6 +434,7 @@
               <option value="artificialLawn">ปูหญ้าเทียม</option>
               <option value="voidOnly">ปิดโพรงอย่างเดียว</option>
             </select>
+            <div id="paverField">
             <label>รุ่นแผ่นทางเดิน</label>
             <select id="paverRate">
               <option value="1250">P Stone / Gods Stone — 1,250 บาท/ตร.ม.</option>
@@ -440,12 +442,13 @@
               <option value="1450">Superior / SCG ลอนดอนหรือปารีส — 1,450 บาท/ตร.ม.</option>
               <option value="1700">SCG รุ่นอื่น ๆ — 1,700 บาท/ตร.ม.</option>
             </select>
+            </div>
             <label>งานเพิ่มเติม</label>
             <div class="extra-box">
-              <label class="check-row"><input id="extraConcrete" type="checkbox"> <span>ปูบนพื้นปูน / โรงจอดรถ เพิ่ม 550 บาท/ตร.ม.</span></label>
-              <label class="check-row"><input id="extraVoid" type="checkbox"> <span>ปิดโพรงร่วมกับงานปู 850 บาท/เมตร</span><input id="voidLength" type="number" value="10" min="0" aria-label="ความยาวปิดโพรง"></label>
-              <label class="check-row"><input id="extraGravel" type="checkbox"> <span>ปรับระดับหินเกล็ด 10 บาท/ซม./ตร.ม.</span><input id="gravelCm" type="number" value="5" min="0" aria-label="ความหนาหินเกล็ด"></label>
-              <label class="check-row"><input id="extraCement" type="checkbox"> <span>ปรับระดับปูน 100 บาท/ซม./ตร.ม.</span><input id="cementCm" type="number" value="3" min="0" aria-label="ความหนาปูน"></label>
+              <label class="check-row" id="extraConcreteRow"><input id="extraConcrete" type="checkbox"> <span>ปูบนพื้นปูน / โรงจอดรถ เพิ่ม 550 บาท/ตร.ม.</span></label>
+              <label class="check-row" id="extraVoidRow"><input id="extraVoid" type="checkbox"> <span>ปิดโพรงร่วมกับงานปู 850 บาท/เมตร</span><input id="voidLength" type="number" value="10" min="0" aria-label="ความยาวปิดโพรง"></label>
+              <label class="check-row" id="extraGravelRow"><input id="extraGravel" type="checkbox"> <span>ปรับระดับหินเกล็ด 10 บาท/ซม./ตร.ม.</span><input id="gravelCm" type="number" value="5" min="0" aria-label="ความหนาหินเกล็ด"></label>
+              <label class="check-row" id="extraCementRow"><input id="extraCement" type="checkbox"> <span>ปรับระดับปูน 100 บาท/ซม./ตร.ม.</span><input id="cementCm" type="number" value="3" min="0" aria-label="ความหนาปูน"></label>
             </div>
             <button class="cta" style="margin-top:18px;width:100%" onclick="estimate()">คำนวณงบ</button>
             <div class="result">
@@ -798,9 +801,9 @@ function estimate(){
   }else if(workType === 'artificialLawn'){
     subtotal += area * 850;
   }else if(workType === 'voidOnly'){
-    const meters = Math.max(voidLength || 0, 30);
+    const meters = Math.max(area || 0, 30);
     subtotal += meters * 850;
-    selectedExtras.push(`ขั้นต่ำปิดโพรง ${fmt(meters)} เมตร`);
+    if(area < 30) selectedExtras.push('ขั้นต่ำปิดโพรง 30 เมตร');
   }else{
     const dist = distanceRates[distance] || distanceRates['0'];
     if(dist.small === null){
@@ -841,18 +844,19 @@ function estimate(){
   const budgetText = fmt(low)+'–'+fmt(high)+' บาท';
   document.getElementById('budget').textContent = budgetText;
   renderCalcSummary({
-    area: `${fmt(area)} ตร.ม.`,
+    amountLabel: workType === 'voidOnly' ? 'ความยาว' : 'พื้นที่',
+    area: workType === 'voidOnly' ? `${fmt(area)} เมตร` : `${fmt(area)} ตร.ม.`,
     workType: labels[workType],
-    distance: (distanceRates[distance] || distanceRates['0']).label,
+    distance: workType === 'voidOnly' ? 'ไม่คิดตามระยะทาง' : (distanceRates[distance] || distanceRates['0']).label,
     material: materialLabel,
     extras: selectedExtras.length ? selectedExtras.join(', ') : 'ไม่มี'
   });
-  updateLineEstimate(labels[workType], area, materialLabel, (distanceRates[distance] || distanceRates['0']).label, selectedExtras, budgetText);
+  updateLineEstimate(labels[workType], area, materialLabel, workType === 'voidOnly' ? 'ไม่คิดตามระยะทาง' : (distanceRates[distance] || distanceRates['0']).label, selectedExtras, budgetText, workType === 'voidOnly' ? 'เมตร' : 'ตร.ม.');
 }
 
 function renderCalcSummary(summary){
   document.getElementById('calcDetail').innerHTML = `
-    <div>พื้นที่<b>${esc(summary.area)}</b></div>
+    <div>${esc(summary.amountLabel || 'พื้นที่')}<b>${esc(summary.area)}</b></div>
     <div>ประเภทงาน<b>${esc(summary.workType)}</b></div>
     <div>ระยะทาง<b>${esc(summary.distance)}</b></div>
     <div>วัสดุ<b>${esc(summary.material)}</b></div>
@@ -860,10 +864,10 @@ function renderCalcSummary(summary){
   `;
 }
 
-function updateLineEstimate(workType, area, material, distance, extras, budgetText){
+function updateLineEstimate(workType, area, material, distance, extras, budgetText, unit='ตร.ม.'){
   const message = `สวัสดีค่ะ สนใจประเมินงาน Siladon Landscape
 
-พื้นที่ประมาณ: ${area || '-'} ตร.ม.
+พื้นที่/ความยาวประมาณ: ${area || '-'} ${unit}
 ประเภทงาน: ${workType}
 รุ่น/วัสดุ: ${material}
 ระยะทางโดยประมาณ: ${distance}
@@ -878,14 +882,38 @@ Location:
   document.getElementById('lineEstimate').href = lineMessageUrl(message);
 }
 
+function syncCalculatorMode(){
+  const workType = document.getElementById('workType').value;
+  const isVoidOnly = workType === 'voidOnly';
+  document.getElementById('areaLabel').textContent = isVoidOnly
+    ? 'ความยาวปิดโพรงโดยประมาณ (เมตร)'
+    : 'ขนาดพื้นที่โดยประมาณ (ตร.ม.)';
+  document.getElementById('distanceField').classList.toggle('is-hidden', isVoidOnly);
+  document.getElementById('paverField').classList.toggle('is-hidden', !['paving','pavingStone'].includes(workType));
+  ['extraConcrete','extraVoid','extraGravel','extraCement'].forEach(id=>{
+    if(isVoidOnly) document.getElementById(id).checked = false;
+  });
+  ['extraConcreteRow','extraVoidRow','extraGravelRow','extraCementRow'].forEach(id=>{
+    document.getElementById(id).classList.toggle('is-hidden', isVoidOnly);
+  });
+}
+
 document.addEventListener('DOMContentLoaded', ()=>{
+  syncCalculatorMode();
   estimate();
   loadProjects();
   ['prepareLine','contactLine','mobileLine'].forEach(id=>{
     const el = document.getElementById(id);
     if(el) el.href = lineMessageUrl(LINE_MESSAGE_TEMPLATE);
   });
-  document.querySelectorAll('#estimate input,#estimate select').forEach(el=>el.addEventListener('input', estimate));
+  document.querySelectorAll('#estimate input,#estimate select').forEach(el=>el.addEventListener('input', ()=>{
+    syncCalculatorMode();
+    estimate();
+  }));
+  document.getElementById('workType').addEventListener('change', ()=>{
+    syncCalculatorMode();
+    estimate();
+  });
   document.querySelectorAll('#areaFilters .area-card').forEach(button=>{
     button.addEventListener('click', ()=>{
       activePortfolioFilter = button.dataset.filter || 'all';
