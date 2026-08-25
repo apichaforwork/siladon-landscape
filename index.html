@@ -490,21 +490,8 @@
           <h2>คำถามที่พบบ่อย</h2>
           <p>รวมคำถามที่ลูกค้าสอบถามบ่อย เพื่อช่วยให้คุณประเมินและเตรียมข้อมูลเบื้องต้นก่อนติดต่อทีมงาน</p>
         </div>
-        <div class="faq-list">
-          <details class="faq-item"><summary>งานปูมีขั้นต่ำเท่าไหร่?</summary><p>รับงานขั้นต่ำ 30 ตร.ม. หากพื้นที่น้อยกว่า 30 ตร.ม. ให้คิดราคาเหมาที่ขั้นต่ำ 30 ตร.ม.</p></details>
-          <details class="faq-item"><summary>สามารถประเมินราคาก่อนเข้าสำรวจได้ไหม?</summary><p>ได้ โดยส่งรูปพื้นที่ ขนาดพื้นที่โดยประมาณ Google Maps และรายละเอียดงานที่ต้องการ เพื่อให้ทีมงานประเมินงบเบื้องต้น</p></details>
-          <details class="faq-item"><summary>มีค่าเข้าสำรวจหรือไม่?</summary><p>มีค่าบริการสำรวจ 2,500 บาท</p></details>
-          <details class="faq-item"><summary>ค่าสำรวจ 2,500 บาทหักจากค่างานได้ไหม?</summary><p>ได้ หากลูกค้าดำเนินงานติดตั้งกับร้าน สามารถนำค่าสำรวจ 2,500 บาทไปหักจากยอดค่างานได้</p></details>
-          <details class="faq-item"><summary>หลังเข้าสำรวจจะได้รับอะไร?</summary><p>ทีมงานตรวจสภาพพื้นที่ วัดขนาดหน้างาน และจัดทำแบบ 2D เพื่อใช้ประกอบการเสนอราคา</p></details>
-          <details class="faq-item"><summary>จำเป็นต้องเข้าสำรวจทุกงานไหม?</summary><p>ไม่จำเป็นต้องสำรวจตั้งแต่ขั้นแรก ลูกค้าสามารถส่งข้อมูลเพื่อประเมินงบเบื้องต้นก่อนได้ หากต้องการดำเนินงานจริงจึงนัดสำรวจตามความเหมาะสมของงาน</p></details>
-          <details class="faq-item"><summary>ลูกค้าเลือกวัสดุเองได้ไหม?</summary><p>ได้ สามารถเลือกแผ่นทางเดิน หิน และวัสดุตกแต่งจากสินค้าของร้าน หรือส่ง Reference เพื่อให้ทีมงานช่วยแนะนำได้</p></details>
-          <details class="faq-item"><summary>มีบริการขายและจัดส่งวัสดุอย่างเดียวไหม?</summary><p>มีบริการจำหน่ายและจัดส่งวัสดุ โดยไม่จำเป็นต้องใช้บริการติดตั้ง</p></details>
-          <details class="faq-item"><summary>ค่าขนส่งคิดอย่างไร?</summary><p>ขึ้นอยู่กับระยะทาง ประเภทสินค้า ปริมาณสินค้า และประเภทรถที่ใช้จัดส่ง</p></details>
-          <details class="faq-item"><summary>ใช้เวลาติดตั้งกี่วัน?</summary><p>ขึ้นอยู่กับขนาดพื้นที่ สภาพหน้างาน และประเภทงาน โดยทีมงานจะแจ้งระยะเวลาโดยประมาณก่อนเริ่มงาน</p></details>
-          <details class="faq-item"><summary>ฝนตกสามารถติดตั้งได้ไหม?</summary><p>ขึ้นอยู่กับสภาพหน้างานและขั้นตอนการติดตั้ง บางขั้นตอนอาจต้องเลื่อนเพื่อให้ได้คุณภาพงานที่เหมาะสม</p></details>
-          <details class="faq-item"><summary>มีรับประกันงานติดตั้งไหม?</summary><p>รับประกันงานติดตั้ง 6 เดือน ตามเงื่อนไขของบริษัท</p></details>
-          <details class="faq-item"><summary>ชำระเงินอย่างไร?</summary><p>มัดจำ 60% ก่อนเริ่มดำเนินงาน และชำระส่วนที่เหลือ 40% หลังติดตั้งและส่งมอบงาน</p></details>
-          <details class="faq-item"><summary>ราคาจากเครื่องคำนวณบนเว็บไซต์เป็นราคาสุดท้ายหรือไม่?</summary><p>ไม่ใช่ เป็นเพียงการประเมินเบื้องต้น ราคาจริงขึ้นอยู่กับวัสดุ สภาพพื้นที่ ระยะทาง และรายละเอียดหน้างานจริง</p></details>
+        <div class="faq-list" id="faqList">
+          <div style="padding:18px;text-align:center;color:#777">กำลังโหลดคำถาม...</div>
         </div>
       </div>
     </section>
@@ -615,6 +602,22 @@ const DEFAULT_HERO_SLIDES = [
     caption: 'ส่งมอบพื้นที่เรียบร้อยพร้อมใช้งาน'
   }
 ];
+const DEFAULT_FAQS = [
+  { question: 'งานปูมีขั้นต่ำเท่าไหร่?', answer: 'รับงานขั้นต่ำ 30 ตร.ม. หากพื้นที่น้อยกว่า 30 ตร.ม. ให้คิดราคาเหมาที่ขั้นต่ำ 30 ตร.ม.', visible: true },
+  { question: 'สามารถประเมินราคาก่อนเข้าสำรวจได้ไหม?', answer: 'ได้ โดยส่งรูปพื้นที่ ขนาดพื้นที่โดยประมาณ Google Maps และรายละเอียดงานที่ต้องการ เพื่อให้ทีมงานประเมินงบเบื้องต้น', visible: true },
+  { question: 'มีค่าเข้าสำรวจหรือไม่?', answer: 'มีค่าบริการสำรวจ 2,500 บาท', visible: true },
+  { question: 'ค่าสำรวจ 2,500 บาทหักจากค่างานได้ไหม?', answer: 'ได้ หากลูกค้าดำเนินงานติดตั้งกับร้าน สามารถนำค่าสำรวจ 2,500 บาทไปหักจากยอดค่างานได้', visible: true },
+  { question: 'หลังเข้าสำรวจจะได้รับอะไร?', answer: 'ทีมงานตรวจสภาพพื้นที่ วัดขนาดหน้างาน และจัดทำแบบ 2D เพื่อใช้ประกอบการเสนอราคา', visible: true },
+  { question: 'จำเป็นต้องเข้าสำรวจทุกงานไหม?', answer: 'ไม่จำเป็นต้องสำรวจตั้งแต่ขั้นแรก ลูกค้าสามารถส่งข้อมูลเพื่อประเมินงบเบื้องต้นก่อนได้ หากต้องการดำเนินงานจริงจึงนัดสำรวจตามความเหมาะสมของงาน', visible: true },
+  { question: 'ลูกค้าเลือกวัสดุเองได้ไหม?', answer: 'ได้ สามารถเลือกแผ่นทางเดิน หิน และวัสดุตกแต่งจากสินค้าของร้าน หรือส่ง Reference เพื่อให้ทีมงานช่วยแนะนำได้', visible: true },
+  { question: 'มีบริการขายและจัดส่งวัสดุอย่างเดียวไหม?', answer: 'มีบริการจำหน่ายและจัดส่งวัสดุ โดยไม่จำเป็นต้องใช้บริการติดตั้ง', visible: true },
+  { question: 'ค่าขนส่งคิดอย่างไร?', answer: 'ขึ้นอยู่กับระยะทาง ประเภทสินค้า ปริมาณสินค้า และประเภทรถที่ใช้จัดส่ง', visible: true },
+  { question: 'ใช้เวลาติดตั้งกี่วัน?', answer: 'ขึ้นอยู่กับขนาดพื้นที่ สภาพหน้างาน และประเภทงาน โดยทีมงานจะแจ้งระยะเวลาโดยประมาณก่อนเริ่มงาน', visible: true },
+  { question: 'ฝนตกสามารถติดตั้งได้ไหม?', answer: 'ขึ้นอยู่กับสภาพหน้างานและขั้นตอนการติดตั้ง บางขั้นตอนอาจต้องเลื่อนเพื่อให้ได้คุณภาพงานที่เหมาะสม', visible: true },
+  { question: 'มีรับประกันงานติดตั้งไหม?', answer: 'รับประกันงานติดตั้ง 6 เดือน ตามเงื่อนไขของบริษัท', visible: true },
+  { question: 'ชำระเงินอย่างไร?', answer: 'มัดจำ 60% ก่อนเริ่มดำเนินงาน และชำระส่วนที่เหลือ 40% หลังติดตั้งและส่งมอบงาน', visible: true },
+  { question: 'ราคาจากเครื่องคำนวณบนเว็บไซต์เป็นราคาสุดท้ายหรือไม่?', answer: 'ไม่ใช่ เป็นเพียงการประเมินเบื้องต้น ราคาจริงขึ้นอยู่กับวัสดุ สภาพพื้นที่ ระยะทาง และรายละเอียดหน้างานจริง', visible: true }
+];
 const LINE_MESSAGE_TEMPLATE = `สวัสดีค่ะ สนใจขอประเมินงาน
 
 พื้นที่ประมาณ:
@@ -688,15 +691,46 @@ function renderHeroSlides(slides){
   }
 }
 
+function normalizeFaqs(faqs){
+  const cleanFaqs = (Array.isArray(faqs) ? faqs : []).map((faq)=>{
+    if(typeof faq === 'string') return { question: faq, answer: '', visible: true };
+    return {
+      question: faq.question || faq.title || '',
+      answer: faq.answer || faq.content || '',
+      visible: faq.visible !== false
+    };
+  }).filter(faq => faq.question && faq.answer);
+  return cleanFaqs.length ? cleanFaqs : DEFAULT_FAQS;
+}
+
+function renderFaqs(faqs){
+  const list = document.getElementById('faqList');
+  if(!list) return;
+  const visibleFaqs = normalizeFaqs(faqs).filter(faq => faq.visible !== false);
+  if(!visibleFaqs.length){
+    list.innerHTML = '<div style="padding:18px;text-align:center;color:#777">ยังไม่มีคำถามที่เปิดแสดง</div>';
+    return;
+  }
+  list.innerHTML = visibleFaqs.map((faq)=>`
+    <details class="faq-item">
+      <summary>${esc(faq.question)}</summary>
+      <p>${esc(faq.answer)}</p>
+    </details>
+  `).join('');
+}
+
 async function loadSiteSettings(){
   renderHeroSlides(DEFAULT_HERO_SLIDES);
+  renderFaqs(DEFAULT_FAQS);
   try{
     const res = await fetch(SITE_DATA_URL + '?ts=' + Date.now());
     if(!res.ok) throw new Error('site settings not found');
     const data = await res.json();
     renderHeroSlides(data.heroSlides || []);
+    renderFaqs(data.faqs || []);
   }catch(e){
     renderHeroSlides(DEFAULT_HERO_SLIDES);
+    renderFaqs(DEFAULT_FAQS);
   }
 }
 
