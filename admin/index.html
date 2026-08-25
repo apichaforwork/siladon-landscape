@@ -501,6 +501,54 @@
       color: var(--green);
       font-size: 12px;
     }
+    .faq-editor-list {
+      padding: 18px;
+      display: grid;
+      gap: 14px;
+    }
+    .faq-editor {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcf9;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 14px;
+      align-items: start;
+    }
+    .faq-fields {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+    .faq-actions {
+      display: grid;
+      gap: 8px;
+      min-width: 96px;
+    }
+    .faq-add-card {
+      min-height: 86px;
+      border: 1px dashed #9caf9f;
+      border-radius: 8px;
+      color: var(--green);
+      background: #fbfcf9;
+      font-weight: 800;
+      font-size: 18px;
+    }
+    .faq-preview-list {
+      margin: 18px;
+      display: grid;
+      gap: 10px;
+    }
+    .faq-preview-item {
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+    .faq-preview-item strong { display: block; font-size: 15px; }
+    .faq-preview-item p { margin: 8px 0 0; color: var(--muted); font-size: 13px; line-height: 1.55; }
+    .faq-preview-item.is-hidden-on-site { opacity: .55; background: #f8f7f1; }
     .toast {
       position: fixed;
       right: 22px;
@@ -544,6 +592,8 @@
       .hero-slide-editor img { width: 100%; height: auto; aspect-ratio: 16 / 10; }
       .hero-slide-fields { grid-template-columns: 1fr; }
       .hero-slide-actions { grid-template-columns: repeat(3, 1fr); }
+      .faq-editor { grid-template-columns: 1fr; }
+      .faq-actions { grid-template-columns: repeat(4, 1fr); }
     }
   </style>
 </head>
@@ -577,6 +627,7 @@
       <nav class="nav" aria-label="เมนูหลังบ้าน">
         <button class="active" type="button" id="nav-projects">▦ ผลงานจัดสวน</button>
         <button type="button" id="nav-hero">▣ รูปสไลด์หน้าแรก</button>
+        <button type="button" id="nav-faq">? คำถามที่พบบ่อย</button>
         <button type="button" id="side-add">＋ เพิ่มงานใหม่</button>
         <button type="button" id="open-site-side">◉ ดูหน้าเว็บ</button>
         <button type="button" id="logout">↺ ออกจากระบบ</button>
@@ -746,6 +797,34 @@
           <div class="hero-admin-preview" id="hero-admin-preview"></div>
         </section>
       </section>
+
+      <section class="content single is-hidden" id="faq-view">
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <h2>คำถามที่พบบ่อย</h2>
+              <p>เพิ่ม ลบ เรียงลำดับ และเปิด/ปิดคำถามที่ต้องการให้แสดงหน้าเว็บ</p>
+            </div>
+            <button class="plain-btn" type="button" id="add-faq">＋ เพิ่มคำถาม</button>
+          </div>
+          <div class="faq-editor-list" id="faq-editor-list"></div>
+          <div class="bottom-actions">
+            <button class="plain-btn" type="button" id="reset-faq">ใช้ชุดคำถามเริ่มต้น</button>
+            <div class="status-line" id="faq-status-line">พร้อมแก้ไขคำถาม</div>
+            <button class="primary-btn" type="button" id="publish-faq">เผยแพร่ FAQ</button>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <h2>พรีวิว FAQ บนหน้าเว็บ</h2>
+              <p>รายการที่ปิดไว้จะไม่แสดงให้ลูกค้าเห็น</p>
+            </div>
+          </div>
+          <div class="faq-preview-list" id="faq-admin-preview"></div>
+        </section>
+      </section>
     </main>
   </div>
 
@@ -778,6 +857,22 @@
         caption: 'ส่งมอบพื้นที่เรียบร้อยพร้อมใช้งาน'
       }
     ];
+    const DEFAULT_FAQS = [
+      { question: 'งานปูมีขั้นต่ำเท่าไหร่?', answer: 'รับงานขั้นต่ำ 30 ตร.ม. หากพื้นที่น้อยกว่า 30 ตร.ม. ให้คิดราคาเหมาที่ขั้นต่ำ 30 ตร.ม.', visible: true },
+      { question: 'สามารถประเมินราคาก่อนเข้าสำรวจได้ไหม?', answer: 'ได้ โดยส่งรูปพื้นที่ ขนาดพื้นที่โดยประมาณ Google Maps และรายละเอียดงานที่ต้องการ เพื่อให้ทีมงานประเมินงบเบื้องต้น', visible: true },
+      { question: 'มีค่าเข้าสำรวจหรือไม่?', answer: 'มีค่าบริการสำรวจ 2,500 บาท', visible: true },
+      { question: 'ค่าสำรวจ 2,500 บาทหักจากค่างานได้ไหม?', answer: 'ได้ หากลูกค้าดำเนินงานติดตั้งกับร้าน สามารถนำค่าสำรวจ 2,500 บาทไปหักจากยอดค่างานได้', visible: true },
+      { question: 'หลังเข้าสำรวจจะได้รับอะไร?', answer: 'ทีมงานตรวจสภาพพื้นที่ วัดขนาดหน้างาน และจัดทำแบบ 2D เพื่อใช้ประกอบการเสนอราคา', visible: true },
+      { question: 'จำเป็นต้องเข้าสำรวจทุกงานไหม?', answer: 'ไม่จำเป็นต้องสำรวจตั้งแต่ขั้นแรก ลูกค้าสามารถส่งข้อมูลเพื่อประเมินงบเบื้องต้นก่อนได้ หากต้องการดำเนินงานจริงจึงนัดสำรวจตามความเหมาะสมของงาน', visible: true },
+      { question: 'ลูกค้าเลือกวัสดุเองได้ไหม?', answer: 'ได้ สามารถเลือกแผ่นทางเดิน หิน และวัสดุตกแต่งจากสินค้าของร้าน หรือส่ง Reference เพื่อให้ทีมงานช่วยแนะนำได้', visible: true },
+      { question: 'มีบริการขายและจัดส่งวัสดุอย่างเดียวไหม?', answer: 'มีบริการจำหน่ายและจัดส่งวัสดุ โดยไม่จำเป็นต้องใช้บริการติดตั้ง', visible: true },
+      { question: 'ค่าขนส่งคิดอย่างไร?', answer: 'ขึ้นอยู่กับระยะทาง ประเภทสินค้า ปริมาณสินค้า และประเภทรถที่ใช้จัดส่ง', visible: true },
+      { question: 'ใช้เวลาติดตั้งกี่วัน?', answer: 'ขึ้นอยู่กับขนาดพื้นที่ สภาพหน้างาน และประเภทงาน โดยทีมงานจะแจ้งระยะเวลาโดยประมาณก่อนเริ่มงาน', visible: true },
+      { question: 'ฝนตกสามารถติดตั้งได้ไหม?', answer: 'ขึ้นอยู่กับสภาพหน้างานและขั้นตอนการติดตั้ง บางขั้นตอนอาจต้องเลื่อนเพื่อให้ได้คุณภาพงานที่เหมาะสม', visible: true },
+      { question: 'มีรับประกันงานติดตั้งไหม?', answer: 'รับประกันงานติดตั้ง 6 เดือน ตามเงื่อนไขของบริษัท', visible: true },
+      { question: 'ชำระเงินอย่างไร?', answer: 'มัดจำ 60% ก่อนเริ่มดำเนินงาน และชำระส่วนที่เหลือ 40% หลังติดตั้งและส่งมอบงาน', visible: true },
+      { question: 'ราคาจากเครื่องคำนวณบนเว็บไซต์เป็นราคาสุดท้ายหรือไม่?', answer: 'ไม่ใช่ เป็นเพียงการประเมินเบื้องต้น ราคาจริงขึ้นอยู่กับวัสดุ สภาพพื้นที่ ระยะทาง และรายละเอียดหน้างานจริง', visible: true }
+    ];
 
     const $ = (selector) => document.querySelector(selector);
     const fields = {
@@ -793,7 +888,10 @@
     let user = null;
     let authMode = 'netlify';
     let projects = [];
-    let siteSettings = { heroSlides: DEFAULT_HERO_SLIDES.map((slide) => ({ ...slide })) };
+    let siteSettings = {
+      heroSlides: DEFAULT_HERO_SLIDES.map((slide) => ({ ...slide })),
+      faqs: DEFAULT_FAQS.map((faq) => ({ ...faq }))
+    };
     let dataSha = '';
     let siteDataSha = '';
     let activeProject = 0;
@@ -813,6 +911,7 @@
       document.querySelectorAll('button').forEach((button) => button.disabled = isBusy);
       $('#status-line').textContent = message || (isBusy ? 'กำลังทำงาน...' : 'พร้อมแก้ไข');
       $('#hero-status-line').textContent = message || (isBusy ? 'กำลังทำงาน...' : 'พร้อมแก้ไขรูปหน้าแรก');
+      $('#faq-status-line').textContent = message || (isBusy ? 'กำลังทำงาน...' : 'พร้อมแก้ไขคำถาม');
       $('#save-state').textContent = isBusy ? 'กำลังบันทึก' : 'พร้อม';
       $('#save-detail').textContent = message || 'พร้อมใช้งาน';
     }
@@ -890,12 +989,27 @@
       };
     }
 
+    function normalizeFaq(faq = {}) {
+      if (typeof faq === 'string') {
+        return { question: faq, answer: '', visible: true };
+      }
+      return {
+        question: faq.question || faq.title || '',
+        answer: faq.answer || faq.content || '',
+        visible: faq.visible !== false
+      };
+    }
+
     function normalizeSiteSettings(data = {}) {
       const slides = Array.isArray(data.heroSlides)
         ? data.heroSlides.map(normalizeHeroSlide).filter((slide) => slide.image)
         : [];
+      const faqs = Array.isArray(data.faqs)
+        ? data.faqs.map(normalizeFaq).filter((faq) => faq.question || faq.answer)
+        : [];
       return {
-        heroSlides: slides.length ? slides : DEFAULT_HERO_SLIDES.map((slide) => ({ ...slide }))
+        heroSlides: slides.length ? slides : DEFAULT_HERO_SLIDES.map((slide) => ({ ...slide })),
+        faqs: faqs.length ? faqs : DEFAULT_FAQS.map((faq) => ({ ...faq }))
       };
     }
 
@@ -911,6 +1025,7 @@
         await loadSiteSettings();
         renderAll();
         renderHeroSettings();
+        renderFaqSettings();
         showToast('โหลดข้อมูลล่าสุดแล้ว');
       } catch (error) {
         showToast('โหลดข้อมูลไม่ได้: ' + friendlyError(error));
@@ -951,17 +1066,23 @@
     function setView(view) {
       activeView = view;
       const isHero = view === 'hero';
-      $('#projects-view').classList.toggle('is-hidden', isHero);
+      const isFaq = view === 'faq';
+      $('#projects-view').classList.toggle('is-hidden', isHero || isFaq);
       $('#hero-view').classList.toggle('is-hidden', !isHero);
-      $('#nav-projects').classList.toggle('active', !isHero);
+      $('#faq-view').classList.toggle('is-hidden', !isFaq);
+      $('#nav-projects').classList.toggle('active', !isHero && !isFaq);
       $('#nav-hero').classList.toggle('active', isHero);
-      $('#side-add').classList.toggle('is-hidden', isHero);
-      $('#add-project').classList.toggle('is-hidden', isHero);
-      $('#page-title').textContent = isHero ? 'รูปสไลด์หน้าแรก' : 'ผลงานจัดสวน';
+      $('#nav-faq').classList.toggle('active', isFaq);
+      $('#side-add').classList.toggle('is-hidden', isHero || isFaq);
+      $('#add-project').classList.toggle('is-hidden', isHero || isFaq);
+      $('#page-title').textContent = isHero ? 'รูปสไลด์หน้าแรก' : (isFaq ? 'คำถามที่พบบ่อย' : 'ผลงานจัดสวน');
       $('#page-subtitle').textContent = isHero
         ? 'อัปโหลด เลือกจำนวนรูป และเรียงลำดับรูปที่เลื่อนบนหน้าแรก'
+        : isFaq
+        ? 'เพิ่ม ลบ แก้ไข และเปิด/ปิดคำถามที่ลูกค้าเห็นในหน้าเว็บ'
         : 'เพิ่มรูป ใส่แบรนด์ รุ่น/ลาย รายละเอียด และเปิด/ปิดงานที่อยากโชว์บนเว็บ';
       if (isHero) renderHeroSettings();
+      if (isFaq) renderFaqSettings();
     }
 
     function renderHeroSettings() {
@@ -1001,6 +1122,49 @@
         <img src="${esc(slide.image)}" alt="พรีวิวรูปแรกบนหน้าเว็บ" />
         <div class="caption"><span>${esc(slide.label || 'ภาพงานจริง')}</span>${esc(slide.caption || '')}</div>
       `;
+    }
+
+    function renderFaqSettings() {
+      const faqs = siteSettings.faqs || [];
+      const list = $('#faq-editor-list');
+      list.innerHTML = faqs.map((faq, index) => `
+        <article class="faq-editor" data-faq="${index}">
+          <div class="faq-fields">
+            <div class="field">
+              <label>คำถาม</label>
+              <input value="${esc(faq.question)}" data-faq-field="question" placeholder="เช่น งานปูมีขั้นต่ำเท่าไหร่?" />
+            </div>
+            <div class="field">
+              <label>คำตอบ</label>
+              <textarea data-faq-field="answer" placeholder="พิมพ์คำตอบที่ต้องการให้ลูกค้าเห็น">${esc(faq.answer)}</textarea>
+            </div>
+            <label class="remember-line"><input type="checkbox" data-faq-field="visible" ${faq.visible !== false ? 'checked' : ''} /> เปิดแสดงบนหน้าเว็บ</label>
+          </div>
+          <div class="faq-actions">
+            <button class="plain-btn" type="button" data-faq-action="up" ${index === 0 ? 'disabled' : ''}>ขึ้น</button>
+            <button class="plain-btn" type="button" data-faq-action="down" ${index === faqs.length - 1 ? 'disabled' : ''}>ลง</button>
+            <button class="plain-btn" type="button" data-faq-action="duplicate">คัดลอก</button>
+            <button class="danger-btn" type="button" data-faq-action="delete">ลบ</button>
+          </div>
+        </article>
+      `).join('') + '<button class="faq-add-card" type="button" id="faq-add-card">＋ เพิ่มคำถาม</button>';
+      renderFaqAdminPreview();
+    }
+
+    function renderFaqAdminPreview() {
+      const preview = $('#faq-admin-preview');
+      const faqs = siteSettings.faqs || [];
+      if (!faqs.length) {
+        preview.innerHTML = '<div class="empty-state show">ยังไม่มีคำถาม กดเพิ่มคำถามเพื่อเริ่มต้น</div>';
+        return;
+      }
+      preview.innerHTML = faqs.map((faq) => `
+        <article class="faq-preview-item ${faq.visible === false ? 'is-hidden-on-site' : ''}">
+          <strong>${esc(faq.question || 'ยังไม่ได้ใส่คำถาม')}</strong>
+          <p>${esc(faq.answer || 'ยังไม่ได้ใส่คำตอบ')}</p>
+          ${faq.visible === false ? '<p><b>ซ่อนไว้ ไม่แสดงบนหน้าเว็บ</b></p>' : ''}
+        </article>
+      `).join('');
     }
 
     function renderMetrics() {
@@ -1184,18 +1348,26 @@
       }
     }
 
-    async function publishHeroSettings() {
-      setBusy(true, 'กำลังเผยแพร่รูปสไลด์หน้าแรก...');
+    async function publishSiteSettings(kind = 'settings') {
+      const busyText = kind === 'faq' ? 'กำลังเผยแพร่ FAQ...' : 'กำลังเผยแพร่รูปสไลด์หน้าแรก...';
+      const doneText = kind === 'faq' ? 'เผยแพร่ FAQ แล้ว รอเว็บอัปเดตสักครู่' : 'เผยแพร่รูปหน้าแรกแล้ว รอเว็บอัปเดตสักครู่';
+      const errorText = kind === 'faq' ? 'เผยแพร่ FAQ ไม่ได้: ' : 'เผยแพร่รูปหน้าแรกไม่ได้: ';
+      setBusy(true, busyText);
       try {
         const payload = {
           heroSlides: (siteSettings.heroSlides || []).map((slide) => ({
             image: slide.image,
             label: slide.label,
             caption: slide.caption
+          })),
+          faqs: (siteSettings.faqs || []).map((faq) => ({
+            question: faq.question,
+            answer: faq.answer,
+            visible: faq.visible !== false
           }))
         };
         const body = {
-          message: 'Update Siladon homepage hero slides',
+          message: kind === 'faq' ? 'Update Siladon website FAQ' : 'Update Siladon homepage hero slides',
           content: utf8ToBase64(JSON.stringify(payload, null, 2) + '\n'),
           branch: BRANCH
         };
@@ -1205,12 +1377,12 @@
           body: JSON.stringify(body)
         });
         siteDataSha = result.content.sha;
-        showToast('เผยแพร่รูปหน้าแรกแล้ว รอเว็บอัปเดตสักครู่');
+        showToast(doneText);
         setTimeout(() => window.open(SITE_URL + '/?v=' + Date.now(), '_blank'), 1200);
       } catch (error) {
-        showToast('เผยแพร่รูปหน้าแรกไม่ได้: ' + friendlyError(error));
+        showToast(errorText + friendlyError(error));
       } finally {
-        setBusy(false, 'พร้อมแก้ไขรูปหน้าแรก');
+        setBusy(false, kind === 'faq' ? 'พร้อมแก้ไขคำถาม' : 'พร้อมแก้ไขรูปหน้าแรก');
       }
     }
 
@@ -1233,6 +1405,7 @@
     $('#reload').addEventListener('click', loadProjects);
     $('#nav-projects').addEventListener('click', () => setView('projects'));
     $('#nav-hero').addEventListener('click', () => setView('hero'));
+    $('#nav-faq').addEventListener('click', () => setView('faq'));
     $('#open-site').addEventListener('click', () => window.open(SITE_URL, '_blank'));
     $('#open-site-side').addEventListener('click', () => window.open(SITE_URL, '_blank'));
     $('#logout').addEventListener('click', () => {
@@ -1241,13 +1414,21 @@
       window.location.reload();
     });
     $('#publish').addEventListener('click', publish);
-    $('#publish-hero').addEventListener('click', publishHeroSettings);
+    $('#publish-hero').addEventListener('click', () => publishSiteSettings('hero'));
+    $('#publish-faq').addEventListener('click', () => publishSiteSettings('faq'));
     $('#upload-hero').addEventListener('click', () => $('#hero-upload').click());
     $('#reset-hero').addEventListener('click', () => {
       if (!confirm('กลับไปใช้ชุดรูปเริ่มต้นของหน้าแรกใช่ไหม?')) return;
       siteSettings.heroSlides = DEFAULT_HERO_SLIDES.map((slide) => ({ ...slide }));
       renderHeroSettings();
       showToast('ใช้ชุดรูปเริ่มต้นแล้ว กดเผยแพร่เพื่ออัปเดตเว็บจริง');
+    });
+    $('#add-faq').addEventListener('click', addFaq);
+    $('#reset-faq').addEventListener('click', () => {
+      if (!confirm('กลับไปใช้ชุดคำถามเริ่มต้นใช่ไหม?')) return;
+      siteSettings.faqs = DEFAULT_FAQS.map((faq) => ({ ...faq }));
+      renderFaqSettings();
+      showToast('ใช้ชุดคำถามเริ่มต้นแล้ว กดเผยแพร่เพื่ออัปเดตเว็บจริง');
     });
     $('#add-project').addEventListener('click', addProject);
     $('#side-add').addEventListener('click', addProject);
@@ -1368,6 +1549,59 @@
         setBusy(false, 'พร้อมแก้ไขรูปหน้าแรก');
       }
     });
+    $('#faq-editor-list').addEventListener('input', (event) => {
+      const field = event.target.dataset.faqField;
+      if (!field || field === 'visible') return;
+      const row = event.target.closest('[data-faq]');
+      const index = Number(row.dataset.faq);
+      if (!siteSettings.faqs[index]) return;
+      siteSettings.faqs[index][field] = event.target.value.trim();
+      renderFaqAdminPreview();
+    });
+    $('#faq-editor-list').addEventListener('change', (event) => {
+      if (event.target.dataset.faqField !== 'visible') return;
+      const row = event.target.closest('[data-faq]');
+      const index = Number(row.dataset.faq);
+      if (!siteSettings.faqs[index]) return;
+      siteSettings.faqs[index].visible = event.target.checked;
+      renderFaqAdminPreview();
+    });
+    $('#faq-editor-list').addEventListener('click', (event) => {
+      if (event.target.id === 'faq-add-card') {
+        addFaq();
+        return;
+      }
+      const action = event.target.dataset.faqAction;
+      if (!action) return;
+      const row = event.target.closest('[data-faq]');
+      const index = Number(row.dataset.faq);
+      const faqs = siteSettings.faqs || [];
+      if (!faqs[index]) return;
+      if (action === 'delete') {
+        if (faqs.length <= 1) {
+          showToast('ต้องมีคำถามไว้อย่างน้อย 1 ข้อ');
+          return;
+        }
+        faqs.splice(index, 1);
+        renderFaqSettings();
+        showToast('ลบคำถามแล้ว กดเผยแพร่เพื่ออัปเดตเว็บจริง');
+        return;
+      }
+      if (action === 'duplicate') {
+        faqs.splice(index + 1, 0, { ...faqs[index], question: faqs[index].question + ' (คัดลอก)' });
+        renderFaqSettings();
+        showToast('คัดลอกคำถามแล้ว กดเผยแพร่เพื่ออัปเดตเว็บจริง');
+        return;
+      }
+      if (action === 'up' && index > 0) {
+        [faqs[index - 1], faqs[index]] = [faqs[index], faqs[index - 1]];
+        renderFaqSettings();
+      }
+      if (action === 'down' && index < faqs.length - 1) {
+        [faqs[index], faqs[index + 1]] = [faqs[index + 1], faqs[index]];
+        renderFaqSettings();
+      }
+    });
     $('#tag-editor').addEventListener('click', (event) => {
       if (event.target.classList.contains('delete-tag')) {
         projects[activeProject].tags.splice(Number(event.target.dataset.index), 1);
@@ -1387,6 +1621,17 @@
       activeProject = 0;
       renderAll();
       showToast('เพิ่มผลงานใหม่แล้ว กรอกข้อมูลแล้วกดเผยแพร่');
+    }
+
+    function addFaq() {
+      if (!Array.isArray(siteSettings.faqs)) siteSettings.faqs = [];
+      siteSettings.faqs.unshift({
+        question: 'คำถามใหม่',
+        answer: 'พิมพ์คำตอบที่ต้องการให้ลูกค้าเห็น',
+        visible: false
+      });
+      renderFaqSettings();
+      showToast('เพิ่มคำถามใหม่แล้ว แก้ข้อความและเปิดแสดงเมื่อพร้อม');
     }
 
     function showApp(currentUser, mode = 'netlify') {
