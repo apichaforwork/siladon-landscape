@@ -1,6 +1,19 @@
 {
   "projects": [
     {
+      "title": "ผลงานใหม่",
+      "category": "LANDSCAPE PROJECT",
+      "cover": "https://images.unsplash.com/photo-1598902108854-10e335adac99?auto=format&fit=crop&w=1200&q=80",
+      "area": "",
+      "brand": "",
+      "model": "",
+      "duration": "",
+      "description": "",
+      "tags": [],
+      "gallery": [],
+      "visible": false
+    },
+    {
       "title": "SCG รุ่นแบล็ค มาร์เบิ้ล",
       "category": "งานติดตั้งแผ่นทางเดิน",
       "cover": "https://raw.githubusercontent.com/apichaforwork/siladon-landscape/main/images/uploads/1787387751186-j8jjcn-780160796-1630246802444851-4701723938285776848-n.jpg",
