@@ -601,8 +601,8 @@
   <div class="login-screen" id="login-screen">
     <div class="login-panel">
       <h1>Siladon Landscape Admin</h1>
-      <p>เข้าสู่ระบบเพื่อแก้ผลงาน รูปสไลด์หน้าแรก และเผยแพร่ขึ้นเว็บไซต์จริง</p>
-      <button class="primary-btn" type="button" id="login-button">เข้าสู่ระบบผ่าน Netlify</button>
+      <p>เข้าสู่ระบบเพื่อแก้ผลงาน รูปสไลด์หน้าแรก บันทึกฉบับร่าง และเผยแพร่ขึ้นเว็บไซต์จริง</p>
+      <button class="primary-btn" type="button" id="login-button">เข้าสู่ระบบ</button>
       <div class="token-login">
         <div class="field">
           <label for="github-token">GitHub token สำหรับอัปโหลดเอง</label>
@@ -610,7 +610,7 @@
         </div>
         <label class="remember-line"><input id="remember-token" type="checkbox" checked /> จำไว้ในเครื่องนี้</label>
         <button class="plain-btn" type="button" id="github-token-login">เข้าใช้งานด้วย GitHub</button>
-        <small>ใช้เมื่อ Netlify deploy ถูก pause หรือหลังบ้าน Netlify ยังไม่อัปเดต Token นี้ใช้คุยกับ GitHub โดยตรงจากเครื่องคุณ</small>
+        <small>ใช้สำหรับบันทึกและเผยแพร่ข้อมูลเข้า GitHub Pages โดยตรงจากเครื่องนี้</small>
       </div>
     </div>
   </div>
@@ -633,7 +633,7 @@
         <button type="button" id="logout">↺ ออกจากระบบ</button>
       </nav>
       <div class="side-card">
-        <small>กดเผยแพร่แล้วระบบจะบันทึกข้อมูลเข้า GitHub หน้าเว็บ GitHub Pages จะอัปเดตให้อัตโนมัติ</small>
+        <small>กดบันทึกเพื่อเก็บฉบับร่างในเครื่องนี้ กดเผยแพร่เมื่อต้องการอัปเดตหน้าเว็บจริง</small>
       </div>
     </aside>
 
@@ -764,6 +764,7 @@
           <div class="bottom-actions">
             <button class="danger-btn" type="button" id="delete-project">ลบผลงานนี้</button>
             <div class="status-line" id="status-line">พร้อมแก้ไข</div>
+            <button class="plain-btn" type="button" id="save-project">บันทึกฉบับร่าง</button>
             <button class="primary-btn" type="button" id="publish">เผยแพร่ขึ้นเว็บไซต์</button>
           </div>
         </section>
@@ -783,6 +784,7 @@
           <div class="bottom-actions">
             <button class="plain-btn" type="button" id="reset-hero">ใช้ชุดรูปเริ่มต้น</button>
             <div class="status-line" id="hero-status-line">พร้อมแก้ไขรูปหน้าแรก</div>
+            <button class="plain-btn" type="button" id="save-hero">บันทึกฉบับร่าง</button>
             <button class="primary-btn" type="button" id="publish-hero">เผยแพร่รูปหน้าแรก</button>
           </div>
         </section>
@@ -811,6 +813,7 @@
           <div class="bottom-actions">
             <button class="plain-btn" type="button" id="reset-faq">ใช้ชุดคำถามเริ่มต้น</button>
             <div class="status-line" id="faq-status-line">พร้อมแก้ไขคำถาม</div>
+            <button class="plain-btn" type="button" id="save-faq">บันทึกฉบับร่าง</button>
             <button class="primary-btn" type="button" id="publish-faq">เผยแพร่ FAQ</button>
           </div>
         </section>
@@ -831,7 +834,8 @@
   <div class="toast" role="status" aria-live="polite" id="toast"></div>
 
   <script>
-    const SITE_URL = 'https://apichaforwork.github.io/siladon-landscape';
+    const SITE_URL = 'http://landscape.suanhinsiladon.com';
+    const DRAFT_KEY = 'siladonAdminDraft';
     const GITHUB_OWNER = 'apichaforwork';
     const GITHUB_REPO = 'siladon-landscape';
     const BRANCH = 'main';
@@ -914,6 +918,55 @@
       $('#faq-status-line').textContent = message || (isBusy ? 'กำลังทำงาน...' : 'พร้อมแก้ไขคำถาม');
       $('#save-state').textContent = isBusy ? 'กำลังบันทึก' : 'พร้อม';
       $('#save-detail').textContent = message || 'พร้อมใช้งาน';
+    }
+
+    function getDraftPayload() {
+      updateProjectFromFields();
+      return {
+        savedAt: new Date().toISOString(),
+        projects,
+        siteSettings
+      };
+    }
+
+    function saveDraft(kind = 'ข้อมูล') {
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(getDraftPayload()));
+      $('#save-state').textContent = 'บันทึกแล้ว';
+      $('#save-detail').textContent = 'ฉบับร่างถูกเก็บไว้ในเครื่องนี้';
+      const label = kind === 'hero' ? 'รูปหน้าแรก' : kind === 'faq' ? 'FAQ' : 'ผลงาน';
+      showToast('บันทึกฉบับร่าง' + label + 'แล้ว ยังไม่อัปเดตหน้าเว็บจริง');
+    }
+
+    function markDraftChanged(message = 'มีการแก้ไขที่ยังไม่เผยแพร่') {
+      if (saving) return;
+      $('#save-state').textContent = 'มีฉบับร่าง';
+      $('#save-detail').textContent = message;
+      $('#status-line').textContent = 'มีการแก้ไขที่ยังไม่เผยแพร่';
+      $('#hero-status-line').textContent = 'มีการแก้ไขที่ยังไม่เผยแพร่';
+      $('#faq-status-line').textContent = 'มีการแก้ไขที่ยังไม่เผยแพร่';
+    }
+
+    function restoreDraftIfAvailable() {
+      const rawDraft = localStorage.getItem(DRAFT_KEY);
+      if (!rawDraft) return false;
+      try {
+        const draft = JSON.parse(rawDraft);
+        if (!draft || !Array.isArray(draft.projects)) return false;
+        if (!confirm('มีฉบับร่างที่เคยบันทึกไว้ในเครื่องนี้ ต้องการใช้ฉบับร่างต่อไหม?')) return false;
+        projects = draft.projects.map(normalizeProject);
+        siteSettings = normalizeSiteSettings(draft.siteSettings || {});
+        activeProject = Math.min(activeProject, projects.length - 1);
+        renderAll();
+        renderHeroSettings();
+        renderFaqSettings();
+        $('#save-state').textContent = 'ฉบับร่าง';
+        $('#save-detail').textContent = 'กำลังใช้ข้อมูลที่บันทึกไว้ในเครื่องนี้';
+        showToast('เปิดฉบับร่างแล้ว กดเผยแพร่เมื่อต้องการอัปเดตเว็บจริง');
+        return true;
+      } catch (error) {
+        localStorage.removeItem(DRAFT_KEY);
+        return false;
+      }
     }
 
     async function getToken() {
@@ -1023,10 +1076,12 @@
         if (!projects.length) projects = [createBlankProject()];
         activeProject = Math.min(activeProject, projects.length - 1);
         await loadSiteSettings();
-        renderAll();
-        renderHeroSettings();
-        renderFaqSettings();
-        showToast('โหลดข้อมูลล่าสุดแล้ว');
+        if (!restoreDraftIfAvailable()) {
+          renderAll();
+          renderHeroSettings();
+          renderFaqSettings();
+          showToast('โหลดข้อมูลล่าสุดจากเว็บจริงแล้ว');
+        }
       } catch (error) {
         showToast('โหลดข้อมูลไม่ได้: ' + friendlyError(error));
       } finally {
@@ -1339,7 +1394,8 @@
           })
         });
         dataSha = result.content.sha;
-        showToast('เผยแพร่แล้ว รอ Netlify อัปเดตหน้าเว็บสักครู่');
+        localStorage.removeItem(DRAFT_KEY);
+        showToast('เผยแพร่แล้ว รอ GitHub Pages อัปเดตหน้าเว็บสักครู่');
         setTimeout(() => window.open(SITE_URL + '/?v=' + Date.now(), '_blank'), 1200);
       } catch (error) {
         showToast('เผยแพร่ไม่ได้: ' + friendlyError(error));
@@ -1350,7 +1406,7 @@
 
     async function publishSiteSettings(kind = 'settings') {
       const busyText = kind === 'faq' ? 'กำลังเผยแพร่ FAQ...' : 'กำลังเผยแพร่รูปสไลด์หน้าแรก...';
-      const doneText = kind === 'faq' ? 'เผยแพร่ FAQ แล้ว รอเว็บอัปเดตสักครู่' : 'เผยแพร่รูปหน้าแรกแล้ว รอเว็บอัปเดตสักครู่';
+      const doneText = kind === 'faq' ? 'เผยแพร่ FAQ แล้ว รอ GitHub Pages อัปเดตสักครู่' : 'เผยแพร่รูปหน้าแรกแล้ว รอ GitHub Pages อัปเดตสักครู่';
       const errorText = kind === 'faq' ? 'เผยแพร่ FAQ ไม่ได้: ' : 'เผยแพร่รูปหน้าแรกไม่ได้: ';
       setBusy(true, busyText);
       try {
@@ -1377,6 +1433,7 @@
           body: JSON.stringify(body)
         });
         siteDataSha = result.content.sha;
+        localStorage.removeItem(DRAFT_KEY);
         showToast(doneText);
         setTimeout(() => window.open(SITE_URL + '/?v=' + Date.now(), '_blank'), 1200);
       } catch (error) {
@@ -1399,7 +1456,10 @@
       return String(value).replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[char]));
     }
 
-    Object.values(fields).forEach((field) => field.addEventListener('input', updatePreview));
+    Object.values(fields).forEach((field) => field.addEventListener('input', () => {
+      updatePreview();
+      markDraftChanged();
+    }));
     $('#search').addEventListener('input', filterProjects);
     $('#status').addEventListener('change', filterProjects);
     $('#reload').addEventListener('click', loadProjects);
@@ -1416,19 +1476,24 @@
     $('#publish').addEventListener('click', publish);
     $('#publish-hero').addEventListener('click', () => publishSiteSettings('hero'));
     $('#publish-faq').addEventListener('click', () => publishSiteSettings('faq'));
+    $('#save-project').addEventListener('click', () => saveDraft('projects'));
+    $('#save-hero').addEventListener('click', () => saveDraft('hero'));
+    $('#save-faq').addEventListener('click', () => saveDraft('faq'));
     $('#upload-hero').addEventListener('click', () => $('#hero-upload').click());
     $('#reset-hero').addEventListener('click', () => {
       if (!confirm('กลับไปใช้ชุดรูปเริ่มต้นของหน้าแรกใช่ไหม?')) return;
       siteSettings.heroSlides = DEFAULT_HERO_SLIDES.map((slide) => ({ ...slide }));
       renderHeroSettings();
-      showToast('ใช้ชุดรูปเริ่มต้นแล้ว กดเผยแพร่เพื่ออัปเดตเว็บจริง');
+      markDraftChanged('แก้รูปหน้าแรกแล้ว ยังไม่เผยแพร่');
+      showToast('ใช้ชุดรูปเริ่มต้นแล้ว กดบันทึกฉบับร่างหรือเผยแพร่เว็บจริง');
     });
     $('#add-faq').addEventListener('click', addFaq);
     $('#reset-faq').addEventListener('click', () => {
       if (!confirm('กลับไปใช้ชุดคำถามเริ่มต้นใช่ไหม?')) return;
       siteSettings.faqs = DEFAULT_FAQS.map((faq) => ({ ...faq }));
       renderFaqSettings();
-      showToast('ใช้ชุดคำถามเริ่มต้นแล้ว กดเผยแพร่เพื่ออัปเดตเว็บจริง');
+      markDraftChanged('แก้ FAQ แล้ว ยังไม่เผยแพร่');
+      showToast('ใช้ชุดคำถามเริ่มต้นแล้ว กดบันทึกฉบับร่างหรือเผยแพร่เว็บจริง');
     });
     $('#add-project').addEventListener('click', addProject);
     $('#side-add').addEventListener('click', addProject);
@@ -1441,11 +1506,13 @@
       projects.splice(activeProject, 1);
       activeProject = Math.max(0, activeProject - 1);
       renderAll();
-      showToast('ลบผลงานแล้ว กดเผยแพร่เพื่ออัปเดตเว็บจริง');
+      markDraftChanged();
+      showToast('ลบผลงานแล้ว กดบันทึกฉบับร่างหรือเผยแพร่เว็บจริง');
     });
     $('#visible-toggle').addEventListener('click', () => {
       projects[activeProject].visible = !projects[activeProject].visible;
       renderAll();
+      markDraftChanged();
     });
     $('#change-cover').addEventListener('click', () => $('#cover-upload').click());
     $('#cover-upload').addEventListener('change', async () => {
@@ -1455,7 +1522,8 @@
       try {
         projects[activeProject].cover = await uploadImage(file);
         renderAll();
-        showToast('อัปโหลดรูปปกแล้ว กดเผยแพร่เพื่ออัปเดตเว็บจริง');
+        markDraftChanged();
+        showToast('อัปโหลดรูปปกแล้ว กดบันทึกฉบับร่างหรือเผยแพร่เว็บจริง');
       } catch (error) {
         showToast('อัปโหลดรูปไม่ได้: ' + friendlyError(error));
       } finally {
@@ -1467,7 +1535,8 @@
       if (event.target.classList.contains('delete-image')) {
         projects[activeProject].gallery.splice(Number(event.target.dataset.index), 1);
         renderAll();
-        showToast('ลบรูปแล้ว กดเผยแพร่เพื่ออัปเดตเว็บจริง');
+        markDraftChanged();
+        showToast('ลบรูปแล้ว กดบันทึกฉบับร่างหรือเผยแพร่เว็บจริง');
         return;
       }
       if (event.target.classList.contains('gallery-add')) $('#gallery-upload').click();
@@ -1481,7 +1550,8 @@
           if (file.type.startsWith('image/')) projects[activeProject].gallery.push(await uploadImage(file));
         }
         renderAll();
-        showToast('อัปโหลดรูป Gallery แล้ว กดเผยแพร่เพื่ออัปเดตเว็บจริง');
+        markDraftChanged();
+        showToast('อัปโหลดรูป Gallery แล้ว กดบันทึกฉบับร่างหรือเผยแพร่เว็บจริง');
       } catch (error) {
         showToast('อัปโหลดรูปไม่ได้: ' + friendlyError(error));
       } finally {
@@ -1497,6 +1567,7 @@
       if (!siteSettings.heroSlides[index]) return;
       siteSettings.heroSlides[index][field] = event.target.value.trim();
       renderHeroAdminPreview();
+      markDraftChanged('แก้รูปหน้าแรกแล้ว ยังไม่เผยแพร่');
     });
     $('#hero-slide-list').addEventListener('click', (event) => {
       if (event.target.id === 'hero-add-card') {
@@ -1515,16 +1586,19 @@
         }
         slides.splice(index, 1);
         renderHeroSettings();
-        showToast('ลบรูปสไลด์แล้ว กดเผยแพร่เพื่ออัปเดตเว็บจริง');
+        markDraftChanged('แก้รูปหน้าแรกแล้ว ยังไม่เผยแพร่');
+        showToast('ลบรูปสไลด์แล้ว กดบันทึกฉบับร่างหรือเผยแพร่เว็บจริง');
         return;
       }
       if (action === 'up' && index > 0) {
         [slides[index - 1], slides[index]] = [slides[index], slides[index - 1]];
         renderHeroSettings();
+        markDraftChanged('แก้รูปหน้าแรกแล้ว ยังไม่เผยแพร่');
       }
       if (action === 'down' && index < slides.length - 1) {
         [slides[index], slides[index + 1]] = [slides[index + 1], slides[index]];
         renderHeroSettings();
+        markDraftChanged('แก้รูปหน้าแรกแล้ว ยังไม่เผยแพร่');
       }
     });
     $('#hero-upload').addEventListener('change', async () => {
@@ -1541,7 +1615,8 @@
           });
         }
         renderHeroSettings();
-        showToast('อัปโหลดรูปสไลด์แล้ว กดเผยแพร่เพื่ออัปเดตเว็บจริง');
+        markDraftChanged('แก้รูปหน้าแรกแล้ว ยังไม่เผยแพร่');
+        showToast('อัปโหลดรูปสไลด์แล้ว กดบันทึกฉบับร่างหรือเผยแพร่เว็บจริง');
       } catch (error) {
         showToast('อัปโหลดรูปไม่ได้: ' + friendlyError(error));
       } finally {
@@ -1557,6 +1632,7 @@
       if (!siteSettings.faqs[index]) return;
       siteSettings.faqs[index][field] = event.target.value.trim();
       renderFaqAdminPreview();
+      markDraftChanged('แก้ FAQ แล้ว ยังไม่เผยแพร่');
     });
     $('#faq-editor-list').addEventListener('change', (event) => {
       if (event.target.dataset.faqField !== 'visible') return;
@@ -1565,6 +1641,7 @@
       if (!siteSettings.faqs[index]) return;
       siteSettings.faqs[index].visible = event.target.checked;
       renderFaqAdminPreview();
+      markDraftChanged('แก้ FAQ แล้ว ยังไม่เผยแพร่');
     });
     $('#faq-editor-list').addEventListener('click', (event) => {
       if (event.target.id === 'faq-add-card') {
@@ -1584,28 +1661,33 @@
         }
         faqs.splice(index, 1);
         renderFaqSettings();
-        showToast('ลบคำถามแล้ว กดเผยแพร่เพื่ออัปเดตเว็บจริง');
+        markDraftChanged('แก้ FAQ แล้ว ยังไม่เผยแพร่');
+        showToast('ลบคำถามแล้ว กดบันทึกฉบับร่างหรือเผยแพร่เว็บจริง');
         return;
       }
       if (action === 'duplicate') {
         faqs.splice(index + 1, 0, { ...faqs[index], question: faqs[index].question + ' (คัดลอก)' });
         renderFaqSettings();
-        showToast('คัดลอกคำถามแล้ว กดเผยแพร่เพื่ออัปเดตเว็บจริง');
+        markDraftChanged('แก้ FAQ แล้ว ยังไม่เผยแพร่');
+        showToast('คัดลอกคำถามแล้ว กดบันทึกฉบับร่างหรือเผยแพร่เว็บจริง');
         return;
       }
       if (action === 'up' && index > 0) {
         [faqs[index - 1], faqs[index]] = [faqs[index], faqs[index - 1]];
         renderFaqSettings();
+        markDraftChanged('แก้ FAQ แล้ว ยังไม่เผยแพร่');
       }
       if (action === 'down' && index < faqs.length - 1) {
         [faqs[index], faqs[index + 1]] = [faqs[index + 1], faqs[index]];
         renderFaqSettings();
+        markDraftChanged('แก้ FAQ แล้ว ยังไม่เผยแพร่');
       }
     });
     $('#tag-editor').addEventListener('click', (event) => {
       if (event.target.classList.contains('delete-tag')) {
         projects[activeProject].tags.splice(Number(event.target.dataset.index), 1);
         renderAll();
+        markDraftChanged();
         return;
       }
       if (!event.target.classList.contains('add-tag')) return;
@@ -1613,6 +1695,7 @@
       if (!tag) return;
       projects[activeProject].tags.push(tag.trim());
       renderAll();
+      markDraftChanged();
     });
 
     function addProject() {
@@ -1620,7 +1703,8 @@
       projects.unshift(createBlankProject());
       activeProject = 0;
       renderAll();
-      showToast('เพิ่มผลงานใหม่แล้ว กรอกข้อมูลแล้วกดเผยแพร่');
+      markDraftChanged();
+      showToast('เพิ่มผลงานใหม่แล้ว กรอกข้อมูลแล้วกดบันทึกฉบับร่างหรือเผยแพร่');
     }
 
     function addFaq() {
@@ -1631,6 +1715,7 @@
         visible: false
       });
       renderFaqSettings();
+      markDraftChanged('แก้ FAQ แล้ว ยังไม่เผยแพร่');
       showToast('เพิ่มคำถามใหม่แล้ว แก้ข้อความและเปิดแสดงเมื่อพร้อม');
     }
 
