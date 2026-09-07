@@ -1,17 +1,28 @@
 {
   "projects": [
     {
-      "title": "ผลงานใหม่",
-      "category": "LANDSCAPE PROJECT",
-      "cover": "https://images.unsplash.com/photo-1598902108854-10e335adac99?auto=format&fit=crop&w=1200&q=80",
-      "area": "",
-      "brand": "",
-      "model": "",
-      "duration": "",
-      "description": "",
-      "tags": [],
-      "gallery": [],
-      "visible": false
+      "title": "SCG รุ่นลอนดอน สีเทาและสีดำ (London)",
+      "category": "งานติดตั้งแผ่นทางเดิน",
+      "cover": "https://raw.githubusercontent.com/apichaforwork/siladon-landscape/main/images/uploads/1788763497649-z606yh-097-357-9339-4.jpeg",
+      "area": "70 ตร.ม.",
+      "brand": "SCG",
+      "model": "SCG รุ่นลอนดอน (London)",
+      "duration": "3 วัน",
+      "description": "งานปูแผ่นกระเบื้องคอนกรีตปูพื้น เอสซีจี SCG รุ่นลอนดอน (London) ขนาด 40x40x3.5 ซม. \n- บริเวณริมตัวบ้านและริมกำแพง ใช้หินสีฟ้าเทา เบอร์ 2",
+      "tags": [
+        "แผ่นทางเดิน",
+        "หินโรย",
+        "ขอบกั้น",
+        "ข้างบ้าน"
+      ],
+      "gallery": [
+        "https://raw.githubusercontent.com/apichaforwork/siladon-landscape/main/images/uploads/1788763695268-rv968i-097-357-9339-2.jpeg",
+        "https://raw.githubusercontent.com/apichaforwork/siladon-landscape/main/images/uploads/1788763698423-scx5vc-097-357-9339-3.jpeg",
+        "https://raw.githubusercontent.com/apichaforwork/siladon-landscape/main/images/uploads/1788763701180-955soj-097-357-9339-4.jpeg",
+        "https://raw.githubusercontent.com/apichaforwork/siladon-landscape/main/images/uploads/1788763703801-6cfvc7-097-357-9339-1.jpeg",
+        "https://raw.githubusercontent.com/apichaforwork/siladon-landscape/main/images/uploads/1788763706649-znqdef-097-357-9339-5.jpeg"
+      ],
+      "visible": true
     },
     {
       "title": "SCG รุ่นแบล็ค มาร์เบิ้ล",
