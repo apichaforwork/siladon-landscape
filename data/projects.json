@@ -1,6 +1,31 @@
 {
   "projects": [
     {
+      "title": "PST ลาย 8 ช่อง สีดำ",
+      "category": "LANDSCAPE PROJECT",
+      "cover": "https://raw.githubusercontent.com/apichaforwork/siladon-landscape/main/images/uploads/1789020699696-1f1b5r-2.png",
+      "area": "50 ตร.ม.",
+      "brand": "P Stone",
+      "model": "PST ลาย 8 ช่อง สีดำ",
+      "duration": "2 วัน",
+      "description": "",
+      "tags": [],
+      "gallery": [
+        "https://raw.githubusercontent.com/apichaforwork/siladon-landscape/main/images/uploads/1789020720669-yb8tat-1.png",
+        "https://raw.githubusercontent.com/apichaforwork/siladon-landscape/main/images/uploads/1789020724674-yvyo9f-2.png",
+        "https://raw.githubusercontent.com/apichaforwork/siladon-landscape/main/images/uploads/1789020727904-cib7v7-7.png",
+        "https://raw.githubusercontent.com/apichaforwork/siladon-landscape/main/images/uploads/1789020730131-bjn79c-6.png",
+        "https://raw.githubusercontent.com/apichaforwork/siladon-landscape/main/images/uploads/1789020733640-5bam3u-5.png",
+        "https://raw.githubusercontent.com/apichaforwork/siladon-landscape/main/images/uploads/1789020737141-bq0tv2-4.png",
+        "https://raw.githubusercontent.com/apichaforwork/siladon-landscape/main/images/uploads/1789020740193-ysx17p-3.png",
+        "https://raw.githubusercontent.com/apichaforwork/siladon-landscape/main/images/uploads/1789020743783-r00e3v-8.png",
+        "https://raw.githubusercontent.com/apichaforwork/siladon-landscape/main/images/uploads/1789020747969-uexuh5-9.png",
+        "https://raw.githubusercontent.com/apichaforwork/siladon-landscape/main/images/uploads/1789020752170-kgpq22-10.png",
+        "https://raw.githubusercontent.com/apichaforwork/siladon-landscape/main/images/uploads/1789020755759-u54xru-11.png"
+      ],
+      "visible": true
+    },
+    {
       "title": "SCG รุ่นลอนดอน สีเทาและสีดำ (London)",
       "category": "งานติดตั้งแผ่นทางเดิน",
       "cover": "https://raw.githubusercontent.com/apichaforwork/siladon-landscape/main/images/uploads/1788763497649-z606yh-097-357-9339-4.jpeg",
