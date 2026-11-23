@@ -1739,6 +1739,7 @@ const ProjectMedia = (() => {
           <a href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">${esc(item.title || 'ดูสินค้าบนเว็บร้าน')}</a>
           <label class="field">ชื่อสินค้า<input data-product-field="title" value="${esc(item.title)}" /></label>
           <label class="field">ลิงก์รูปสินค้า<input type="url" data-product-field="image" value="${esc(item.image)}" /></label>
+          ${!item.title || !item.image ? `<button class="plain-btn" type="button" data-retry-product="${index}">โหลดพรีวิวอีกครั้ง</button>` : ''}
           <button class="plain-btn" type="button" data-remove-media="${index}">เอาสินค้าออก</button>
         </div>`).join('');
     }
@@ -1782,37 +1783,70 @@ const ProjectMedia = (() => {
       }
     });
 
+    const productPreviews = {
+      '18090-46406': {
+        title: 'แผ่นคอนกรีตพิมพ์ลาย P.STONE อิตาลี สีดำ',
+        image: 'https://image.makewebeasy.net/makeweb/r_400x400/SWIHGcc9A/DefaultData/167.png?v=202405291424'
+      },
+      '22519-55821': {
+        title: 'หินแกลบโขง เบอร์ 3',
+        image: 'https://image.makewebeasy.net/makeweb/r_400x400/SWIHGcc9A/DefaultData/%E0%B9%81%E0%B8%81%E0%B8%A5%E0%B8%9A%E0%B9%82%E0%B8%82%E0%B8%87_3.png?v=202405291424'
+      }
+    };
+
+    function knownProductPreview(url) {
+      return productPreviews[/^\/product\/(\d+-\d+)(?:\/|$)/.exec(new URL(url).pathname)?.[1]];
+    }
+
+    async function loadProductPreview(project, item) {
+      const known = knownProductPreview(item.url);
+      if (known) {
+        item.title ||= known.title;
+        item.image ||= known.image;
+        refreshProjectMedia(project);
+        return;
+      }
+      setBusy(true, 'กำลังโหลดพรีวิวสินค้า...');
+      try {
+        const endpoint = new URL('https://api.microlink.io/');
+        endpoint.searchParams.set('url', item.url);
+        const response = await fetch(endpoint, { signal: AbortSignal.timeout(8000) });
+        if (!response.ok) throw Error('Preview unavailable');
+        const preview = await response.json();
+        if (preview.status !== 'success') throw Error('Preview unavailable');
+        if (!project.products.includes(item)) return;
+        item.title ||= String(preview.data?.title || '');
+        item.image ||= ProjectMedia.httpsUrl(preview.data?.image?.url)?.href || '';
+        if (!item.title || !item.image) showToast('เติมชื่อหรือรูปสินค้าที่ดึงไม่ได้ในช่องพรีวิว');
+      } catch {
+        showToast('โหลดพรีวิวไม่ได้ ใส่ชื่อและลิงก์รูปเองได้');
+      } finally {
+        setBusy(false, 'พร้อมแก้ไข');
+        refreshProjectMedia(project);
+      }
+    }
+
     $('#add-project-product').addEventListener('click', async () => {
       const input = $('#project-product-url');
       const url = ProjectMedia.productUrl(input.value.trim());
       const project = projects[activeProject];
       if (!project) return;
       if (!url) return showToast('ใส่ลิงก์ HTTPS ของหน้าสินค้าบนเว็บสวนหินศิลาดล');
-      if (project.products.some((item) => item.url === url)) return showToast('เพิ่มสินค้านี้ไว้แล้ว');
       input.value = '';
-      const item = { url, title: '', image: '' };
-      project.products.push(item);
-      refreshProjectMedia(project);
-      setBusy(true, 'กำลังโหลดพรีวิวสินค้า...');
-      try {
-        const endpoint = new URL('https://api.microlink.io/');
-        endpoint.searchParams.set('url', url);
-        const response = await fetch(endpoint, { signal: AbortSignal.timeout(8000) });
-        if (!response.ok) throw Error('Preview unavailable');
-        const preview = await response.json();
-        if (preview.status !== 'success') throw Error('Preview unavailable');
-        if (!project.products.includes(item)) return;
-        const editor = $('#project-products');
-        if (!item.title) item.title = String(preview.data?.title || '');
-        if (!item.image) item.image = ProjectMedia.httpsUrl(preview.data?.image?.url)?.href || '';
-        if (!editor.contains(document.activeElement)) refreshProjectMedia(project);
-        if (!item.title || !item.image) showToast('เติมชื่อหรือรูปสินค้าที่ดึงไม่ได้ในช่องพรีวิว');
-      } catch {
-        showToast('เพิ่มลิงก์แล้ว แต่โหลดพรีวิวไม่ได้ ใส่ชื่อและลิงก์รูปเองได้');
-      } finally {
-        setBusy(false, 'พร้อมแก้ไข');
-        markDraftChanged();
+      let item = project.products.find((product) => product.url === url);
+      if (!item) {
+        item = { url, title: '', image: '' };
+        project.products.push(item);
+        refreshProjectMedia(project);
       }
+      await loadProductPreview(project, item);
+    });
+
+    $('#project-products').addEventListener('click', async (event) => {
+      const button = event.target.closest('[data-retry-product]');
+      const project = projects[activeProject];
+      const item = project?.products[Number(button?.dataset.retryProduct)];
+      if (button && item) await loadProductPreview(project, item);
     });
 
     $('#project-products').addEventListener('input', (event) => {
