@@ -861,7 +861,7 @@
               <div class="project-media-editor" id="project-videos"></div>
             </section>
             <section class="project-media-editor" aria-labelledby="project-products-heading">
-              <h3 id="project-products-heading">สินค้าที่ใช้</h3>
+              <h3 id="project-products-heading">วัสดุที่ใช้</h3>
               <div class="field">
                 <label for="project-product-url">ลิงก์สินค้าจากเว็บสวนหินศิลาดล</label>
                 <input id="project-product-url" type="url" placeholder="https://www.suanhinsiladon.com/…" />
@@ -895,6 +895,11 @@
                 <p id="preview-description">เพิ่มรายละเอียดงานเพื่อให้ลูกค้าเข้าใจภาพรวมของผลงาน</p>
               </div>
             </div>
+            <section class="project-media-editor" aria-labelledby="preview-materials-heading">
+              <h3 id="preview-materials-heading">วัสดุที่ใช้</h3>
+              <div id="preview-materials" class="project-media-editor"></div>
+              <small>ข้อมูลในพรีวิวจะขึ้นบนหน้าเว็บเมื่อกดเผยแพร่ขึ้นเว็บไซต์</small>
+            </section>
           </div>
 
           <div class="bottom-actions">
@@ -1503,7 +1508,20 @@ const ProjectMedia = (() => {
       $('#preview-title').textContent = project.title || 'ยังไม่ได้ตั้งชื่อโครงการ';
       $('#preview-meta').textContent = [project.brand, project.model].filter(Boolean).join(' · ') || 'ยังไม่ได้ใส่แบรนด์/รุ่น';
       $('#preview-description').textContent = project.description || 'เพิ่มรายละเอียดงานเพื่อให้ลูกค้าเข้าใจภาพรวมของผลงาน';
+      renderMaterialPreview(project);
       renderMetrics();
+    }
+
+    function renderMaterialPreview(project) {
+      const cards = ProjectMedia.products(project.products).map((item) => `
+        <a class="media-entry" href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">
+          ${item.image ? `<img src="${esc(item.image)}" alt="" loading="lazy" />` : ''}
+          <strong>${esc(item.title || 'ดูสินค้าบนเว็บสวนหินศิลาดล')}</strong>
+        </a>`).join('');
+      const material = project.model || project.brand;
+      $('#preview-materials').innerHTML = cards || (material
+        ? `<div class="media-entry"><strong>${esc(material)}</strong></div>`
+        : '<small>ยังไม่ได้ระบุวัสดุสำหรับผลงานนี้</small>');
     }
 
     function filterProjects() {
@@ -1745,7 +1763,10 @@ const ProjectMedia = (() => {
     }
 
     function refreshProjectMedia(project) {
-      if (project === projects[activeProject]) renderProjectMedia(project);
+      if (project === projects[activeProject]) {
+        renderProjectMedia(project);
+        renderMaterialPreview(project);
+      }
       markDraftChanged();
     }
 
@@ -1855,6 +1876,7 @@ const ProjectMedia = (() => {
       const item = projects[activeProject]?.products[Number(row?.dataset.product)];
       if (!item || !field) return;
       item[field] = event.target.value.trim();
+      renderMaterialPreview(projects[activeProject]);
       markDraftChanged();
     });
     $('#project-products').addEventListener('change', (event) => {

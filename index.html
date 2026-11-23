@@ -225,6 +225,10 @@
     .album-media { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr)); gap:12px; }
     .album-media iframe,.album-media video { width:100%; display:block; aspect-ratio:16/9; border:0; border-radius:12px; background:#15251b; }
     .album-product { display:flex; gap:12px; align-items:center; border:1px solid #dce5de; border-radius:12px; padding:10px; color:inherit; overflow-wrap:anywhere; }
+    .album-materials { margin-top:24px; border-top:1px solid #dce5de; padding-top:16px; }
+    .album-materials h3 { margin:0 0 12px; }
+    .album-materials .album-product { background:#f5f8f3; text-decoration:none; }
+    .album-materials a.album-product:hover { border-color:#387353; text-decoration:underline; }
     .album-product img { width:72px; aspect-ratio:1; object-fit:cover; border-radius:8px; }
     .gallery-photo img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:12px;display:block}
     .photo-lightbox{
@@ -874,7 +878,12 @@ function openProject(i){
     </div>
     ${gallery?`<h3>รูปในอัลบั้ม</h3><div class="gallery">${gallery}</div>`:''}
     ${videos?`<h3>วิดีโอผลงาน</h3><div class="album-media">${videos}</div>`:''}
-    ${products?`<h3>สินค้าที่ใช้</h3><div class="album-media">${products}</div>`:''}
+    <section class="album-materials" aria-label="วัสดุที่ใช้">
+      <h3>วัสดุที่ใช้</h3>
+      <div class="album-media">${products || (p.model || p.brand
+        ? `<div class="album-product"><strong>${esc(p.model || p.brand)}</strong></div>`
+        : '<p>ยังไม่ได้ระบุวัสดุสำหรับผลงานนี้</p>')}</div>
+    </section>
   `;
   document.getElementById('projectModal').classList.add('open');
   document.body.style.overflow='hidden';
