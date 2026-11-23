@@ -222,6 +222,10 @@
     .modal-meta div{background:#f6f6f6;border-radius:14px;padding:13px}
     .gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px}
     .gallery-photo{border:0;background:transparent;padding:0;cursor:zoom-in}
+    .album-media { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr)); gap:12px; }
+    .album-media iframe,.album-media video { width:100%; display:block; aspect-ratio:16/9; border:0; border-radius:12px; background:#15251b; }
+    .album-product { display:flex; gap:12px; align-items:center; border:1px solid #dce5de; border-radius:12px; padding:10px; color:inherit; overflow-wrap:anywhere; }
+    .album-product img { width:72px; aspect-ratio:1; object-fit:cover; border-radius:8px; }
     .gallery-photo img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:12px;display:block}
     .photo-lightbox{
       display:none;position:fixed;inset:0;z-index:120;background:rgba(0,0,0,.88);
@@ -764,6 +768,48 @@ function projectMatchesFilter(project, filter){
   return (terms[filter] || []).some(term => text.includes(term.toLowerCase()));
 }
 
+
+const ProjectMedia = (() => {
+  function httpsUrl(value) {
+    try {
+      const url = new URL(value);
+      return url.protocol === 'https:' && !url.username && !url.password ? url : null;
+    } catch {
+      return null;
+    }
+  }
+
+  function productUrl(value) {
+    const url = httpsUrl(value);
+    return url && ['www.suanhinsiladon.com', 'suanhinsiladon.com'].includes(url.host) && url.pathname !== '/' ? url.href : '';
+  }
+
+  function video(value) {
+    const url = httpsUrl(value);
+    if (!url) return null;
+    const youtube = ['youtube.com', 'www.youtube.com', 'm.youtube.com'].includes(url.host);
+    const id = url.host === 'youtu.be' ? url.pathname.split('/')[1]
+      : youtube && url.pathname === '/watch' ? url.searchParams.get('v')
+      : youtube ? /^\/(?:shorts|embed|live)\/([\w-]+)/.exec(url.pathname)?.[1] : '';
+    if (id && /^[\w-]{11}$/.test(id)) return { url: url.href, embed: 'https://www.youtube-nocookie.com/embed/' + id };
+    if (/\.(mp4|webm)$/i.test(url.pathname)) return { url: url.href };
+    return null;
+  }
+
+  function products(items) {
+    return (Array.isArray(items) ? items : []).flatMap((item) => {
+      const url = productUrl(item?.url);
+      return url ? [{ url, title: String(item.title || '').trim(), image: httpsUrl(item.image)?.href || '' }] : [];
+    });
+  }
+
+  function videos(items) {
+    return (Array.isArray(items) ? items : []).map(video).filter(Boolean);
+  }
+
+  return { httpsUrl, productUrl, products, video, videos };
+})();
+
 function renderProjects(){
   const grid = document.getElementById('projectsGrid');
   const visibleProjects = projectData.filter(p => projectMatchesFilter(p, activePortfolioFilter));
@@ -795,6 +841,14 @@ function renderProjects(){
 
 function openProject(i){
   const p=projectData[i]; if(!p) return;
+  const videos = ProjectMedia.videos(p.videos).map((video, index) => video.embed
+    ? `<iframe src="${esc(video.embed)}" title="วิดีโอผลงาน ${index + 1}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>`
+    : `<video src="${esc(video.url)}" controls playsinline preload="metadata"></video>`).join('');
+  const products = ProjectMedia.products(p.products).map((item) => `
+    <a class="album-product" href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">
+      ${item.image ? `<img src="${esc(item.image)}" alt="" loading="lazy">` : ''}
+      <strong>${esc(item.title || 'ดูสินค้าบนเว็บสวนหินศิลาดล')}</strong>
+    </a>`).join('');
   document.getElementById('modalTitle').textContent=p.title||'รายละเอียดโครงการ';
   const cover = imageUrl(p.cover || '');
   const gallerySources = (p.gallery || []).map(x => imageUrl(typeof x === 'string' ? x : x.image || '')).filter(Boolean);
@@ -819,12 +873,15 @@ function openProject(i){
       <div><small>ระยะเวลา</small><br><b>${esc(p.duration||'—')}</b></div>
     </div>
     ${gallery?`<h3>รูปในอัลบั้ม</h3><div class="gallery">${gallery}</div>`:''}
+    ${videos?`<h3>วิดีโอผลงาน</h3><div class="album-media">${videos}</div>`:''}
+    ${products?`<h3>สินค้าที่ใช้</h3><div class="album-media">${products}</div>`:''}
   `;
   document.getElementById('projectModal').classList.add('open');
   document.body.style.overflow='hidden';
 }
 function closeProject(){
   document.getElementById('projectModal').classList.remove('open');
+  document.getElementById('modalBody').replaceChildren();
   document.body.style.overflow='';
 }
 function openLightbox(index){

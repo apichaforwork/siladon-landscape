@@ -694,6 +694,12 @@
       .login-photo { min-height: 150px; }
       .login-panel .brand-mark { margin-bottom: 15px; }
     }
+    .project-media-editor { margin-top: 18px; display: grid; gap: 12px; }
+    .project-media-editor h3 { margin: 0; }
+    .project-media-editor small { color: var(--muted); }
+    .media-entry { display: grid; gap: 8px; padding: 12px; border: 1px solid var(--line); border-radius: 12px; overflow-wrap: anywhere; }
+    .media-entry img { width: 80px; aspect-ratio: 1; object-fit: cover; border-radius: 8px; }
+    .media-entry button { justify-self: start; }
   </style>
 </head>
 <body>
@@ -840,6 +846,30 @@
               <input class="file-input" id="gallery-upload" type="file" accept="image/*" multiple />
               <input class="file-input" id="cover-upload" type="file" accept="image/*" />
             </div>
+            <section class="project-media-editor" aria-labelledby="project-videos-heading">
+              <h3 id="project-videos-heading">วิดีโอผลงาน</h3>
+              <div class="field">
+                <label for="project-video-url">ลิงก์ YouTube หรือไฟล์ MP4 / WebM</label>
+                <input id="project-video-url" type="url" placeholder="https://…" />
+              </div>
+              <div class="actions">
+                <button class="plain-btn" type="button" id="add-project-video">เพิ่มลิงก์วิดีโอ</button>
+                <button class="plain-btn" type="button" id="upload-project-video">อัปโหลด MP4 / WebM</button>
+                <input class="file-input" id="project-video-file" type="file" accept=".mp4,.webm,video/mp4,video/webm" />
+              </div>
+              <small>อัปโหลดได้สูงสุด 4 MB ต่อไฟล์ คลิปใหญ่ใช้ลิงก์ YouTube ได้</small>
+              <div class="project-media-editor" id="project-videos"></div>
+            </section>
+            <section class="project-media-editor" aria-labelledby="project-products-heading">
+              <h3 id="project-products-heading">สินค้าที่ใช้</h3>
+              <div class="field">
+                <label for="project-product-url">ลิงก์สินค้าจากเว็บสวนหินศิลาดล</label>
+                <input id="project-product-url" type="url" placeholder="https://www.suanhinsiladon.com/…" />
+              </div>
+              <button class="plain-btn" type="button" id="add-project-product">เพิ่มสินค้าและโหลดพรีวิว</button>
+              <small>ส่งเฉพาะลิงก์สินค้าสาธารณะให้ Microlink เพื่อดึงชื่อและรูป แก้ข้อมูลพรีวิวเองได้</small>
+              <div class="project-media-editor" id="project-products"></div>
+            </section>
             <div class="toggle-line">
               <div>
                 <strong>แสดงงานนี้บนเว็บไซต์</strong>
@@ -947,6 +977,48 @@
     const BRANCH = 'main';
     const DATA_PATH = 'data/projects.json';
     const SITE_DATA_PATH = 'data/site.json';
+
+const ProjectMedia = (() => {
+  function httpsUrl(value) {
+    try {
+      const url = new URL(value);
+      return url.protocol === 'https:' && !url.username && !url.password ? url : null;
+    } catch {
+      return null;
+    }
+  }
+
+  function productUrl(value) {
+    const url = httpsUrl(value);
+    return url && ['www.suanhinsiladon.com', 'suanhinsiladon.com'].includes(url.host) && url.pathname !== '/' ? url.href : '';
+  }
+
+  function video(value) {
+    const url = httpsUrl(value);
+    if (!url) return null;
+    const youtube = ['youtube.com', 'www.youtube.com', 'm.youtube.com'].includes(url.host);
+    const id = url.host === 'youtu.be' ? url.pathname.split('/')[1]
+      : youtube && url.pathname === '/watch' ? url.searchParams.get('v')
+      : youtube ? /^\/(?:shorts|embed|live)\/([\w-]+)/.exec(url.pathname)?.[1] : '';
+    if (id && /^[\w-]{11}$/.test(id)) return { url: url.href, embed: 'https://www.youtube-nocookie.com/embed/' + id };
+    if (/\.(mp4|webm)$/i.test(url.pathname)) return { url: url.href };
+    return null;
+  }
+
+  function products(items) {
+    return (Array.isArray(items) ? items : []).flatMap((item) => {
+      const url = productUrl(item?.url);
+      return url ? [{ url, title: String(item.title || '').trim(), image: httpsUrl(item.image)?.href || '' }] : [];
+    });
+  }
+
+  function videos(items) {
+    return (Array.isArray(items) ? items : []).map(video).filter(Boolean);
+  }
+
+  return { httpsUrl, productUrl, products, video, videos };
+})();
+
     const UPLOAD_DIR = 'images/uploads';
     const RAW_BASE = 'https://raw.githubusercontent.com/apichaforwork/siladon-landscape/main/';
     const FALLBACK_COVER = 'https://images.unsplash.com/photo-1598902108854-10e335adac99?auto=format&fit=crop&w=1200&q=80';
@@ -1126,6 +1198,8 @@
         description: project.description || '',
         tags: Array.isArray(project.tags) ? project.tags : [],
         gallery: Array.isArray(project.gallery) ? project.gallery.map((item) => normalizeImageUrl(typeof item === 'string' ? item : item.image)).filter(Boolean) : [],
+        videos: ProjectMedia.videos(project.videos).map((video) => video.url),
+        products: ProjectMedia.products(project.products),
         visible: project.visible !== false
       };
     }
@@ -1386,6 +1460,9 @@
       $('#cover-preview').style.backgroundImage = `linear-gradient(180deg, rgba(20,35,28,.08), rgba(20,35,28,.58)), url("${project.cover || FALLBACK_COVER}")`;
       renderTags(project.tags);
       renderGallery(project.gallery);
+      $('#project-video-url').value = '';
+      $('#project-product-url').value = '';
+      renderProjectMedia(project);
       updatePreview();
     }
 
@@ -1446,7 +1523,7 @@
       if (empty) empty.classList.toggle('show', shown === 0);
     }
 
-    async function uploadImage(file) {
+    async function uploadImage(file, kind = 'image') {
       const extension = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg';
       const cleanName = file.name.replace(/\.[^.]+$/, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'image';
       const path = `${UPLOAD_DIR}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}-${cleanName}.${extension}`;
@@ -1454,7 +1531,7 @@
       await gitFetch('contents/' + path, {
         method: 'PUT',
         body: JSON.stringify({
-          message: 'Upload image for Siladon project',
+          message: 'Upload ' + kind + ' for Siladon project',
           content,
           branch: BRANCH
         })
@@ -1487,6 +1564,8 @@
             description: project.description,
             tags: project.tags,
             gallery: project.gallery,
+            videos: project.videos,
+            products: ProjectMedia.products(project.products),
             visible: project.visible
           }))
         };
@@ -1647,6 +1726,130 @@
       }
       if (event.target.classList.contains('gallery-add')) $('#gallery-upload').click();
     });
+
+    function renderProjectMedia(project) {
+      $('#project-videos').innerHTML = project.videos.map((url, index) => `
+        <div class="media-entry">
+          <a href="${esc(url)}" target="_blank" rel="noopener noreferrer">ดูวิดีโอ ${index + 1}</a>
+          <button class="plain-btn" type="button" data-remove-media="${index}">เอาวิดีโอออก</button>
+        </div>`).join('');
+      $('#project-products').innerHTML = project.products.map((item, index) => `
+        <div class="media-entry" data-product="${index}">
+          ${ProjectMedia.httpsUrl(item.image) ? `<img src="${esc(item.image)}" alt="" loading="lazy" />` : ''}
+          <a href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">${esc(item.title || 'ดูสินค้าบนเว็บร้าน')}</a>
+          <label class="field">ชื่อสินค้า<input data-product-field="title" value="${esc(item.title)}" /></label>
+          <label class="field">ลิงก์รูปสินค้า<input type="url" data-product-field="image" value="${esc(item.image)}" /></label>
+          <button class="plain-btn" type="button" data-remove-media="${index}">เอาสินค้าออก</button>
+        </div>`).join('');
+    }
+
+    function refreshProjectMedia(project) {
+      if (project === projects[activeProject]) renderProjectMedia(project);
+      markDraftChanged();
+    }
+
+    $('#add-project-video').addEventListener('click', () => {
+      const input = $('#project-video-url');
+      const video = ProjectMedia.video(input.value.trim());
+      const project = projects[activeProject];
+      if (!project) return;
+      if (!video) return showToast('ใช้ลิงก์ HTTPS ของ YouTube, MP4 หรือ WebM');
+      if (project.videos.includes(video.url)) return showToast('เพิ่มวิดีโอนี้ไว้แล้ว');
+      project.videos.push(video.url);
+      input.value = '';
+      refreshProjectMedia(project);
+    });
+
+    $('#upload-project-video').addEventListener('click', () => $('#project-video-file').click());
+    $('#project-video-file').addEventListener('change', async (event) => {
+      const input = event.target;
+      const file = input.files[0];
+      const project = projects[activeProject];
+      input.value = '';
+      if (!file || !project) return;
+      if (!/\.(mp4|webm)$/i.test(file.name) || (file.type && !['video/mp4', 'video/webm'].includes(file.type))) return showToast('เลือกไฟล์ MP4 หรือ WebM');
+      if (file.size > 4 * 1024 * 1024) return showToast('ไฟล์เกิน 4 MB ใช้ลิงก์ YouTube หรือ MP4 แทนได้');
+      setBusy(true, 'กำลังอัปโหลดวิดีโอ...');
+      try {
+        project.videos.push(await uploadImage(file, 'video'));
+        showToast('เพิ่มวิดีโอแล้ว กดเผยแพร่เพื่ออัปเดตอัลบั้ม');
+      } catch (error) {
+        showToast('อัปโหลดวิดีโอไม่ได้: ' + friendlyError(error));
+      } finally {
+        if (project === projects[activeProject]) renderProjectMedia(project);
+        setBusy(false, 'พร้อมแก้ไข');
+        markDraftChanged();
+      }
+    });
+
+    $('#add-project-product').addEventListener('click', async () => {
+      const input = $('#project-product-url');
+      const url = ProjectMedia.productUrl(input.value.trim());
+      const project = projects[activeProject];
+      if (!project) return;
+      if (!url) return showToast('ใส่ลิงก์ HTTPS ของหน้าสินค้าบนเว็บสวนหินศิลาดล');
+      if (project.products.some((item) => item.url === url)) return showToast('เพิ่มสินค้านี้ไว้แล้ว');
+      input.value = '';
+      const item = { url, title: '', image: '' };
+      project.products.push(item);
+      refreshProjectMedia(project);
+      setBusy(true, 'กำลังโหลดพรีวิวสินค้า...');
+      try {
+        const endpoint = new URL('https://api.microlink.io/');
+        endpoint.searchParams.set('url', url);
+        const response = await fetch(endpoint, { signal: AbortSignal.timeout(8000) });
+        if (!response.ok) throw Error('Preview unavailable');
+        const preview = await response.json();
+        if (preview.status !== 'success') throw Error('Preview unavailable');
+        if (!project.products.includes(item)) return;
+        const editor = $('#project-products');
+        if (!item.title) item.title = String(preview.data?.title || '');
+        if (!item.image) item.image = ProjectMedia.httpsUrl(preview.data?.image?.url)?.href || '';
+        if (!editor.contains(document.activeElement)) refreshProjectMedia(project);
+        if (!item.title || !item.image) showToast('เติมชื่อหรือรูปสินค้าที่ดึงไม่ได้ในช่องพรีวิว');
+      } catch {
+        showToast('เพิ่มลิงก์แล้ว แต่โหลดพรีวิวไม่ได้ ใส่ชื่อและลิงก์รูปเองได้');
+      } finally {
+        setBusy(false, 'พร้อมแก้ไข');
+        markDraftChanged();
+      }
+    });
+
+    $('#project-products').addEventListener('input', (event) => {
+      const field = event.target.dataset.productField;
+      const row = event.target.closest('[data-product]');
+      const item = projects[activeProject]?.products[Number(row?.dataset.product)];
+      if (!item || !field) return;
+      item[field] = event.target.value.trim();
+      markDraftChanged();
+    });
+    $('#project-products').addEventListener('change', (event) => {
+      if (!event.target.dataset.productField) return;
+      const row = event.target.closest('[data-product]');
+      const item = projects[activeProject]?.products[Number(row?.dataset.product)];
+      if (!item) return;
+      row.querySelector('a').textContent = item.title || 'ดูสินค้าบนเว็บร้าน';
+      const safeImage = ProjectMedia.httpsUrl(item.image);
+      let image = row.querySelector('img');
+      if (safeImage && !image) {
+        image = document.createElement('img');
+        image.alt = '';
+        row.prepend(image);
+      }
+      if (safeImage) image.src = safeImage.href;
+      else image?.remove();
+    });
+
+    for (const key of ['videos', 'products']) {
+      $('#project-' + key).addEventListener('click', (event) => {
+        const button = event.target.closest('[data-remove-media]');
+        const project = projects[activeProject];
+        if (!button || !project) return;
+        project[key].splice(Number(button.dataset.removeMedia), 1);
+        refreshProjectMedia(project);
+      });
+    }
+
     $('#gallery-upload').addEventListener('change', async () => {
       const files = Array.from($('#gallery-upload').files || []);
       if (!files.length) return;
