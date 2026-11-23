@@ -1204,7 +1204,10 @@ const ProjectMedia = (() => {
         tags: Array.isArray(project.tags) ? project.tags : [],
         gallery: Array.isArray(project.gallery) ? project.gallery.map((item) => normalizeImageUrl(typeof item === 'string' ? item : item.image)).filter(Boolean) : [],
         videos: ProjectMedia.videos(project.videos).map((video) => video.url),
-        products: ProjectMedia.products(project.products),
+        products: ProjectMedia.products(project.products).map((item) => {
+          const preview = knownProductPreview(item.url);
+          return { ...item, title: item.title || preview?.title || '', image: item.image || preview?.image || '' };
+        }),
         visible: project.visible !== false
       };
     }
@@ -1516,7 +1519,7 @@ const ProjectMedia = (() => {
       const cards = ProjectMedia.products(project.products).map((item) => `
         <a class="media-entry" href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">
           ${item.image ? `<img src="${esc(item.image)}" alt="" loading="lazy" />` : ''}
-          <strong>${esc(item.title || 'ดูสินค้าบนเว็บสวนหินศิลาดล')}</strong>
+          <strong>${esc(productLabel(item))}</strong>
         </a>`).join('');
       const material = project.model || project.brand;
       $('#preview-materials').innerHTML = cards || (material
@@ -1754,7 +1757,7 @@ const ProjectMedia = (() => {
       $('#project-products').innerHTML = project.products.map((item, index) => `
         <div class="media-entry" data-product="${index}">
           ${ProjectMedia.httpsUrl(item.image) ? `<img src="${esc(item.image)}" alt="" loading="lazy" />` : ''}
-          <a href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">${esc(item.title || 'ดูสินค้าบนเว็บร้าน')}</a>
+          <a href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">${esc(productLabel(item))}</a>
           <label class="field">ชื่อสินค้า<input data-product-field="title" value="${esc(item.title)}" /></label>
           <label class="field">ลิงก์รูปสินค้า<input type="url" data-product-field="image" value="${esc(item.image)}" /></label>
           ${!item.title || !item.image ? `<button class="plain-btn" type="button" data-retry-product="${index}">โหลดพรีวิวอีกครั้ง</button>` : ''}
@@ -1805,6 +1808,8 @@ const ProjectMedia = (() => {
     });
 
     const productPreviews = {
+      "22515-55817": {"title":"หินแกลบขาว เบอร์ 2","image":"https://image.makewebeasy.net/makeweb/r_400x400/SWIHGcc9A/DefaultData/%E0%B9%81%E0%B8%81%E0%B8%A5%E0%B8%9A%E0%B8%82%E0%B8%B2%E0%B8%A7_2.png?v=202405291424"},
+      "19876-51152": {"title":"บล็อกปูพื้นครอบ 10x10x30 ซม. สีเทา","image":"https://image.makewebeasy.net/makeweb/r_400x400/SWIHGcc9A/DefaultData/22.png?v=202405291424"},
       '18090-46406': {
         title: 'แผ่นคอนกรีตพิมพ์ลาย P.STONE อิตาลี สีดำ',
         image: 'https://image.makewebeasy.net/makeweb/r_400x400/SWIHGcc9A/DefaultData/167.png?v=202405291424'
@@ -1814,6 +1819,13 @@ const ProjectMedia = (() => {
         image: 'https://image.makewebeasy.net/makeweb/r_400x400/SWIHGcc9A/DefaultData/%E0%B9%81%E0%B8%81%E0%B8%A5%E0%B8%9A%E0%B9%82%E0%B8%82%E0%B8%87_3.png?v=202405291424'
       }
     };
+
+    function productLabel(item) {
+      if (item.title) return item.title;
+      const slug = new URL(item.url).pathname.split('/').filter(Boolean).at(-1);
+      try { return decodeURIComponent(slug).replaceAll('-', ' '); }
+      catch { return 'ดูสินค้าบนเว็บร้าน'; }
+    }
 
     function knownProductPreview(url) {
       return productPreviews[/^\/product\/(\d+-\d+)(?:\/|$)/.exec(new URL(url).pathname)?.[1]];
@@ -1884,7 +1896,7 @@ const ProjectMedia = (() => {
       const row = event.target.closest('[data-product]');
       const item = projects[activeProject]?.products[Number(row?.dataset.product)];
       if (!item) return;
-      row.querySelector('a').textContent = item.title || 'ดูสินค้าบนเว็บร้าน';
+      row.querySelector('a').textContent = productLabel(item);
       const safeImage = ProjectMedia.httpsUrl(item.image);
       let image = row.querySelector('img');
       if (safeImage && !image) {
