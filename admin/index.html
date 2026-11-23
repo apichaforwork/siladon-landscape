@@ -627,15 +627,87 @@
       .faq-editor { grid-template-columns: 1fr; }
       .faq-actions { grid-template-columns: repeat(4, 1fr); }
     }
+    /* Landscape admin refresh */
+    :root {
+      --ink: #192d24;
+      --muted: #53665c;
+      --line: #dce5de;
+      --paper: #f4f7f3;
+      --green: #205b41;
+      --green-bright: #28734d;
+      --shadow: 0 16px 42px rgba(23, 48, 36, .08);
+    }
+    body { background: var(--paper); }
+    button:focus-visible, a:focus-visible, summary:focus-visible, [tabindex]:focus-visible {
+      outline: 3px solid #5d936c;
+      outline-offset: 3px;
+    }
+    .login-screen { min-height: 100svh; padding: clamp(16px, 4vw, 56px); }
+    .login-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+      width: min(100%, 1050px);
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 26px;
+      background: #fff;
+      box-shadow: 0 28px 72px rgba(23, 48, 36, .13);
+    }
+    .login-photo {
+      min-height: 520px;
+      background: #213b2e url('../images/uploads/1787387766589-gag6ph-779239046-1630246805778184-1908871125689229029-n.jpg') center / cover no-repeat;
+    }
+    .login-panel {
+      width: 100%;
+      align-self: center;
+      padding: clamp(24px, 5vw, 64px);
+      border: 0;
+      background: #fff;
+      box-shadow: none;
+    }
+    .login-panel .brand-mark { margin-bottom: 24px; }
+    .login-panel h1 { font-size: clamp(30px, 4vw, 43px); line-height: 1.08; letter-spacing: -.035em; }
+    .login-panel p { margin: 12px 0 24px; }
+    #login-button, #github-token-login { width: 100%; min-height: 46px; }
+    .login-alternative { margin-top: 24px; border-top: 1px solid var(--line); padding-top: 16px; }
+    .login-alternative summary { cursor: pointer; color: var(--green); font-size: 14px; font-weight: 700; }
+    .token-login { border-top: 0; padding-top: 0; margin-top: 14px; }
+    .sidebar { background: #173629; box-shadow: none; }
+    .nav button { border-radius: 10px; }
+    .nav button.active { background: #d9efdf; color: #18392b; }
+    .topbar { background: #fff; border-bottom: 1px solid var(--line); }
+    .topbar h1 { font-size: clamp(24px, 3vw, 34px); letter-spacing: -.025em; }
+    .metric, .panel { border-radius: 16px; box-shadow: 0 5px 18px rgba(23, 48, 36, .05); }
+    .project-row.active { background: #eaf5ed; box-shadow: inset 3px 0 0 var(--green-bright); }
+    .primary-btn { background: var(--green); box-shadow: none; }
+    .plain-btn, .primary-btn, .danger-btn { min-height: 42px; border-radius: 10px; }
+    .thumb, .preview-card img, .gallery-item { border-radius: 10px; }
+    @media (max-width: 1080px) {
+      .sidebar { display: flex; position: static; height: auto; padding: 14px 18px; gap: 12px; }
+      .sidebar .brand { padding: 0 0 10px; }
+      .sidebar .nav { display: flex; flex-wrap: wrap; gap: 5px; }
+      .sidebar .nav button { width: auto; }
+      .sidebar .side-card { display: none; }
+    }
+    @media (max-width: 640px) {
+      .login-layout { grid-template-columns: minmax(0, 1fr); border-radius: 18px; }
+      .login-photo { min-height: 150px; }
+      .login-panel .brand-mark { margin-bottom: 15px; }
+    }
   </style>
 </head>
 <body>
   <div class="login-screen" id="login-screen">
-    <div class="login-panel">
-      <h1>Siladon Landscape Admin</h1>
-      <p>เข้าสู่ระบบเพื่อแก้ผลงาน รูปสไลด์หน้าแรก บันทึกฉบับร่าง และเผยแพร่ขึ้นเว็บไซต์จริง</p>
+    <div class="login-layout">
+      <div class="login-photo" aria-hidden="true"></div>
+      <div class="login-panel">
+      <div class="brand-mark" aria-hidden="true">S</div>
+      <h1>Siladon Landscape</h1>
+      <p>เข้าสู่ระบบจัดการผลงานและเนื้อหาเว็บไซต์</p>
       <button class="primary-btn" type="button" id="login-button">เข้าสู่ระบบ</button>
-      <div class="token-login">
+      <details class="login-alternative">
+        <summary>เข้าสู่ระบบด้วย GitHub token</summary>
+        <div class="token-login">
         <div class="field">
           <label for="github-token">GitHub token สำหรับอัปโหลดเอง</label>
           <input id="github-token" type="password" autocomplete="off" placeholder="วาง token ที่มีสิทธิ์แก้ repository นี้" />
@@ -643,6 +715,8 @@
         <label class="remember-line"><input id="remember-token" type="checkbox" checked /> จำไว้ในเครื่องนี้</label>
         <button class="plain-btn" type="button" id="github-token-login">เข้าใช้งานด้วย GitHub</button>
         <small>ใช้สำหรับบันทึกและเผยแพร่ข้อมูลเข้า GitHub Pages โดยตรงจากเครื่องนี้</small>
+        </div>
+      </details>
       </div>
     </div>
   </div>
