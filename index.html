@@ -226,14 +226,13 @@
     .album-media iframe,.album-media video { width:100%; display:block; aspect-ratio:16/9; border:0; border-radius:12px; background:#15251b; }
     .album-product { display:flex; gap:12px; align-items:center; border:1px solid #dce5de; border-radius:12px; padding:10px; color:inherit; overflow-wrap:anywhere; }
     .album-materials { margin-top:24px; border-top:1px solid #dce5de; padding-top:16px; }
-    .project .album-materials { margin-top:14px; padding-top:12px; }
-    .project .album-materials .album-media { grid-template-columns:1fr; gap:8px; }
-    .project .album-materials .album-product { font-size:14px; }
-    .project .album-materials h3 { font-size:15px; }
     .album-materials h3 { margin:0 0 12px; }
     .album-materials .album-product { background:#f5f8f3; text-decoration:none; }
     .album-materials a.album-product:hover { border-color:#387353; text-decoration:underline; }
-    .album-product img { width:72px; aspect-ratio:1; object-fit:cover; border-radius:8px; }
+    .album-materials .album-media { grid-template-columns:repeat(auto-fill,minmax(min(100%,170px),1fr)); }
+    .album-materials a.album-product { display:grid; align-content:start; align-items:start; }
+    .album-product img { display:block; width:100%; aspect-ratio:4/3; object-fit:contain; border-radius:8px; background:#fff; }
+    .album-product span { font-size:13px; color:#245a3e; }
     .gallery-photo img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:12px;display:block}
     .photo-lightbox{
       display:none;position:fixed;inset:0;z-index:120;background:rgba(0,0,0,.88);
@@ -822,7 +821,8 @@ function renderProjectMaterials(p) {
   const products = ProjectMedia.products(p.products).map((item) => `
     <a class="album-product" href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">
       ${item.image ? `<img src="${esc(item.image)}" alt="" loading="lazy">` : ''}
-      <strong>${esc(item.title || 'ดูสินค้าบนเว็บสวนหินศิลาดล')}</strong>
+      <strong>${esc(item.title || 'วัสดุจากสวนหินศิลาดล')}</strong>
+      <span>ดูสินค้าบนเว็บร้าน ↗</span>
     </a>`).join('');
   return `
     <section class="album-materials" aria-label="วัสดุที่ใช้">
@@ -850,14 +850,13 @@ function renderProjects(){
       const tags=(p.tags||[]).map(t=>`<span class="chip">${esc(t)}</span>`).join('');
       const area = p.area ? `พื้นที่ ${esc(p.area)}${String(p.area).includes('ตร.ม.') ? '' : ' ตร.ม.'}` : '';
       const meta = [area, p.duration ? `ใช้เวลา ${esc(p.duration)}` : ''].filter(Boolean).join(' • ');
-      return `<article class="project" onclick="if (!event.target.closest('a')) openProject(${i})">
+      return `<article class="project" onclick="openProject(${i})">
         <div class="project-img" style="background-image:url('${esc(imageUrl(p.cover||''))}')"></div>
         <div class="project-body">
           <small>${esc(p.category||'LANDSCAPE PROJECT')}</small>
           <h3>${esc(p.title||'ผลงานจัดสวน')}</h3>
           <p>${meta}</p>
           <div class="chips">${tags}</div>
-          ${renderProjectMaterials(p)}
         </div>
       </article>`;
     }).join('');
