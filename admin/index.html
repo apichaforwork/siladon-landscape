@@ -700,6 +700,48 @@
     .media-entry { display: grid; gap: 8px; padding: 12px; border: 1px solid var(--line); border-radius: 12px; overflow-wrap: anywhere; }
     .media-entry img { width: 80px; aspect-ratio: 1; object-fit: cover; border-radius: 8px; }
     .media-entry button { justify-self: start; }
+    #app main { min-width:0; background:#f2f5f0; }
+    #app .topbar { padding-inline:clamp(16px,3vw,40px); }
+    #app .content { padding-inline:clamp(16px,3vw,40px); }
+    #projects-view { grid-template-columns:minmax(260px,.68fr) minmax(0,1.65fr); gap:20px; }
+    #app .metric { min-height:100px; background:#fff; box-shadow:none; }
+    #app .metric strong { font-size:clamp(20px,2.2vw,27px); overflow-wrap:anywhere; }
+    #app .panel { min-width:0; border-radius:20px; }
+    #app .panel-head { background:#fff; }
+    .project-directory .filters { background:#f7f9f5; }
+    .project-directory .project-row { gap:12px; }
+    .editor-heading { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px; padding:16px 20px; border-bottom:1px solid var(--line); }
+    .editor-heading h2 { margin:0; font-size:20px; }
+    .editor-heading nav { display:flex; flex-wrap:wrap; gap:6px; }
+    .editor-heading a { padding:6px 10px; border-radius:8px; background:#edf4ed; color:var(--green); text-decoration:none; font-size:13px; font-weight:700; }
+    .editor-heading a:hover { background:#d9ecde; }
+    .project-editor .hero-upload { margin:16px 20px 0; border-radius:14px; overflow:hidden; }
+    .project-editor .form-grid { padding:20px; grid-template-columns:repeat(2,minmax(0,1fr)); }
+    .project-editor .form-grid > .project-media-editor { grid-column:1/-1; align-content:start; min-width:0; margin:4px 0 0; padding:16px; border:1px solid var(--line); border-radius:14px; background:#f7faf6; }
+    .project-media-editor:empty { display:none; }
+    .project-editor .project-media-editor > button { justify-self:start; }
+    .project-editor .media-entry { background:#fff; min-width:0; }
+    #project-details,#project-videos-heading,#project-products-heading,#project-preview { scroll-margin-top:110px; }
+    #project-preview { margin:0 20px 20px; padding:16px; border:1px solid var(--line); border-radius:14px; background:#f7faf6; }
+    #project-preview .panel-head { min-height:0; padding:0 0 14px; border:0; background:transparent; }
+    #preview-materials { margin-top:0; grid-template-columns:repeat(auto-fill,minmax(min(100%,145px),1fr)); align-items:start; }
+    #preview-materials .media-entry { color:var(--green); text-decoration:none; font-size:14px; }
+    #preview-materials a.media-entry:hover { border-color:var(--green); text-decoration:underline; }
+    #preview-materials img { display:block; width:100%; aspect-ratio:4/3; object-fit:contain; background:#f5f7f3; }
+    .project-editor .bottom-actions { justify-content:flex-end; align-items:center; flex-wrap:wrap; }
+    .project-editor .status-line { margin-right:auto; }
+    @media (min-width:1210px) {
+      .project-directory { position:sticky; top:96px; max-height:calc(100vh - 116px); overflow:auto; }
+    }
+    @media (max-width:1209px) {
+      #projects-view { grid-template-columns:minmax(0,1fr); }
+    }
+    @media (max-width:640px) {
+      .project-editor .form-grid { grid-template-columns:minmax(0,1fr); padding:14px; }
+      .project-editor .hero-upload { margin:12px 14px 0; }
+      #project-preview { margin:0 14px 14px; }
+      #project-details,#project-videos-heading,#project-products-heading,#project-preview { scroll-margin-top:185px; }
+    }
   </style>
 </head>
 <body>
@@ -770,7 +812,7 @@
           <div class="metric"><span>สถานะ</span><strong id="save-state">พร้อม</strong><small id="save-detail">ยังไม่มีการแก้ล่าสุด</small></div>
         </div>
 
-        <section class="panel">
+        <section class="panel project-directory">
           <div class="panel-head">
             <div>
               <h2>รายการผลงาน</h2>
@@ -796,7 +838,16 @@
           </div>
         </section>
 
-        <section class="panel">
+        <section class="panel project-editor">
+          <div class="editor-heading">
+            <h2>แก้ไขผลงาน</h2>
+            <nav aria-label="ไปยังส่วนที่ต้องการแก้">
+              <a href="#project-details">รายละเอียด</a>
+              <a href="#project-videos-heading">วิดีโอ</a>
+              <a href="#project-products-heading">วัสดุ</a>
+              <a href="#project-preview">พรีวิว</a>
+            </nav>
+          </div>
           <div class="hero-upload" id="cover-preview">
             <div class="upload-actions">
               <div>
@@ -807,7 +858,7 @@
             </div>
           </div>
 
-          <div class="form-grid">
+          <div class="form-grid" id="project-details">
             <div class="field full">
               <label for="title">ชื่อโครงการ</label>
               <input id="title" />
@@ -879,8 +930,8 @@
             </div>
           </div>
 
-          <div class="preview-band">
-            <div class="panel-head" style="padding:0 0 12px;border:0;min-height:0">
+          <div class="preview-band" id="project-preview">
+            <div class="panel-head">
               <div>
                 <h2>พรีวิวบนหน้าเว็บ</h2>
                 <p>ดูภาพรวมก่อนกดเผยแพร่</p>
