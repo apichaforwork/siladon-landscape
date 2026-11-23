@@ -742,6 +742,51 @@
       #project-preview { margin:0 14px 14px; }
       #project-details,#project-videos-heading,#project-products-heading,#project-preview { scroll-margin-top:185px; }
     }
+    /* Light palette for the signed-in workspace */
+    #app {
+      --ink:#192b24;
+      --muted:#52665b;
+      --line:#dce9e2;
+      --green:#176748;
+      --green-bright:#238259;
+      --mint:#e8f7ee;
+      --shadow:0 6px 22px rgba(32,76,54,.055);
+      color:var(--ink);
+      background:#f7faf8;
+    }
+    #app main { background:#f7faf8; }
+    #app .sidebar { background:#fff; color:var(--ink); border-right:1px solid var(--line); }
+    #app .brand { border-color:var(--line); }
+    #app .brand-mark { color:var(--green); background:#ddf4e6; border-radius:12px; }
+    #app .brand span, #app .side-card small { color:var(--muted); }
+    #app .nav button { color:#354f41; font-weight:650; }
+    #app .nav button:hover { background:#f0f8f3; color:var(--green); }
+    #app .nav button.active { background:#e0f5e8; color:#145c3e; }
+    #app .side-card { background:#f7faf8; border:1px solid var(--line); border-radius:12px; }
+    #app .topbar { background:#fff; }
+    #app .topbar h1 { font-weight:700; }
+    #app .panel, #app .metric { border-radius:16px; box-shadow:none; background:#fff; }
+    #app .metric { border-top:3px solid #bce9cd; }
+    #app .metric:nth-child(2) { border-top-color:#c9e9e7; }
+    #app .metric:nth-child(3) { border-top-color:#f0dfaa; }
+    #app .metric:nth-child(4) { border-top-color:#d8e3fa; }
+    #app .project-directory .filters { background:#f7faf8; }
+    #app .project-row.active { background:#eaf8ef; box-shadow:inset 3px 0 0 #58a77b; }
+    #app .project-row:hover { background:#f0f8f3; }
+    #app .editor-heading a, #app .pill { background:#e9f7ef; color:#1b6848; }
+    #app .editor-heading a:hover { background:#d8f0e2; }
+    #app .primary-btn { background:#176748; color:#fff; }
+    #app .primary-btn:not(:disabled):hover { background:#125338; }
+    #app .plain-btn { color:#215c43; border-color:#d2e5d9; background:#fff; }
+    #app .plain-btn:not(:disabled):hover { background:#eaf8ef; }
+    #app .project-editor .form-grid > .project-media-editor, #app #project-preview { background:#f5fbf7; border-color:#dceee2; }
+    #app .project-editor .bottom-actions { background:#fff; }
+    #app .field input, #app .field textarea, #app .field select { border-color:#d7e5dc; background:#fff; }
+    #app .gallery-add { background:#eaf8ef; color:var(--green); }
+    #app #preview-materials img { background:#f7faf8; }
+    @media (max-width:1080px) {
+      #app .sidebar { border-right:0; border-bottom:1px solid var(--line); }
+    }
   </style>
 </head>
 <body>
