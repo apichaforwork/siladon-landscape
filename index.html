@@ -136,6 +136,12 @@
     .price-row{
       display:flex;justify-content:space-between;gap:20px;padding:17px 0;border-bottom:1px solid #eee
     }
+    .distance-table{margin-top:18px;border-top:1px solid var(--line);padding-top:12px}
+    .distance-table summary{cursor:pointer;font-weight:750}
+    .distance-table table{width:100%;border-collapse:collapse;margin-top:8px;font-size:clamp(11px,2.7vw,14px)}
+    .distance-table caption{text-align:left;color:var(--muted);padding:0 0 6px}
+    .distance-table th,.distance-table td{padding:7px 4px;border-bottom:1px solid var(--line);text-align:right}
+    .distance-table tr > :first-child{text-align:left}
     .price-row:last-child{border-bottom:0}
     .price-row span:last-child{font-weight:850;text-align:right}
     .note{font-size:12px;color:#777;margin-top:15px}
@@ -392,13 +398,21 @@
             <div class="price-row"><span>ปูหญ้าจริง</span><span>ประมาณ 450 บาท/ตร.ม.</span></div>
             <div class="price-row"><span>ปูหญ้าเทียม</span><span>ประมาณ 850 บาท/ตร.ม.</span></div>
             <div class="price-row"><span>ปิดโพรง</span><span>ประมาณ 850 บาท/เมตร</span></div>
-            <div class="price-row"><span>งานปูขั้นต่ำ</span><span>30 ตร.ม.</span></div>
+            <div class="price-row"><span>งานปูขั้นต่ำ</span><span>30–100 ตร.ม. ตามระยะทาง</span></div>
             <div class="rate-list">
               <div class="rate-pill"><span>P Stone / Gods Stone</span><b>1,250</b></div>
               <div class="rate-pill"><span>Supersun</span><b>1,350</b></div>
               <div class="rate-pill"><span>Superior / SCG ลอนดอนหรือปารีส</span><b>1,450</b></div>
               <div class="rate-pill"><span>SCG รุ่นอื่น ๆ</span><b>1,700</b></div>
             </div>
+            <details class="distance-table">
+              <summary>ค่าเดินทางและพื้นที่ขั้นต่ำ</summary>
+              <table>
+                <caption>ค่าระยะทางเพิ่ม (บาท/ตร.ม.) สำหรับงานปูแผ่น</caption>
+                <thead><tr><th scope="col">ระยะทาง</th><th scope="col" id="distance-small-heading"></th><th scope="col" id="distance-large-heading"></th><th scope="col">ขั้นต่ำ</th></tr></thead>
+                <tbody id="distance-rate-rows"></tbody>
+              </table>
+            </details>
             <div class="note">* ราคาจริงขึ้นอยู่กับชนิดวัสดุ สภาพพื้นที่ ระยะทาง การเตรียมพื้น และรายละเอียดหน้างาน</div>
           </div>
 
@@ -412,11 +426,11 @@
               <div id="distanceField">
                 <label>ระยะทางจากร้านโดยประมาณ</label>
                 <select id="distance">
-                  <option value="0">0–20 กม.</option>
-                  <option value="21">21–30 กม.</option>
-                  <option value="31">31–40 กม.</option>
-                  <option value="41">41–50 กม.</option>
-                  <option value="51">51–55 กม.</option>
+                  <option value="0">0–15 กม.</option>
+                  <option value="16">16–25 กม.</option>
+                  <option value="26">26–29 กม.</option>
+                  <option value="30">30–45 กม.</option>
+                  <option value="46">46–55 กม.</option>
                   <option value="56">มากกว่า 55 กม.</option>
                 </select>
               </div>
@@ -448,7 +462,7 @@
             <button class="cta" style="margin-top:18px;width:100%" onclick="estimate()">คำนวณงบ</button>
             <div class="result">
               งบประมาณเบื้องต้น
-              <b id="budget">62,500–78,125 บาท</b>
+              <b id="budget" aria-live="polite">—</b>
               <div class="calc-detail" id="calcDetail"></div>
               <span style="font-size:12px;color:#666">เป็นการประเมินเบื้องต้นจากข้อมูลที่เลือก ราคาจริงขึ้นอยู่กับวัสดุ สภาพพื้นที่ ระยะทาง และรายละเอียดหน้างาน</span>
             </div>
@@ -638,9 +652,19 @@ Google Maps:
 งบประมาณโดยประมาณ:
 
 แนบรูปพื้นที่และภาพ Reference เพิ่มเติมได้เลยค่ะ`;
+const DISTANCE_RATES = {
+  '0': { small:0, large:0, min:30, label:'0–15 กม.' },
+  '16': { small:50, large:30, min:50, label:'16–25 กม.' },
+  '26': { small:100, large:80, min:50, label:'26–29 กม.' },
+  '30': { small:150, large:120, min:50, label:'30–45 กม.' },
+  '46': { small:250, large:220, min:100, label:'46–55 กม.' },
+  '56': { small:null, large:null, min:null, label:'มากกว่า 55 กม.' }
+};
+
 const CALCULATOR_CONFIG = {
   // TODO: ให้เจ้าของร้านยืนยันว่าใช้ช่วงเผื่อราคา +12% เป็นค่า production หรือไม่
-  estimateRangePercent: 0.12
+  estimateRangePercent: 0.12,
+  largeArea: 100
 };
 
 function esc(s=''){
@@ -937,14 +961,6 @@ function estimate(){
   const hasGravel = document.getElementById('extraGravel').checked;
   const hasCement = document.getElementById('extraCement').checked;
   const fmt = n => Math.round(n).toLocaleString('th-TH');
-  const distanceRates = {
-    '0':{small:0,large:0,min:30,label:'0–20 กม.'},
-    '21':{small:50,large:30,min:30,label:'21–30 กม.'},
-    '31':{small:100,large:80,min:50,label:'31–40 กม.'},
-    '41':{small:150,large:100,min:50,label:'41–50 กม.'},
-    '51':{small:250,large:200,min:50,label:'51–55 กม.'},
-    '56':{small:null,large:null,min:null,label:'มากกว่า 55 กม.'}
-  };
   const labels = {
     paving:'ปูแผ่นทางเดิน',
     pavingStone:'ทางเดิน + โรยหิน / สวนหิน',
@@ -987,7 +1003,7 @@ function estimate(){
     }
     subtotal += area * 850;
   }else{
-    const dist = distanceRates[distance] || distanceRates['0'];
+    const dist = DISTANCE_RATES[distance] || DISTANCE_RATES['0'];
     if(dist.small === null){
       document.getElementById('budget').textContent = 'สอบถามทีมงานเพิ่มเติม';
       renderCalcSummary({
@@ -1001,7 +1017,7 @@ function estimate(){
       return;
     }
     billableArea = Math.max(area, dist.min || 30);
-    const distanceAdd = billableArea >= 80 ? dist.large : dist.small;
+    const distanceAdd = area >= CALCULATOR_CONFIG.largeArea ? dist.large : dist.small;
     let rate = paverRate + distanceAdd;
     if(workType === 'pavingStone') rate += 150;
     subtotal += billableArea * rate;
@@ -1029,11 +1045,11 @@ function estimate(){
     amountLabel: workType === 'voidOnly' ? 'ความยาว' : 'พื้นที่',
     area: workType === 'voidOnly' ? `${fmt(area)} เมตร` : `${fmt(area)} ตร.ม.`,
     workType: labels[workType],
-    distance: workType === 'voidOnly' ? 'ไม่คิดตามระยะทาง' : (distanceRates[distance] || distanceRates['0']).label,
+    distance: workType === 'voidOnly' ? 'ไม่คิดตามระยะทาง' : (DISTANCE_RATES[distance] || DISTANCE_RATES['0']).label,
     material: materialLabel,
     extras: selectedExtras.length ? selectedExtras.join(', ') : 'ไม่มี'
   });
-  updateLineEstimate(labels[workType], area, materialLabel, workType === 'voidOnly' ? 'ไม่คิดตามระยะทาง' : (distanceRates[distance] || distanceRates['0']).label, selectedExtras, budgetText, workType === 'voidOnly' ? 'เมตร' : 'ตร.ม.');
+  updateLineEstimate(labels[workType], area, materialLabel, workType === 'voidOnly' ? 'ไม่คิดตามระยะทาง' : (DISTANCE_RATES[distance] || DISTANCE_RATES['0']).label, selectedExtras, budgetText, workType === 'voidOnly' ? 'เมตร' : 'ตร.ม.');
 }
 
 function renderCalcSummary(summary){
@@ -1081,6 +1097,15 @@ function syncCalculatorMode(){
 }
 
 document.addEventListener('DOMContentLoaded', ()=>{
+  const largeArea = CALCULATOR_CONFIG.largeArea;
+  document.getElementById('distance-small-heading').textContent = 'ต่ำกว่า ' + largeArea + ' ตร.ม.';
+  document.getElementById('distance-large-heading').textContent = largeArea + ' ตร.ม. ขึ้นไป';
+  const surcharge = rate => rate ? '+' + rate : '0';
+  document.getElementById('distance-rate-rows').innerHTML = Object.values(DISTANCE_RATES).map(rate =>
+    rate.min === null
+      ? `<tr><th scope="row">${rate.label}</th><td colspan="3">อยู่นอกพื้นที่ให้บริการ</td></tr>`
+      : `<tr><th scope="row">${rate.label}</th><td>${surcharge(rate.small)}</td><td>${surcharge(rate.large)}</td><td>${rate.min} ตร.ม.</td></tr>`
+  ).join('');
   syncCalculatorMode();
   estimate();
   loadSiteSettings();
